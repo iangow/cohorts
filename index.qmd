@@ -1,0 +1,3 @@
+# Preface {.unnumbered}
+
+This "book" is an iterative reworking of Chapter 4 of @tanimura2021sql.
