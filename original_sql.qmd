@@ -1,4 +1,4 @@
-# Cohort Analysis -- Original
+# Cohort Analysis -- Original {#sec-original}
 
 In Chapter 3 we covered time series analysis.
 With those techniques in hand, we will now turn to a related type of analysis with many business and other applications: cohort analysis.
@@ -87,7 +87,7 @@ Cumulative calculations are often used in calculations of customer lifetime valu
 
 The four types of cohort analysis allow us to compare subgroups and understand how they differ over time in order to make better product, marketing, and financial decisions.
 The calculations for the different types are similar, so we will set the stage with retention, and then I'll show how to modify retention code to calculate the other types.
-Before we dive into constructing our cohort analysis, let’s take a look at the data set we’ll be using for the examples in this chapter.
+Before we dive into constructing our cohort analysis, let's take a look at the data set we'll be using for the examples in this chapter.
 
 
 ## The Legislators Data Set
@@ -140,7 +140,7 @@ Legislators accumulate power and influence via leadership positions the longer t
 In the modern era, the vast majority of legislators are Democrats or Republicans, and the rivalry between the two parties is well known.
 Legislators occasionally change parties while in office.
 
-For the analyses, we’ll make use of two tables: `legislators` and `legislators_terms`.
+For the analyses, we'll make use of two tables: `legislators` and `legislators_terms`.
 The `legislators` table contains a list of all the people included in the data set, with birthday, gender, and a set of ID fields that can be used to look up the person in other data sets.
 The `legislators_terms` table contains a record for each term in office for each legislator, with start and end date, and other attributes such as chamber and 
 `id_bioguide` field is used as the unique identifier of a legislator and appears in each table.
@@ -180,7 +180,7 @@ legislators_terms |>
   style_tt(fontsize = 0.8) |>
   theme_tt("spacing")
 ```
-Now that we have an understanding of what cohort analysis is and of the data set we’ll be using for examples, let's get into how to write SQL for retention analysis.
+Now that we have an understanding of what cohort analysis is and of the data set we'll be using for examples, let's get into how to write SQL for retention analysis.
 The key question SQL will help us answer is: once representatives take office, how long do they keep their jobs?
 
 ## Retention
@@ -189,11 +189,11 @@ One of the most common types of cohort analysis is retention analysis. To retain
 
 The main question in retention analysis is whether the starting size of the cohort—number of subscribers or employees, amount spent, or another key metric—will remain constant, decay, or increase over time. When there is an increase or a decrease, the amount and speed of change are also interesting questions. In most retention analyses, the starting size will tend to decay over time, since a cohort can lose but cannot gain new members once it is formed. Revenue is an interesting exception, since a cohort of customers can spend more in subsequent months than they did in the first month collectively, even if some of them churn.
 
-Retention analysis uses the count of entities or sum of money or actions present in the data set for each period from the starting date, and it normalizes by dividing this number by the count or sum of entities, money, or actions in the first time period. The result is expressed as a percentage, and retention in the starting period is always 100%. Over time, retention based on counts generally declines and can never exceed 100%, whereas money- or action-based retention, while often declining, can increase and be greater than 100% in a time period. Retention analysis output is typically displayed in either table or graph form, which is referred to as a retention curve. We’ll see a number of examples of retention curves later in this chapter.
+Retention analysis uses the count of entities or sum of money or actions present in the data set for each period from the starting date, and it normalizes by dividing this number by the count or sum of entities, money, or actions in the first time period. The result is expressed as a percentage, and retention in the starting period is always 100%. Over time, retention based on counts generally declines and can never exceed 100%, whereas money- or action-based retention, while often declining, can increase and be greater than 100% in a time period. Retention analysis output is typically displayed in either table or graph form, which is referred to as a retention curve. We'll see a number of examples of retention curves later in this chapter.
 
 Graphs of retention curves can be used to compare cohorts. The first characteristic to pay attention to is the shape of the curve in the initial few periods, where there is often an initial steep drop. For many consumer apps, losing half a cohort in the first few months is common. A cohort with a curve that is either more or less steep than others can indicate changes in the product or customer acquisition source that merit further investigation. A second characteristic to look for is whether the curve flattens after some number of periods or continues declining rapidly to zero. A flattening curve indicates that there is a point in time from which most of the cohort that remains stays indefinitely. A retention curve that inflects upward, sometimes called a smile curve, can occur if cohort members return or reactivate after falling out of the data set for some period. Finally, retention curves that measure subscription revenue are monitored for signs of increasing revenue per customer over time, a sign of a healthy SaaS software business.
 
-This section will show how to create a retention analysis, add cohort groupings from the time series itself and other tables, and handle missing and sparse data that can occur in time series data. With this framework in hand, you’ll learn in the subsequent section how to make modifications to create the other related types of cohort analysis. As a result, this section on retention will be the longest one in the chapter, as you build up code and develop your intuition about the calculations.
+This section will show how to create a retention analysis, add cohort groupings from the time series itself and other tables, and handle missing and sparse data that can occur in time series data. With this framework in hand, you'll learn in the subsequent section how to make modifications to create the other related types of cohort analysis. As a result, this section on retention will be the longest one in the chapter, as you build up code and develop your intuition about the calculations.
 
 ### SQL for a Basic Retention Curve
 
@@ -205,7 +205,7 @@ GROUP BY 1;
 The next step is to put this code into a subquery and `JOIN` it to the time series.
 The `age` function is applied to calculate the intervals between each `term_start` and the `first_term` for each legislator.
 Applying the `date_part` functions to the result, with year, transforms this into the number of yearly periods.
-Since elections happen every two or six years, we’ll use years as the time interval to calculate the periods.
+Since elections happen every two or six years, we'll use years as the time interval to calculate the periods.
 We could use a shorter interval, but in this data set there is little fluctuation daily or weekly.
 The count of legislators with records for that period is the number retained:
 
@@ -321,7 +321,7 @@ GROUP BY 1
 ```
 
 Retention appears to be quite low, and from the graph we can see that it is jagged in the first few years. 
-One reason for this is that a representative’s term lasts two years, and senators' terms last six years, but the data set only contains records for the start of new terms; thus we are missing data for years in which a legislator was still in office but did not start a new term.
+One reason for this is that a representative's term lasts two years, and senators' terms last six years, but the data set only contains records for the start of new terms; thus we are missing data for years in which a legislator was still in office but did not start a new term.
 Measuring retention each year is misleading in this case.
 One option is to measure retention only on a two- or six-year cycle, but there is also another strategy we can employ to fill in the "missing" data.
 I will cover this next before returning to the topic of forming cohort groups.
@@ -347,7 +347,7 @@ Legislators can be sworn in on other days of the year due to special off-cycle e
 As a result, term_start dates cluster in January but are spread across the year.
 While we could pick another day, December 31 is a strategy for normalizing around these varying start dates.
 
-The first step is to create a data set that contains a record for each December 31 that each legislator was in office. This can be accomplished by `JOIN`ing the subquery that found the `first_term` to the legislators_terms table to find the term_start and term_end for each term.
+The first step is to create a data set that contains a record for each December 31 that each legislator was in office. This can be accomplished by `JOIN`ing the subquery that found the `first_term` to the legislators_terms table to find the `term_start` and `term_end` for each term.
 A second `JOIN` to the `date_dim` retrieves the dates that fall between the start and end dates, restricting the returned values to `c.month_name = 'December' and c.day_of_month = 31`.
 The period is calculated as the years between the date from the `date_dim` and the `first_term`.
 Note that even though more than 11 months may have elapsed between being sworn in in January and December 31, the first year still appears as 0:
@@ -381,7 +381,7 @@ FROM
     GROUP BY 1
 ) a
 JOIN legislators_terms b on a.id_bioguide = b.id_bioguide 
-LEFT JOIN date_dim c on c.date between b.term_start and b.term_end 
+LEFT JOIN date_dim c on c.date between b.term_start and b.term_end
 and c.month_name = 'December' and c.day_of_month = 31
 ```
 
@@ -430,7 +430,7 @@ FROM
     GROUP BY 1
 ) a
 JOIN legislators_terms b on a.id_bioguide = b.id_bioguide 
-LEFT JOIN date_dim c on c.date between b.term_start and b.term_end 
+LEFT JOIN date_dim c on c.date between b.term_start and b.term_end
 and c.month_name = 'December' and c.day_of_month = 31
 GROUP BY 1
 ORDER BY 1
@@ -456,7 +456,7 @@ FROM
         GROUP BY 1
     ) a
     JOIN legislators_terms b on a.id_bioguide = b.id_bioguide 
-    LEFT JOIN date_dim c on c.date between b.term_start and b.term_end 
+    LEFT JOIN date_dim c on c.date between b.term_start and b.term_end
     and c.month_name = 'December' and c.day_of_month = 31
     GROUP BY 1
 ) aa
@@ -522,8 +522,8 @@ ORDER BY a.id_bioguide
 ```
 
 This code block can then be plugged into the retention code.
-This method has a couple of drawbacks.F
-irst, when there is no subsequent term, the lead function returns null, leaving that term without a term_end.
+This method has a couple of drawbacks.
+First, when there is no subsequent term, the lead function returns null, leaving that term without a `term_end`.
 A default value, such as a default interval shown in the last example, could be used in such cases.
 The second drawback is that this method assumes that terms are always consecutive, with no time spent out of office.
 Although most legislators tend to serve continuously until their congressional careers end, there are certainly examples of gaps between terms spanning several years.
@@ -538,9 +538,9 @@ Next, I'll discuss forming groups from the time series itself, and after that, I
 
 ### Cohorts Derived from the Time Series Itself
 
-Now that we have SQL code to calculate retention, we can start to split the entities into cohorts. In this section, I will show how to derive cohort groupings from the time series itself. First I’ll discuss time-based cohorts based on the first date, and I’ll explain how to make cohorts based on other attributes from the time series.
+Now that we have SQL code to calculate retention, we can start to split the entities into cohorts. In this section, I will show how to derive cohort groupings from the time series itself. First I'll discuss time-based cohorts based on the first date, and I'll explain how to make cohorts based on other attributes from the time series.
 
-The most common way to create the cohorts is based on the first or minimum date or time that the entity appears in the time series. This means that only one table is necessary for the cohort retention analysis: the time series itself. Cohorting by the first appearance or action is interesting because often groups that start at different times behave differently. For consumer services, early adopters are often more enthusiastic and retain differently than later adopters, whereas in SaaS software, later adopters may retain better because the product is more mature. Time-based cohorts can be grouped by any time granularity that is meaningful to the organization, though weekly, monthly, or yearly cohorts are common. If you’re not sure what grouping to use, try running the cohort analysis with different groupings, without making the cohort sizes too small, to see where meaningful patterns emerge. Fortunately, once you know how to construct the cohorts and retention analysis, substituting different time granularities is straightforward.
+The most common way to create the cohorts is based on the first or minimum date or time that the entity appears in the time series. This means that only one table is necessary for the cohort retention analysis: the time series itself. Cohorting by the first appearance or action is interesting because often groups that start at different times behave differently. For consumer services, early adopters are often more enthusiastic and retain differently than later adopters, whereas in SaaS software, later adopters may retain better because the product is more mature. Time-based cohorts can be grouped by any time granularity that is meaningful to the organization, though weekly, monthly, or yearly cohorts are common. If you're not sure what grouping to use, try running the cohort analysis with different groupings, without making the cohort sizes too small, to see where meaningful patterns emerge. Fortunately, once you know how to construct the cohorts and retention analysis, substituting different time granularities is straightforward.
 
 The first example will use yearly cohorts, and then I will demonstrate swapping in centuries. The key question we will consider is whether the era in which a legislator first took office has any correlation with their retention. Political trends and the public mood do change over time, but by how much?
 
@@ -558,7 +558,7 @@ FROM
     GROUP BY 1
 ) a
 JOIN legislators_terms b on a.id_bioguide = b.id_bioguide 
-LEFT JOIN date_dim c on c.date between b.term_start and b.term_end 
+LEFT JOIN date_dim c on c.date between b.term_start and b.term_end
   and c.month_name = 'December' and c.day_of_month = 31
 GROUP BY 1, 2
 ORDER BY 1, 2
@@ -588,7 +588,7 @@ FROM
         GROUP BY 1
     ) a
     JOIN legislators_terms b on a.id_bioguide = b.id_bioguide 
-    LEFT JOIN date_dim c on c.date between b.term_start and b.term_end 
+    LEFT JOIN date_dim c on c.date between b.term_start and b.term_end
     and c.month_name = 'December' and c.day_of_month = 31
     GROUP BY 1,2
 ) aa
@@ -622,7 +622,7 @@ FROM
         GROUP BY 1
     ) a
     JOIN legislators_terms b on a.id_bioguide = b.id_bioguide 
-    LEFT JOIN date_dim c on c.date between b.term_start and b.term_end 
+    LEFT JOIN date_dim c on c.date between b.term_start and b.term_end
     and c.month_name = 'December' and c.day_of_month = 31
     GROUP BY 1,2
 ) aa
@@ -698,7 +698,7 @@ FROM
         FROM legislators_terms 
     ) a
     JOIN legislators_terms b on a.id_bioguide = b.id_bioguide 
-    LEFT JOIN date_dim c on c.date between b.term_start and b.term_end 
+    LEFT JOIN date_dim c on c.date between b.term_start and b.term_end
     and c.month_name = 'December' and c.day_of_month = 31
     GROUP BY 1,2
 ) aa
@@ -710,8 +710,9 @@ FROM
 state_pct_retaineds |> head() |> tt()
 ```
 
-The retention curves for the five states with the highest total number of legislators are graphed in Figure 4-6.
-Those elected in Illinois and Massachusetts have the highest retention, while New Yorkers have the lowest retention. Determining the reasons why would be an interesting offshoot of this analysis.
+The retention curves for the five states with the highest total number of legislators are graphed in @fig-state-pct-retaineds.
+Those elected in Illinois and Massachusetts have the highest retention, while New Yorkers have the lowest retention.
+Determining the reasons why would be an interesting offshoot of this analysis.
 
 ```{r}
 #| echo: false
@@ -731,7 +732,8 @@ state_pct_retaineds |>
 
 Defining cohorts from the time series is relatively straightforward using a `min` date for each entity and then converting that date into a month, year, or century as appropriate for the analysis.
 Switching between month and year or other levels of granularity also is straightforward, allowing for multiple options to be tested in order to find a grouping that is meaningful for the organization.
-Other attributes can be used for cohorting with the `first_value` window function. Next, we’ll turn to cases in which the cohorting attribute comes from a table other than that of the time series.
+Other attributes can be used for cohorting with the `first_value` window function.
+Next, we'll turn to cases in which the cohorting attribute comes from a table other than that of the time series.
 
 ### Defining the Cohort from a Separate Table
 
@@ -755,7 +757,7 @@ FROM
     GROUP BY 1
 ) a
 JOIN legislators_terms b on a.id_bioguide = b.id_bioguide 
-LEFT JOIN date_dim c on c.date between b.term_start and b.term_end 
+LEFT JOIN date_dim c on c.date between b.term_start and b.term_end
 and c.month_name = 'December' and c.day_of_month = 31
 JOIN legislators d on a.id_bioguide = d.id_bioguide
 GROUP BY 1, 2
@@ -786,7 +788,7 @@ FROM
         GROUP BY 1
     ) a
     JOIN legislators_terms b on a.id_bioguide = b.id_bioguide 
-    LEFT JOIN date_dim c on c.date between b.term_start and b.term_end 
+    LEFT JOIN date_dim c on c.date between b.term_start and b.term_end
     and c.month_name = 'December' and c.day_of_month = 31
     JOIN legislators d on a.id_bioguide = d.id_bioguide
     GROUP BY 1,2
@@ -836,7 +838,7 @@ FROM
         GROUP BY 1
     ) a
     JOIN legislators_terms b on a.id_bioguide = b.id_bioguide 
-    LEFT JOIN date_dim c on c.date between b.term_start and b.term_end 
+    LEFT JOIN date_dim c on c.date between b.term_start and b.term_end
     and c.month_name = 'December' and c.day_of_month = 31
     JOIN legislators d on a.id_bioguide = d.id_bioguide
     WHERE a.first_term between '1917-01-01' and '1999-12-31'
@@ -871,7 +873,7 @@ The next section will discuss methods for overcoming this challenge.
 ### Dealing with Sparse Cohorts
 
 In the ideal data set, every cohort has some action or record in the time series for every period of interest.
-We’ve already seen how "missing" dates can occur due to subscriptions or terms lasting over multiple periods, and we looked at how to correct for them using a date dimension to infer intermediate dates.
+We've already seen how "missing" dates can occur due to subscriptions or terms lasting over multiple periods, and we looked at how to correct for them using a date dimension to infer intermediate dates.
 Another issue can arise when, due to grouping criteria, the cohort becomes too small and as a result is represented only sporadically in the data.
 A cohort may disappear from the result set, when we would prefer it to appear with a zero retention value.
 This problem is called sparse cohorts, and it can be worked around with the careful use of `LEFT JOIN`s.
@@ -905,7 +907,7 @@ FROM
         FROM legislators_terms 
     ) a
     JOIN legislators_terms b on a.id_bioguide = b.id_bioguide 
-    LEFT JOIN date_dim c on c.date between b.term_start and b.term_end 
+    LEFT JOIN date_dim c on c.date between b.term_start and b.term_end
     and c.month_name = 'December' and c.day_of_month = 31
     JOIN legislators d on a.id_bioguide = d.id_bioguide
     WHERE a.first_term between '1917-01-01' and '1999-12-31'
@@ -1014,7 +1016,7 @@ LEFT JOIN
         FROM legislators_terms 
     ) d
     JOIN legislators_terms e on d.id_bioguide = e.id_bioguide 
-    LEFT JOIN date_dim f on f.date between e.term_start and e.term_end 
+    LEFT JOIN date_dim f on f.date between e.term_start and e.term_end
      and f.month_name = 'December' and f.day_of_month = 31
     JOIN legislators g on d.id_bioguide = g.id_bioguide
     WHERE d.first_term between '1917-01-01' and '1999-12-31'
@@ -1079,7 +1081,7 @@ FROM
                         FROM legislators_terms 
                 ) d
                 JOIN legislators_terms e on d.id_bioguide = e.id_bioguide 
-                LEFT JOIN date_dim f on f.date between e.term_start and e.term_end 
+                LEFT JOIN date_dim f on f.date between e.term_start and e.term_end
                 and f.month_name = 'December' and f.day_of_month = 31
                 JOIN legislators g on d.id_bioguide = g.id_bioguide
                 WHERE d.first_term between '1917-01-01' and '1999-12-31'
@@ -1109,7 +1111,7 @@ This type of analysis can be used to understand whether product or marketing cha
 
 When using a date other than the first date, we need to take care to precisely define the criteria for inclusion in each cohort.
 One option is to pick entities present on a particular calendar date.
-This is relatively straightforward to put into SQL code, but it can be problematic if a large share of the regular user population doesn’t show up every day, causing retention to vary depending on the exact day chosen.
+This is relatively straightforward to put into SQL code, but it can be problematic if a large share of the regular user population doesn't show up every day, causing retention to vary depending on the exact day chosen.
 One option to correct for this is to calculate retention for several starting dates and then average the results.
 
 Another option is to use a window of time such as a week or month.
@@ -1118,7 +1120,7 @@ While this approach is often more representative of the business or process, the
 Finding the right balance between query performance and accuracy of results is something of an art.
 
 Let's take a look at how to calculate such midstream analysis with the legislators data set by considering retention for legislators who were in office in the year 2000.
-We’ll cohort by the `term_type`, which has values of "sen" for senators and "rep" for representatives.
+We'll cohort by the `term_type`, which has values of "sen" for senators and "rep" for representatives.
 The definition will include any legislator in office at any time during the year 2000: those who started prior to 2000 and whose terms ended during or after 2000 qualify, as do those who started a term in 2000.
 We can hardcode any date in 2000 as the `first_term`, since we will later check whether they were in office at some point during 2000.
 The `min_start` of the terms falling in this window is also calculated for use in a later step:
@@ -1163,7 +1165,7 @@ FROM
     ) a
     JOIN legislators_terms b on a.id_bioguide = b.id_bioguide 
     and b.term_start >= a.min_start
-    LEFT JOIN date_dim c on c.date between b.term_start and b.term_end 
+    LEFT JOIN date_dim c on c.date between b.term_start and b.term_end
     and c.month_name = 'December' and c.day_of_month = 31 
     and c.year >= 2000
     GROUP BY 1,2
@@ -1192,7 +1194,7 @@ As with any cohort, it's important to take care in defining what qualifies an en
 Cohort retention is a powerful way to understand the behavior of entities in a time series data set.
 We've seen how to calculate retention with SQL and how to cohort based on the time series itself or on other tables, and from points in the middle of entity life span.
 We also looked at how to use functions and `JOIN`s to adjust dates within time series and compensate for sparse cohorts.
-There are several types of analyses that are related to cohort retention: analysis, survivorship, returnship, and cumulative calculations, all of which build off of the SQL code that we’ve developed for retention.
+There are several types of analyses that are related to cohort retention: analysis, survivorship, returnship, and cumulative calculations, all of which build off of the SQL code that we've developed for retention.
 Let's turn to them next.
 
 ## Related Cohort Analyses
@@ -1689,7 +1691,7 @@ Senators have fewer but longer terms than their representative peers, and again 
 Cumulative calculations are often used in customer lifetime value calculations.
 LTV is usually calculated using monetary measures, such as total dollars spent by a customer, or the gross margin (revenue minus costs) generated by a customer across their lifetime.
 To facilitate comparisons between cohorts, the "lifetime" is often chosen to reflect average customer lifetime, or periods that are convenient to analyze, such as 3, 5, or 10 years.
-The legislators data set doesn’t contain financial metrics, but swapping in dollar values in any of the preceding SQL code would be straightforward.
+The legislators data set doesn't contain financial metrics, but swapping in dollar values in any of the preceding SQL code would be straightforward.
 Fortunately, SQL is a flexible enough language that we can adapt these templates to address a wide variety of analytical questions.
 
 Cohort analysis includes a set of techniques that can be used to answer questions related to behavior over time and how various attributes may contribute to differences between groups.
@@ -1737,7 +1739,7 @@ On any given date, users from a variety of cohorts are present.
 We can use cross-sectional analysis to examine them, like layers of sediment, to reveal new insights.
 In the next example, we'll create a time series of the share of legislators from each cohort for each year in the data set.
 
-The first step is to find the number of legislators in office each year by JOINing the legislators table to the date_dim, WHERE the date from the date_dim is between the start and end dates of each term. Here we use December 31 for each year to find the legislators in office at each year’s end:
+The first step is to find the number of legislators in office each year by JOINing the legislators table to the date_dim, WHERE the date from the date_dim is between the start and end dates of each term. Here we use December 31 for each year to find the legislators in office at each year's end:
 
 ```{sql}
 #| connection: db
