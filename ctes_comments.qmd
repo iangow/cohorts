@@ -1525,13 +1525,13 @@ rep_first_terms AS (
   
 rep_centuries AS (
   SELECT date_part('century', first_term) AS cohort_century,
-      count(id_bioguide) as reps
-    FROM rep_first_terms
-    GROUP BY 1),
+    count(id_bioguide) as reps
+  FROM rep_first_terms
+  GROUP BY 1),
     
 rep_sen_centuries AS (
   SELECT date_part('century', first_term) AS cohort_century,
-    count(distinct id_bioguide) AS rep_and_sen
+    count(DISTINCT id_bioguide) AS rep_and_sen
   FROM rep_first_terms
   JOIN legislators_terms
   USING (id_bioguide)
@@ -1553,38 +1553,36 @@ Note that the window can easily be made larger or smaller by changing the consta
 
 ```{sql}
 #| connection: db
-SELECT aa.cohort_century
-,bb.rep_and_sen * 1.0 / aa.reps as pct_rep_and_sen
-FROM
-(
-        SELECT date_part('century',a.first_term) as cohort_century
-        ,count(id_bioguide) as reps
-        FROM
-        (
-                SELECT id_bioguide, min(term_start) as first_term
-                FROM legislators_terms
-                WHERE term_type = 'rep'
-                GROUP BY 1
-        ) a
-        WHERE first_term <= '2009-12-31'
-        GROUP BY 1
-) aa
-LEFT JOIN
-(
-        SELECT date_part('century',b.first_term) as cohort_century
-        ,count(distinct b.id_bioguide) as rep_and_sen
-        FROM
-        (
-                SELECT id_bioguide, min(term_start) as first_term
-                FROM legislators_terms
-                WHERE term_type = 'rep'
-                GROUP BY 1
-        ) b
-        JOIN legislators_terms c on b.id_bioguide = c.id_bioguide
-        and c.term_type = 'sen' and c.term_start > b.first_term
-        WHERE age(c.term_start, b.first_term) <= interval '10 years'
-        GROUP BY 1
-) bb on aa.cohort_century = bb.cohort_century
+WITH 
+rep_first_terms AS (
+  SELECT id_bioguide, min(term_start) AS first_term
+  FROM legislators_terms
+  WHERE term_type = 'rep'
+  GROUP BY 1),
+  
+rep_centuries AS (
+  SELECT date_part('century', first_term) AS cohort_century,
+      count(id_bioguide) as reps
+    FROM rep_first_terms
+    WHERE first_term <= '2009-12-31'
+    GROUP BY 1),
+    
+rep_sen_centuries AS (
+  SELECT date_part('century', first_term) AS cohort_century,
+    count(DISTINCT id_bioguide) AS rep_and_sen
+  FROM rep_first_terms
+  JOIN legislators_terms
+  USING (id_bioguide)
+  WHERE term_type = 'sen' 
+    AND term_start > first_term
+    AND age(term_start, first_term) <= interval '10 years'
+  GROUP BY 1)
+
+SELECT cohort_century, 
+  rep_and_sen / reps AS pct_rep_and_sen
+FROM rep_centuries
+LEFT JOIN rep_sen_centuries
+USING (cohort_century)
 ORDER BY 1
 ```
 
@@ -1596,47 +1594,44 @@ Another option is to calculate multiple windows in the same result set by using 
 
 ```{sql}
 #| connection: db
-SELECT aa.cohort_century
-,bb.rep_and_sen_5_yrs * 1.0 / aa.reps as pct_5_yrs
-,bb.rep_and_sen_10_yrs * 1.0 / aa.reps as pct_10_yrs
-,bb.rep_and_sen_15_yrs * 1.0 / aa.reps as pct_15_yrs
-FROM
-(
-    SELECT date_part('century',a.first_term) as cohort_century
-    ,count(id_bioguide) as reps
-    FROM
-    (
-        SELECT id_bioguide, min(term_start) as first_term
-        FROM legislators_terms
-        WHERE term_type = 'rep'
-        GROUP BY 1
-    ) a
+WITH 
+rep_first_terms AS (
+  SELECT id_bioguide, min(term_start) AS first_term
+  FROM legislators_terms
+  WHERE term_type = 'rep'
+  GROUP BY 1),
+  
+rep_centuries AS (
+  SELECT date_part('century', first_term) AS cohort_century,
+      count(id_bioguide) as reps
+    FROM rep_first_terms
     WHERE first_term <= '2009-12-31'
-    GROUP BY 1
-) aa
-LEFT JOIN
-(
-    SELECT date_part('century',b.first_term) as cohort_century
-    ,count(distinct CASE WHEN age(c.term_start,b.first_term) 
+    GROUP BY 1),
+    
+rep_sen_centuries AS (
+  SELECT date_part('century',b.first_term) as cohort_century,
+    count(DISTINCT CASE WHEN age(c.term_start,b.first_term) 
                               <= interval '5 years' 
-                         then b.id_bioguide END) as rep_and_sen_5_yrs
-    ,count(distinct CASE WHEN age(c.term_start,b.first_term) 
+                         THEN b.id_bioguide END) AS rep_and_sen_5_yrs,
+    count(DISTINCT CASE WHEN age(c.term_start,b.first_term) 
                               <= interval '10 years' 
-                         then b.id_bioguide END) as rep_and_sen_10_yrs
-    ,count(distinct CASE WHEN age(c.term_start,b.first_term) 
+                         THEN b.id_bioguide END) AS rep_and_sen_10_yrs,
+    count(DISTINCT CASE WHEN age(c.term_start,b.first_term) 
                               <= interval '15 years' 
-                         then b.id_bioguide END) as rep_and_sen_15_yrs
-    FROM
-    (
-        SELECT id_bioguide, min(term_start) as first_term
-        FROM legislators_terms
-        WHERE term_type = 'rep'
-        GROUP BY 1
-    ) b
-    JOIN legislators_terms c on b.id_bioguide = c.id_bioguide
-    and c.term_type = 'sen' and c.term_start > b.first_term
-    GROUP BY 1
-) bb on aa.cohort_century = bb.cohort_century
+                         THEN b.id_bioguide END) AS rep_and_sen_15_yrs
+  FROM rep_first_terms b
+  JOIN legislators_terms c
+  USING (id_bioguide)
+  WHERE c.term_type = 'sen' AND c.term_start > b.first_term
+  GROUP BY 1)
+
+SELECT cohort_century,
+  rep_and_sen_5_yrs / reps as pct_5_yrs,
+  rep_and_sen_10_yrs / reps as pct_10_yrs,
+  rep_and_sen_15_yrs / reps as pct_15_yrs
+FROM rep_centuries
+LEFT JOIN rep_sen_centuries
+USING (cohort_century)
 ORDER BY 1
 ```
 
@@ -1649,43 +1644,40 @@ Conversion of representatives to senators during the first few decades of the ne
 #| connection: db
 #| include: false
 #| output.var: df_fig_4_12
-SELECT aa.cohort_decade
-,bb.rep_and_sen_10_yrs * 1.0 / aa.reps as pct_10_yrs
-,bb.rep_and_sen_20_yrs * 1.0 / aa.reps as pct_20_yrs
-FROM
-(
-    SELECT date_part('decade',a.first_term) as cohort_decade
-    ,count(id_bioguide) as reps
-    FROM
-    (
-        SELECT id_bioguide, min(term_start) as first_term
-        FROM legislators_terms
-        WHERE term_type = 'rep'
-        GROUP BY 1
-    ) a
+WITH 
+rep_first_terms AS (
+  SELECT id_bioguide, min(term_start) AS first_term
+  FROM legislators_terms
+  WHERE term_type = 'rep'
+  GROUP BY 1),
+
+rep_cohorts AS (
+  SELECT date_part('decade', first_term) AS cohort,
+      count(id_bioguide) as reps
+    FROM rep_first_terms
     WHERE first_term <= '2009-12-31'
-    GROUP BY 1
-) aa
-LEFT JOIN
-(
-    SELECT date_part('decade',b.first_term) as cohort_decade
-    ,count(distinct CASE WHEN age(c.term_start,b.first_term) 
-                              <= interval '10 years' 
-                         then b.id_bioguide END) as rep_and_sen_10_yrs
-    ,count(distinct CASE WHEN age(c.term_start,b.first_term) 
-                              <= interval '20 years' 
-                         then b.id_bioguide END) as rep_and_sen_20_yrs
-    FROM
-    (
-        SELECT id_bioguide, min(term_start) as first_term
-        FROM legislators_terms
-        WHERE term_type = 'rep'
-        GROUP BY 1
-    ) b
-    JOIN legislators_terms c on b.id_bioguide = c.id_bioguide
-    and c.term_type = 'sen' and c.term_start > b.first_term
-    GROUP BY 1
-) bb on aa.cohort_decade = bb.cohort_decade
+    GROUP BY 1),
+    
+rep_sen_cohorts AS (
+  SELECT date_part('decade', first_term) AS cohort,
+    count(DISTINCT
+            CASE WHEN age(term_start, first_term) <= interval '10 years' 
+                 THEN id_bioguide END) AS rep_and_sen_10_yrs,
+    count(DISTINCT 
+            CASE WHEN age(term_start, first_term) <= interval '20 years' 
+                 THEN id_bioguide END) AS rep_and_sen_20_yrs
+  FROM rep_first_terms
+  JOIN legislators_terms
+  USING (id_bioguide)
+  WHERE term_type = 'sen' AND term_start > first_term
+  GROUP BY 1)
+
+SELECT cohort,
+  rep_and_sen_10_yrs / reps AS pct_10_yrs,
+  rep_and_sen_20_yrs / reps AS pct_20_yrs
+FROM rep_cohorts
+LEFT JOIN rep_sen_cohorts
+USING (cohort)
 ORDER BY 1
 ```
 
@@ -1694,9 +1686,9 @@ ORDER BY 1
 #| label: fig-decades
 #| fig-cap: "Trend of the share of representatives for each cohort, defined by starting decade, who later became senators"
 df_fig_4_12 |>
-  pivot_longer(cols = -cohort_decade) |>
+  pivot_longer(cols = -cohort) |>
   mutate(period = str_replace(name, "^pct_(\\d+)_yrs", "\\1 years")) |>
-  ggplot(aes(x = cohort_decade, y = value,
+  ggplot(aes(x = cohort, y = value,
              colour = period, group = period)) +
   geom_line() +
   ylab("% became senator") +
@@ -1725,23 +1717,23 @@ Let's look at the number of terms started within 10 years of the first `term_sta
 
 ```{sql}
 #| connection: db
-SELECT date_part('century',a.first_term) as century
-,first_type
-,count(distinct a.id_bioguide) as cohort
-,count(b.term_start) as terms
-FROM
-(
-    SELECT distinct id_bioguide
-    ,first_value(term_type) over (partition by id_bioguide 
-                                  order by term_start) as first_type
-    ,min(term_start) over (partition by id_bioguide) as first_term
-    ,min(term_start) over (partition by id_bioguide) 
-     + interval '10 years' as first_plus_10
-    FROM legislators_terms
-) a
-LEFT JOIN legislators_terms b on a.id_bioguide = b.id_bioguide 
-and b.term_start between a.first_term and a.first_plus_10
-GROUP BY 1,2
+WITH first_terms AS (
+  SELECT DISTINCT id_bioguide,
+    first_value(term_type) OVER w AS first_type,
+    min(term_start) OVER w AS first_term,
+    min(term_start) OVER w + INTERVAL '10 years' AS first_plus_10
+  FROM legislators_terms
+  WINDOW w AS (PARTITION BY id_bioguide ORDER BY term_start))
+
+SELECT date_part('century', first_term) AS century,
+  first_type,
+  count(DISTINCT a.id_bioguide) AS cohort,
+  count(b.term_start) AS terms
+FROM first_terms a
+LEFT JOIN legislators_terms b
+ON a.id_bioguide = b.id_bioguide 
+  AND term_start BETWEEN first_term AND first_plus_10
+GROUP BY 1, 2
 ORDER BY 1, 2
 ```
 
@@ -1755,36 +1747,33 @@ Here we do that and also pivot the results into table form for easier comparison
 
 ```{sql}
 #| connection: db
-SELECT century
-,max(CASE WHEN first_type = 'rep' then cohort END) as rep_cohort
-,max(CASE WHEN first_type = 'rep' then terms_per_leg END) 
- as avg_rep_terms
-,max(CASE WHEN first_type = 'sen' then cohort END) as sen_cohort
-,max(CASE WHEN first_type = 'sen' then terms_per_leg END) 
- as avg_sen_terms
-FROM
-(
-    SELECT date_part('century',a.first_term) as century
-    ,first_type
-    ,count(distinct a.id_bioguide) as cohort
-    ,count(b.term_start) as terms
-    ,count(b.term_start) 
-     / count(distinct a.id_bioguide) as terms_per_leg
-    FROM
-    (
-        SELECT distinct id_bioguide
-        ,first_value(term_type) over (partition by id_bioguide 
-                                      order by term_start
-                                      ) as first_type
-        ,min(term_start) over (partition by id_bioguide) as first_term
-        ,min(term_start) over (partition by id_bioguide) 
-         + interval '10 years' as first_plus_10
-        FROM legislators_terms
-    ) a
-    LEFT JOIN legislators_terms b on a.id_bioguide = b.id_bioguide 
-    and b.term_start between a.first_term and a.first_plus_10
-    GROUP BY 1,2
-) aa
+WITH 
+first_terms AS (
+  SELECT DISTINCT id_bioguide,
+    first_value(term_type) OVER w AS first_type,
+    min(term_start) OVER w AS first_term,
+    min(term_start) OVER w + interval '10 years' AS first_plus_10
+  FROM legislators_terms
+  WINDOW w AS (PARTITION BY id_bioguide ORDER BY term_start)),
+
+cohort_data AS (
+  SELECT date_part('century', first_term) AS century,
+      first_type,
+      count(distinct a.id_bioguide) AS cohort,
+      count(b.term_start) AS terms,
+      count(b.term_start) / count(distinct a.id_bioguide) AS terms_per_leg
+    FROM first_terms a
+    LEFT JOIN legislators_terms b 
+    ON a.id_bioguide = b.id_bioguide 
+      AND b.term_start BETWEEN a.first_term AND a.first_plus_10
+    GROUP BY 1, 2)
+    
+SELECT century,
+  max(CASE WHEN first_type = 'rep' THEN cohort END) AS rep_cohort,
+  max(CASE WHEN first_type = 'rep' THEN terms_per_leg END) AS avg_rep_terms,
+  max(CASE WHEN first_type = 'sen' THEN cohort END) AS sen_cohort,
+  max(CASE WHEN first_type = 'sen' THEN terms_per_leg END) AS avg_sen_terms
+FROM cohort_data
 GROUP BY 1
 ORDER BY 1
 ```
@@ -1846,11 +1835,16 @@ The first step is to find the number of legislators in office each year by JOINi
 
 ```{sql}
 #| connection: db
-SELECT b.date, count(distinct a.id_bioguide) as legislators
-FROM legislators_terms a
-JOIN date_dim b on b.date between a.term_start and a.term_end
-and b.month_name = 'December' and b.day_of_month = 31
-and b.year <= 2019
+WITH 
+year_ends AS (
+  SELECT *  
+  FROM date_dim
+  WHERE month_name = 'December' AND day_of_month = 31 AND year <= 2019)
+
+SELECT date, count(DISTINCT id_bioguide) AS legislators
+FROM legislators_terms
+JOIN year_ends
+ON date BETWEEN term_start AND term_end
 GROUP BY 1
 ORDER BY 1
 ```
@@ -1859,20 +1853,30 @@ Next, we add in the century cohorting criteria by `JOIN`ing to a subquery with t
 
 ```{sql}
 #| connection: db
-SELECT b.date
-,date_part('century',first_term) as century
-,count(distinct a.id_bioguide) as legislators
-FROM legislators_terms a
-JOIN date_dim b on b.date between a.term_start and a.term_end
- and b.month_name = 'December' and b.day_of_month = 31
- and b.year <= 2019
-JOIN
-(
-    SELECT id_bioguide, min(term_start) as first_term
+WITH 
+first_terms AS (
+   SELECT id_bioguide, min(term_start) as first_term
     FROM legislators_terms
-    GROUP BY 1
-) c on a.id_bioguide = c.id_bioguide        
-GROUP BY 1, 2
+    GROUP BY 1),
+
+year_ends AS (
+  SELECT *  
+  FROM date_dim
+  WHERE month_name = 'December' AND day_of_month = 31 AND year <= 2019),
+    
+cohorts AS (
+  SELECT date,
+    date_part('century', first_term) AS century,
+    count(DISTINCT id_bioguide) AS legislators
+  FROM legislators_terms
+  JOIN year_ends
+  ON date BETWEEN term_start AND term_end
+  JOIN first_terms
+  USING (id_bioguide)
+  GROUP BY 1, 2)
+  
+SELECT *
+FROM cohorts
 ORDER BY 1
 ```
 
@@ -1882,29 +1886,33 @@ The first way is to keep a row for each `date` and `century` combination and use
 
 ```{sql}
 #| connection: db
-SELECT date
-,century
-,legislators
-,sum(legislators) over (partition by date) as cohort
-,legislators / sum(legislators) over (partition by date) 
- as pct_century
-FROM
-(
-    SELECT b.date
-    ,date_part('century',first_term) as century
-    ,count(distinct a.id_bioguide) as legislators
-    FROM legislators_terms a
-    JOIN date_dim b on b.date between a.term_start and a.term_end
-    and b.month_name = 'December' and b.day_of_month = 31
-    and b.year <= 2019
-    JOIN
-    (
-        SELECT id_bioguide, min(term_start) as first_term
-        FROM legislators_terms
-        GROUP BY 1
-    ) c on a.id_bioguide = c.id_bioguide        
-    GROUP BY 1,2
-) a
+WITH 
+first_terms AS (
+   SELECT id_bioguide, min(term_start) as first_term
+    FROM legislators_terms
+    GROUP BY 1),
+
+year_ends AS (
+  SELECT *  
+  FROM date_dim
+  WHERE month_name = 'December' AND day_of_month = 31 AND year <= 2019),
+    
+cohorts AS (
+  SELECT date,
+    date_part('century', first_term) AS century,
+    count(DISTINCT id_bioguide) AS legislators
+  FROM legislators_terms
+  JOIN year_ends
+  ON date BETWEEN term_start AND term_end
+  JOIN first_terms
+  USING (id_bioguide)
+  GROUP BY 1, 2)
+  
+SELECT date, century,
+  legislators,
+  sum(legislators) over (partition by date) as cohort,
+  legislators / sum(legislators) over (partition by date) as pct_century
+FROM cohorts a
 ORDER BY 1 DESC
 ```
 
@@ -1913,32 +1921,38 @@ The second approach results in one row per year, with a column for each century,
 ```{sql}
 #| connection: db
 #| output.var: df_fig_4_13
-SELECT date
-,coalesce(sum(CASE WHEN century = 18 then legislators END)
-          / sum(legislators),0) as pct_18
-,coalesce(sum(CASE WHEN century = 19 then legislators END)
-          / sum(legislators),0) as pct_19
-,coalesce(sum(CASE WHEN century = 20 then legislators END)
-          / sum(legislators),0) as pct_20
-,coalesce(sum(CASE WHEN century = 21 then legislators END)
-          / sum(legislators),0) as pct_21
-FROM
-(
-    SELECT b.date
-    ,date_part('century',first_term) as century
-    ,count(distinct a.id_bioguide) as legislators
-    FROM legislators_terms a
-    JOIN date_dim b on b.date between a.term_start and a.term_end
-     and b.month_name = 'December' and b.day_of_month = 31
-     and b.year <= 2019
-    JOIN
-    (
-        SELECT id_bioguide, min(term_start) as first_term
-        FROM legislators_terms
-        GROUP BY 1
-    ) c on a.id_bioguide = c.id_bioguide        
-    GROUP BY 1,2
-) aa
+WITH 
+first_terms AS (
+   SELECT id_bioguide, min(term_start) as first_term
+    FROM legislators_terms
+    GROUP BY 1),
+
+year_ends AS (
+  SELECT *  
+  FROM date_dim
+  WHERE month_name = 'December' AND day_of_month = 31 AND year <= 2019),
+    
+cohorts AS (
+  SELECT date,
+    date_part('century', first_term) AS century,
+    count(DISTINCT id_bioguide) AS legislators
+  FROM legislators_terms
+  JOIN year_ends
+  ON date BETWEEN term_start AND term_end
+  JOIN first_terms
+  USING (id_bioguide)
+  GROUP BY 1, 2)
+
+SELECT date,
+  coalesce(sum(CASE WHEN century = 18 THEN legislators END)
+          / sum(legislators), 0) as pct_18,
+  coalesce(sum(CASE WHEN century = 19 THEN legislators END)
+          / sum(legislators), 0) as pct_19,
+  coalesce(sum(CASE WHEN century = 20 THEN legislators END)
+          / sum(legislators), 0) as pct_20,
+  coalesce(sum(CASE WHEN century = 21 THEN legislators END)
+          / sum(legislators), 0) as pct_21
+FROM cohorts
 GROUP BY 1
 ORDER BY 1 DESC
 ```
