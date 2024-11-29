@@ -7,11 +7,12 @@ book:
   author: "Ian Gow"
   date: today
   date-format: "D MMMM YYYY"
-  
+
   chapters:
     - index.qmd
     - original_sql.qmd
     - ctes_comments.qmd
+    - dbplyr.qmd
     - references.qmd
 
 bibliography: references.bib

@@ -1,36 +1,10 @@
-# Cohort Analysis -- CTE Version {#sec-ctes}
+# Cohort Analysis -- `dbplyr` version
 
 ::: {.callout-note}
-# CTE Version
+# `dbplyr` Version
 
-In this version of the chapter, I do a number of things.
-First, I add some commentary on the original approach in Chapter 4 of @tanimura2021sql.
-This commentary can be found below in "callout blocks" like this one.
-Second, I replace subqueries with common table expressions (CTEs) where applicable.
-Third, as a concomitant of using the CTEs, I clean up the SQL in other ways.
- 
-  - I can't take the "leading commas" used in @tanimura2021sql: ["We're living in a society!"](@tanimura2021sql) ... so these go!
-  - I make other changes to the SQL for a more consistent style (e.g., SQL keywords are capitalized).
-  - I use `USING` for cleaner SQL. For example `USING (id_bioguide)` is shorter than `ON a.id_bioguide = b.id_bioguide` and often obviates the need to use aliases (`a` and `b` here).
-  
-Fourth, I delete some text, such as the introductory text that was in this very spot in the original chapter.
-Fifth, I modify some of the original text when it no longer reflects the approach used here.
-:::
+This version of the chapter builds on @sec-ctes by converting SQL queries to `dbplyr` code.
 
-::: {.callout-note}
-# Common Table Expressions (CTEs)
-
-It should be clear from the queries below what a CTE is.
-The [documentation for PostgreSQL](https://www.postgresql.org/docs/17/queries-with.html) suggests that CTEs "can be thought of as defining temporary tables that exist just for one query."
-CTEs are created using the `WITH` keyword.
-
-In the queries below, CTEs generally replace subqueries in the the original queries found in @sec-original.
-My view is that CTEs provide a number of benefits over subqueries.
-First, it allows easy reuse of a subquery in different parts of the query.
-In some cases, queries in @sec-original contain the same subquery two or more times.
-Such duplication requires more text and likely increases the chances of errors.
-Second, the use of CTEs facilitates debugging of queries because it is possible to query a CTE in way that is not possible for a nested subquery.
-Third, I think CTEs produce more transparent SQL code.
 :::
 
 ## Cohorts: A Useful Analysis Framework
@@ -111,7 +85,7 @@ Before we dive into constructing our cohort analysis, let's take a look at the d
 
 ```{r}
 #| warning: false
-#| include: false
+#| include: true
 library(DBI)
 library(tidyverse)
 library(dbplyr)
@@ -120,12 +94,12 @@ library(knitr)
 ```
 
 ```{r}
-#| include: false
+#| include: true
 db <- dbConnect(duckdb::duckdb())
 ```
 
 ```{r}
-#| include: false
+#| include: true
 load_parquet <- function (conn, table, data_dir = "data") {
     file_path <- file.path(data_dir, paste0(table, ".parquet"))
     df_sql <- paste0("SELECT * FROM read_parquet('", file_path, 
@@ -136,7 +110,7 @@ load_parquet <- function (conn, table, data_dir = "data") {
 ```
 
 ```{r}
-#| include: false
+#| include: true
 legislators_terms <- load_parquet(db, "legislators_terms")
 legislators <- load_parquet(db, "legislators")
 ```
@@ -197,6 +171,7 @@ legislators_terms |>
   style_tt(fontsize = 0.8) |>
   theme_tt("spacing")
 ```
+
 Now that we have an understanding of what cohort analysis is and of the data set we'll be using for examples, let's get into how to write SQL for retention analysis.
 The key question SQL will help us answer is: once representatives take office, how long do they keep their jobs?
 
@@ -214,48 +189,93 @@ This section will show how to create a retention analysis, add cohort groupings 
 
 ### SQL for a Basic Retention Curve
 
-```{sql, connection = db}
-SELECT id_bioguide, min(term_start) AS first_term
-FROM legislators_terms 
-GROUP BY 1;
+::: {.callout-note}
+# Converting code to `dbplyr`
+
+It is generally straightforward to convert SQL code to equivalent `dbplyr` code.
+Note that `dbplyr` code generally looks quite similar to `dplyr` code, so we will occasion refer to `dbplyr` code as simply `dplyr`.
+
+One noticeable difference between SQL and `dplyr` is the order in which the code is written is different.
+In the code below, the `legislators_terms` function as `FROM legislators_terms` in SQL, which typically comes *after* the `SELECT` statement.
+In many ways, the `dplyr` code matches both our intuition and the order of operation.
+
+Other differences here include the `na.rm = TRUE` argument to `min()` and the `.groups = "drop"` argument to `summarize()`.
+While this is not strictly necessary, it serves as a reminder to users coming from R that SQL always excludes `NULL` or `NA` values, which is equivalent to `na.rm = TRUE`.
+The `.groups = "drop"` ensures that the resulting data frame has no `groups` attribute.
+
+Finally, we can see that the result of the code below is a **remote** data frame, of which just the first 10 rows are shown below.
+In effect, the code below can be treated much like a subquery.
+:::
+
+```{r}
+legislators_terms |>
+  group_by(id_bioguide) |>
+  summarize(first_term = min(term_start, na.rm = TRUE),
+            .groups = "drop")
 ```
 
-The next step is to put this code into a CTE and `JOIN` it to the time series.
+The next step is to put this code into variable so we can join it to the time series.
+
+```{r}
+first_terms <-
+  legislators_terms |>
+  group_by(id_bioguide) |>
+  summarize(first_term = min(term_start, na.rm = TRUE),
+            .groups = "drop")
+```
+
+::: {.callout-note}
+# Handling functions
+
+Some functions are recognized by `dbplyr` and translated to their SQL equivalents.
+For example `n_distinct(x)` is translated to `count(DISTINCT x)`
+
+Functions that are not recognized by `dbplyr` are passed along as is to SQL.
+For example, if there were no `year()` or `age()` recognized by `dbplyr`, then 
+
+:::
+
+and join it to the time series.
 The `age()` function is applied to calculate the intervals between each `term_start` and the `first_term` for each legislator.
 Applying `year()` to the result transforms this into the number of yearly periods.
 Since elections happen every two or six years, we'll use years as the time interval to calculate the periods.
 We could use a shorter interval, but in this data set there is little fluctuation daily or weekly.
-The count of legislators with records for that period is the number retained:
+
+```{r}
+cohorts <-
+  first_terms |>
+  inner_join(legislators_terms, by = "id_bioguide") |>
+  mutate(period = year(age(term_start, first_term))) |>
+  group_by(period) |>
+  summarize(cohort_retained = n_distinct(id_bioguide)) 
+```
 
 ::: {.callout-note}
-# Our first CTEs
+# Viewing the SQL translation
 
-I put the query above in a CTE named `first_terms`.
-I also put the "main query" in a CTE that I query at the end.
-My reason for doing this is that this faciltates building on the CTEs in later queries.
+We can use `show_query()` to see the actual translated SQL.
+Here we can see that `year()` is translated to `EXTRACT(year FROM age(term_start, first_term))`.
 
-I use the `year()` function made available by DuckDB to replace `date_part('year', x)`.
-
-I also use `USING (id_bioguide)` to replace `ON a.id_bioguide = b.id_bioguide`.
 :::
 
-```{sql, connection = db}
-WITH first_terms AS (
-  SELECT id_bioguide, min(term_start) AS first_term
-  FROM legislators_terms 
-  GROUP BY 1),
-  
-cohorts AS (
-  SELECT year(age(term_start, first_term)) AS period,
-    count(DISTINCT id_bioguide) AS cohort_retained
-  FROM first_terms
-  JOIN legislators_terms
-  USING (id_bioguide)
-  GROUP BY 1)
+```{r}
+cohorts |>
+  show_query()
+```
 
-SELECT * 
-FROM cohorts
-ORDER BY 1;
+::: {.callout-note}
+# Using `collect()`
+
+
+:::
+
+The count of legislators with records for that period is the number retained:
+
+```{r}
+cohorts |>
+  arrange(period) |>
+  collect(n = 10) |>
+  tt()
 ```
 
 ::: {.callout-tip}
@@ -281,56 +301,37 @@ first_value(cohort_retained) over (order by period) as cohort_size
 ```
 
 ::: {.callout-note}
-# Window aliases
+# Accessing variables
 
-Using CTEs, adding to a query becomes much cleaner.
-Again I put the "main query" in a CTE (here `cohort_stats`), as this will facilitate later queries.
+Much simpler!
 
-Note that I put the window specification from the original query in a window alias `w`.
-This means I only have to write the window once, saving text and reducing errors.
+
 :::
 
 To find the percent retained, divide the `cohort_retained` value by this same calculation:
 
-```{sql}
-#| connection: db
-#| output.var: retained_data
-WITH 
+```{r}
+cohort_stats <-
+  cohorts |>
+  window_order(period) |>
+  mutate(cohort_size = first(cohort_retained),
+         pct_retained = cohort_retained / cohort_size)
+```
 
-first_terms AS (
-  SELECT id_bioguide, min(term_start) AS first_term
-  FROM legislators_terms 
-  GROUP BY 1),
-  
-cohorts AS (
-  SELECT year(age(term_start, first_term)) AS period,
-    count(DISTINCT id_bioguide) AS cohort_retained
-  FROM first_terms
-  JOIN legislators_terms
-  USING (id_bioguide)
-  GROUP BY 1),
-
-cohort_stats AS (
-  SELECT period,
-    first_value(cohort_retained) OVER w AS cohort_size,
-    cohort_retained,
-    cohort_retained / first_value(cohort_retained) OVER w AS pct_retained
-  FROM cohorts
-  WINDOW w AS (ORDER BY period))
-
-SELECT *
-FROM cohort_stats
-ORDER BY 1
+```{r}
+cohort_stats |>
+  arrange(period) |>
+  collect(n = 10) |>
+  tt()
 ```
 
 We now have a retention calculation, and we can see that there is a big drop-off between the 100% of legislators retained in period 0, or on their start date, and the share with another term record that starts a year later.
 Graphing the results, as in @fig-retained, demonstrates how the curve flattens and eventually goes to zero, as even the longest-serving legislators eventually retire or die.
 
 ```{r}
-#| echo: false
 #| label: fig-retained
 #| fig-cap: Retention from start of first term for US legislators
-retained_data |>
+cohort_stats |>
   ggplot(aes(x = period, y = pct_retained)) +
   geom_line() +
   ylab("Percent retained") +
@@ -341,40 +342,16 @@ We can take the cohort retention result and reshape the data to show it in table
 Pivot and flatten the results using an aggregate function with a `CASE` statement; `max` is used in this example, but other aggregations such as `min` or `avg` would return the same result.
 Retention is calculated for years 0 through 4, but additional years can be added by following the same pattern:
 
-```{sql}
-#| connection: db
-WITH 
-
-first_terms AS (
-  SELECT id_bioguide, min(term_start) AS first_term
-  FROM legislators_terms 
-  GROUP BY 1),
-  
-cohorts AS (
-  SELECT year(age(term_start, first_term)) AS period,
-    count(DISTINCT id_bioguide) AS cohort_retained
-  FROM first_terms
-  JOIN legislators_terms
-  USING (id_bioguide)
-  GROUP BY 1),
-
-cohort_stats AS (
-  SELECT period,
-    first_value(cohort_retained) OVER w AS cohort_size,
-    cohort_retained,
-    cohort_retained / first_value(cohort_retained) OVER w AS pct_retained
-  FROM cohorts
-  WINDOW w AS (ORDER BY period))
-
-SELECT cohort_size,
-  max(CASE WHEN period = 0 THEN pct_retained END) AS yr0,
-  max(CASE WHEN period = 1 THEN pct_retained END) AS yr1,
-  max(CASE WHEN period = 2 THEN pct_retained END) AS yr2,
-  max(CASE WHEN period = 3 THEN pct_retained END) AS yr3,
-  max(CASE WHEN period = 4 THEN pct_retained END) AS yr4
-FROM cohort_stats
-GROUP BY 1
-ORDER BY 1
+```{r}
+cohort_stats |>
+  select(cohort_size, period, pct_retained) |>
+  filter(period <= 4) |>
+  pivot_wider(names_from = period,
+              values_from = pct_retained,
+              names_prefix = "yr",
+              names_sort = TRUE) |>
+  collect() |>
+  tt()
 ```
 
 Retention appears to be quite low, and from the graph we can see that it is jagged in the first few years. 
@@ -411,7 +388,6 @@ Note that even though more than 11 months may have elapsed between being sworn i
 
 ```{sql}
 #| connection: db
-#| include: false
 CREATE OR REPLACE TABLE date_dim AS
 WITH dates AS 
   (
@@ -435,130 +411,73 @@ So I create a CTE `year_ends` that I use over and over again.
 Note that there is a dramatic reduction in the number of meaningless aliases (e.g., `a` or `bb`) in the rewritten queries.
 :::
 
-```{sql}
-#| connection: db
-WITH 
+```{r}
+date_dim <- tbl(db, "date_dim")
+```
 
-first_terms AS (
-  SELECT id_bioguide, min(term_start) AS first_term
-  FROM legislators_terms 
-  GROUP BY 1),
-  
-year_ends AS (
-  SELECT *  
-  FROM date_dim
-  WHERE month_name = 'December' AND day_of_month = 31),
- 
-cohorts AS (
-  SELECT id_bioguide, first_term,
-    term_start, term_end, date,
-    year(age(date, first_term)) AS period
-  FROM first_terms
-  JOIN legislators_terms 
-  USING (id_bioguide)
-  LEFT JOIN year_ends
-  ON date BETWEEN term_start AND term_end)
-  
-SELECT *
-FROM cohorts
+```{r}
+year_ends <-
+  date_dim |>
+  filter(month_name == 'December', day_of_month == 31)
+```
+
+```{r}
+cohorts <-
+  first_terms |>
+  inner_join(legislators_terms, by = "id_bioguide") |>
+  left_join(year_ends,
+            join_by(between(y$date, x$term_start, x$term_end))) |>
+  mutate(period = year(age(date, first_term))) |>
+  select(period, id_bioguide, first_term, 
+         term_start, term_end, date)
 ```
 
 ::: {.callout-tip}
 
-If a date dimension is not available, you can create a subquery with the necessary dates in a couple of ways. If your database supports `generate_series`, you can create a subquery that returns the desired dates:
+If a date dimension is not available, you can create a subquery with the necessary dates in a number of ways.
+One approach is to create the sequence of dates in R and copy to the database.
 
-```{sql}
-#| connection: db
+```{r}
 #| eval: false
-SELECT generate_series::date as date
-FROM generate_series('1770-12-31'::date,
-                     '2020-12-31'::date,
-                     interval '1 year')
+year_ends <-
+  tibble(date = seq(as.Date("1770-12-31"), 
+                    as.Date("2020-12-31"), 
+                    "years")) |>
+         copy_to(db, df = _, name = "year_ends", overwrite = TRUE)
 ```
 
 You may want to save this as a table or view for later use. 
 Alternatively, you can query the data set or any other table in the database that has a full set of dates.
 In this case, the table has all of the necessary years, but we will make a December 31 date for each year using the `make_date` function:
 
-```{sql}
-#| connection: db
+```{r}
 #| eval: false
-SELECT DISTINCT
-  make_date(date_part('year',term_start)::int, 12, 31) AS date
-FROM legislators_terms
-ORDER BY date
+legislators_terms |>
+  mutate(date = make_date(year(term_start), 12L, 31L)) |>
+  distinct(date) |>
+  arrange(date)
 ```
-There are a number of creative ways to get the series of dates needed. Use whichever method is available and simplest within your queries.
+There are a number of creative ways to get the series of dates needed. 
+Use which ever method is available and simplest within your queries.
 :::
 
 We now have a row for each date (year END) for which we would like to calculate retention.
 The next step is to calculate the `cohort_retained` for each period, which is done with a count of `id_bioguide`. 
 A `coalesce` function is used on `period` to set a default value of 0 when null.
-This handles the cases in which a legislator's term starts and ends in the same year, giving credit for serving in that year:
-
-```{sql}
-#| connection: db
-WITH 
-
-first_terms AS (
-  SELECT id_bioguide, min(term_start) AS first_term
-  FROM legislators_terms 
-  GROUP BY 1),
-  
-year_ends AS (
-  SELECT *  
-  FROM date_dim
-  WHERE month_name = 'December' AND day_of_month = 31
-)
-  
-SELECT coalesce(year(age(date, first_term)), 0) AS period,
-  count(DISTINCT id_bioguide) AS cohort_retained
-FROM first_terms a
-JOIN legislators_terms b 
-USING (id_bioguide)
-LEFT JOIN year_ends
-ON date BETWEEN term_start and term_end
-GROUP BY 1
-ORDER BY 1
-```
+This handles the cases in which a legislator's term starts and ends in the same year, giving credit for serving in that year.
 The final step is to calculate the `cohort_size` and `pct_retained` as we did previously using `first_value` window functions:
 
-```{sql}
-#| connection: db
-#| output.var: pct_retained
-WITH 
-
-first_terms AS (
-  SELECT id_bioguide, min(term_start) AS first_term
-  FROM legislators_terms 
-  GROUP BY 1),
-  
-year_ends AS (
-  SELECT *  
-  FROM date_dim
-  WHERE month_name = 'December' AND day_of_month = 31),
-  
-cohorts AS (
-  SELECT year(age(term_start, first_term)) AS period,
-    count(DISTINCT id_bioguide) AS cohort_retained
-  FROM first_terms
-  JOIN legislators_terms 
-  USING (id_bioguide)
-  LEFT JOIN year_ends
-  ON date BETWEEN term_start AND term_end
-  GROUP BY 1),
-
-cohort_stats AS (
-  SELECT period,
-    first_value(cohort_retained) OVER w AS cohort_size,
-    cohort_retained,
-    cohort_retained / first_value(cohort_retained) OVER w AS pct_retained
-  FROM cohorts
-  WINDOW w AS (ORDER BY period))
-
-SELECT *
-FROM cohort_stats
-ORDER BY 1
+```{r}
+cohort_stats <-
+  cohorts |>
+  mutate(period = coalesce(year(age(date, first_term)), 0)) |>
+  group_by(period) |>
+  mutate(cohort_retained = n_distinct(id_bioguide)) |>
+  ungroup() |>
+  window_order(period) |>
+  mutate(cohort_size = first(cohort_retained),
+         pct_retained = cohort_retained / cohort_size) |>
+  arrange(period)
 ```
 The results, graphed in @fig-pct-retained, are now much more accurate. Almost all legislators are still in office in year 1, and the first big drop-off occurs in year 2, when some representatives will fail to be reelected.
 
@@ -566,7 +485,7 @@ The results, graphed in @fig-pct-retained, are now much more accurate. Almost al
 #| echo: false
 #| label: fig-pct-retained
 #| fig-cap: Legislator retention after adjusting for actual years in office
-pct_retained |>
+cohort_stats |>
   ggplot(aes(x = period, y = pct_retained)) + 
   geom_line() +
   ylab("% Retained") +
@@ -576,52 +495,41 @@ pct_retained |>
 If the data set does not contain an end date, there are a couple of options for imputing one.
 One option is to add a fixed interval to the start date, when the length of a subscription or term is known.
 This can be done with date math by adding a constant interval to the `term_start`.
-Here, a `CASE` statement handles the addition for the two `term_types`:
+Here, a `case_when()` is used to handle the addition for the two `term_types`:
 
-```{sql}
-#| connection: db
-WITH 
+```{r}
+cohorts <-
+  first_terms |>
+  inner_join(legislators_terms, by = "id_bioguide") |>
+  mutate(term_end = case_when(term_type == 'rep' ~ term_start + years(2L),
+                               term_type == 'sen' ~ term_start + years(6L))) |>
+  select(id_bioguide, first_term, term_start, term_end)
 
-first_terms AS (
-  SELECT id_bioguide, min(term_start) AS first_term
-  FROM legislators_terms 
-  GROUP BY 1)
-  
-SELECT id_bioguide, first_term, term_start,
-  CASE
-      WHEN term_type = 'rep' THEN term_start + INTERVAL '2 years'
-      WHEN term_type = 'sen' THEN term_start + INTERVAL '6 years'
-      END AS term_end
-FROM first_terms
-JOIN legislators_terms
-USING (id_bioguide)
+cohorts |>
+  collect(n = 10) |>
+  tt()
 ```
 
 This block of code can then be plugged into the retention code to derive the `period` and `pct_retained`.
 The drawback to this method is that it fails to capture instances in which a legislator did not complete a full term, which can happen in the event of death or appointment to a higher office.
 
 A second option is to use the subsequent starting date, minus one day, as the `term_end` date.
-This can be calculated with the `lead` window function.
-This function is similar to the `lag` function we've used previously, but rather than returning a value from a row earlier in the partition, it returns a value from a row later in the partition, as determined in the `ORDER BY` clause.
-The default is one row, which we will use here, but the function has an optional argument indicating a different number of rows. Here we find the term_start date of the subsequent term using `lead` and then subtract the interval `'1 day'` to derive the `term_end`:
+This can be calculated with the `lead()` window function.
+This function is similar to the `lag()` function we've used previously, but rather than returning a value from a row earlier in the partition, it returns a value from a row later in the partition, as determined in the `window_order()` call.
+The default is one row, which we will use here, but the function has an optional argument indicating a different number of rows. Here we find the term_start date of the subsequent term using `lead` and then subtract the `days(1L)` to derive the `term_end`:
 
+```{r}
+cohorts <-
+  first_terms |>
+  inner_join(legislators_terms, by = "id_bioguide") |>
+  group_by(id_bioguide) |>
+  window_order(term_start) |>
+  mutate(term_end = as.Date(lead(term_start) - days(1L))) |>
+  select(id_bioguide, first_term, term_start, term_end)
 
-```{sql}
-#| connection: db
-WITH 
-
-first_terms AS (
-  SELECT id_bioguide, min(term_start) AS first_term
-  FROM legislators_terms 
-  GROUP BY 1)
-
-SELECT id_bioguide, first_term, term_start,
-  lead(term_start) OVER w - INTERVAL '1 day' AS term_end
-FROM first_terms a
-JOIN legislators_terms b 
-USING (id_bioguide)
-WINDOW w AS (PARTITION BY id_bioguide ORDER BY term_start)
-ORDER BY id_bioguide
+cohorts |>
+  arrange(id_bioguide, term_start) |>
+  collect(n = 10)
 ```
 
 This code block can then be plugged into the retention code.
@@ -649,72 +557,40 @@ The first example will use yearly cohorts, and then I will demonstrate swapping 
 
 To calculate yearly cohorts, we first add the year of the `first_term` calculated previously to `cohorts_retained`, the CTE that finds `period` and `cohort_retained`:
 
-```{sql}
-#| connection: db
-WITH 
+```{r}
+cohorts <-
+  first_terms |>
+  inner_join(legislators_terms, by = "id_bioguide") |>
+  left_join(year_ends, 
+            join_by(between(y$date, x$term_start, x$term_end))) |>
+  mutate(first_year =  year(first_term),
+         period = coalesce(year(age(date, first_term)), 0)) |>
+  group_by(first_year, period) |>
+  summarize(cohort_retained = n_distinct(id_bioguide),
+            .groups = "drop")
 
-first_terms AS (
-  SELECT id_bioguide, min(term_start) AS first_term
-  FROM legislators_terms 
-  GROUP BY 1),
-  
-year_ends AS (
-  SELECT *  
-  FROM date_dim
-  WHERE month_name = 'December' AND day_of_month = 31),
-  
-cohorts_retained AS (
-  SELECT year(first_term) AS first_year,
-    coalesce(year(age(date, first_term)), 0) AS period,
-    count(DISTINCT id_bioguide) AS cohort_retained
-  FROM first_terms
-  JOIN legislators_terms
-  USING (id_bioguide)
-  LEFT JOIN year_ends
-  ON date BETWEEN term_start AND term_end
-  GROUP BY 1, 2)
-  
-SELECT *
-FROM cohorts_retained
-ORDER BY 1, 2
+cohorts |>
+  arrange(first_year, period) |>
+  collect(n = 10)
 ```
 
-Data returned by the `cohorts_retained` CTE are then used to calculate `cohort_size` and `pct_retained`.
+Data in `cohorts` are then used to calculate `cohort_size` and `pct_retained`.
 In this case, however, we need a `PARTITION BY` clause that includes `first_year` so that the `first_value` is calculated only within the set of rows for that `first_year`, rather than across the whole result set from the subquery:
 
-```{sql}
-#| connection: db
-WITH 
-
-first_terms AS (
-  SELECT id_bioguide, min(term_start) AS first_term
-  FROM legislators_terms 
-  GROUP BY 1),
-  
-year_ends AS (
-  SELECT *  
-  FROM date_dim
-  WHERE month_name = 'December' AND day_of_month = 31),
-  
-cohorts AS (
-  SELECT year(first_term) AS first_year,
-    coalesce(year(age(date, first_term)), 0) AS period,
-    count(DISTINCT id_bioguide) AS cohort_retained
-  FROM first_terms
-  JOIN legislators_terms
-  USING (id_bioguide)
-  LEFT JOIN year_ends
-  ON date BETWEEN term_start AND term_end
-  GROUP BY 1, 2)
-
-SELECT first_year, period,
-  first_value(cohort_retained) OVER w AS cohort_size,
-  cohort_retained,
-  cohort_retained / first_value(cohort_retained) OVER w AS pct_retained
-FROM cohorts
-WINDOW w AS (PARTITION BY 1 ORDER BY 2)
-ORDER BY 1, 2
+```{r}
+cohorts |>
+  group_by(first_year) |>
+  window_order(period) |>
+  mutate(cohort_size = first(cohort_retained),
+         pct_retained = cohort_retained / cohort_size) |>
+  ungroup() |>
+  select(first_year, period, cohort_size, cohort_retained,
+         pct_retained) |>
+  arrange(first_year, period) |>
+  collect(n = 10) |>
+  tt()
 ```
+
 This data set includes over two hundred starting years, too many to easily graph or examine in a table.
 Next we'll look at a less granular interval and cohort the legislators by the century of the `first_term`.
 This change is easily made by substituting `century()` for `year()` in the `cohorts` CTE.
@@ -743,39 +619,34 @@ SELECT century('1701-01-01'::date) AS century
 
 The partitioning in the `first_value` function changes to the `first_century` field:
 
-```{sql}
-#| connection: db
-#| output.var: cen_pct_retaineds
-WITH 
+```{r}
+cohorts <-
+  first_terms |>
+  inner_join(legislators_terms, by = "id_bioguide") |>
+  left_join(year_ends, 
+            join_by(between(y$date, x$term_start, x$term_end))) |>
+  mutate(first_century =  century(first_term),
+         period = coalesce(year(age(date, first_term)), 0)) |>
+  group_by(first_century, period) |>
+  summarize(cohort_retained = n_distinct(id_bioguide),
+            .groups = "drop")
+```
 
-first_terms AS (
-  SELECT id_bioguide, min(term_start) AS first_term
-  FROM legislators_terms 
-  GROUP BY 1),
-  
-year_ends AS (
-  SELECT *  
-  FROM date_dim
-  WHERE month_name = 'December' AND day_of_month = 31),
-  
-cohorts AS (
-  SELECT century(first_term) AS first_century,
-    coalesce(year(age(date, first_term)), 0) AS period,
-    count(DISTINCT id_bioguide) AS cohort_retained
-  FROM first_terms
-  JOIN legislators_terms
-  USING (id_bioguide)
-  LEFT JOIN year_ends
-  ON date BETWEEN term_start AND term_end
-  GROUP BY 1, 2)
-  
-SELECT first_century, period,
-  first_value(cohort_retained) OVER w AS cohort_size,
-  cohort_retained,
-  cohort_retained / first_value(cohort_retained) OVER w AS pct_retained
-FROM cohorts
-WINDOW w AS (PARTITION BY 1 ORDER BY 2)
-ORDER BY 1, 2
+```{r}
+cen_pct_retaineds <-
+  cohorts |>
+  group_by(first_century) |>
+  window_order(period) |>
+  mutate(cohort_size = first(cohort_retained),
+         pct_retained = cohort_retained / cohort_size) |>
+  ungroup() |>
+  select(first_century, period, cohort_size, cohort_retained,
+         pct_retained)
+
+cen_pct_retaineds |>
+  arrange(first_century, period) |>
+  collect(n = 10) |>
+  tt()
 ```
 
 The results are graphed in @fig-cen-pct-retained.
@@ -814,13 +685,16 @@ Usually the value from the earliest record in the data set is used.
 To find the first state for each legislator, we can use the `first_value` window function.
 In this example, we'll also turn the `min` function into a window function to avoid a lengthy `GROUP BY` clause:
 
-```{sql}
-#| connection: db
-SELECT DISTINCT id_bioguide,
-  min(term_start) OVER w AS first_term,
-  first_value(state) OVER w AS first_state
-FROM legislators_terms
-WINDOW w AS (PARTITION BY id_bioguide ORDER BY term_start)
+```{r}
+first_term_states <-
+  legislators_terms |>
+  group_by(id_bioguide) |>
+  window_order(term_start) |>
+  mutate(first_term = min(term_start),
+         first_state = first(state)) |>
+  ungroup() |>
+  distinct(id_bioguide, first_term, first_state) |>
+  arrange()
 ```
 
 ::: {.callout-note}
@@ -832,49 +706,33 @@ However, the value returned by `min()` is unaffected by the addition of `ORDER B
 
 We can then plug this code into our retention code to find the retention by `first_state`:
 
-```{sql}
-#| connection: db
-#| output.var: state_pct_retaineds
-WITH 
-first_term_states AS (
-  SELECT distinct id_bioguide,
-    min(term_start) OVER w AS first_term,
-    first_value(state) OVER w AS first_state
-  FROM legislators_terms
-  WINDOW w AS (PARTITION BY id_bioguide ORDER BY term_start)),
-  
-year_ends AS (
-  SELECT *  
-  FROM date_dim
-  WHERE month_name = 'December' AND day_of_month = 31),
-  
-cohorts AS (
-  SELECT first_state,
-    coalesce(year(age(date, first_term)), 0) AS period,
-    count(DISTINCT id_bioguide) AS cohort_retained
-  FROM first_term_states
-  JOIN legislators_terms
-  USING (id_bioguide)
-  LEFT JOIN year_ends
-  ON date BETWEEN term_start AND term_end
-  GROUP BY 1, 2),
-  
-cohort_sizes AS (
-  SELECT first_state, period, 
-    first_value(cohort_retained) OVER w AS cohort_size,
-    cohort_retained
-  FROM cohorts
-  WINDOW w AS (PARTITION BY first_state ORDER BY period))
-
-SELECT first_state, period, cohort_size, cohort_retained,
-  cohort_retained / cohort_size AS pct_retained
-FROM cohort_sizes
-ORDER BY 1, 2
+```{r}
+cohorts <-
+  first_term_states |>
+  inner_join(legislators_terms, by = "id_bioguide") |>
+  left_join(year_ends, 
+            join_by(between(y$date, x$term_start, x$term_end))) |>
+  mutate(period = coalesce(year(age(date, first_term)), 0)) |>
+  group_by(first_state, period) |>
+  summarize(cohort_retained = n_distinct(id_bioguide),
+            .groups = "drop")
 ```
 
 ```{r}
-#| echo: false
-state_pct_retaineds |> head() |> tt()
+state_pct_retaineds <-
+  cohorts |>
+  group_by(first_state) |>
+  window_order(period) |>
+  mutate(cohort_size = first(cohort_retained),
+         pct_retained = cohort_retained / cohort_size) |>
+  ungroup() |>
+  select(first_state, period, cohort_size, cohort_retained,
+         pct_retained)
+
+state_pct_retaineds |>
+  arrange(first_state, period) |>
+  collect(n = 10) |>
+  tt()
 ```
 
 The retention curves for the five states with the highest total number of legislators are graphed in @fig-state-pct-retaineds.
@@ -911,89 +769,48 @@ For this example, we'll consider whether the gender of the legislator has any im
 The `legislators` table has a gender field, where F means female and M means male, that we can use to cohort the legislators.
 To do this, we'll `JOIN` the `legislators` table in as alias to add gender to `cohorts`, in place of year or century:
 
-```{sql}
-#| connection: db
-WITH
-
-first_terms AS (
-  SELECT id_bioguide, min(term_start) AS first_term
-  FROM legislators_terms 
-  GROUP BY 1),
-  
-year_ends AS (
-  SELECT *  
-  FROM date_dim
-  WHERE month_name = 'December' AND day_of_month = 31),
-  
-cohorts AS (
-  SELECT gender,
-    coalesce(year(age(date, first_term)), 0) AS period,
-    count(distinct id_bioguide) AS cohort_retained
-  FROM first_terms
-  JOIN legislators_terms
-  USING (id_bioguide)
-  LEFT JOIN year_ends 
-  ON date BETWEEN term_start AND term_end
-  JOIN legislators
-  USING (id_bioguide)
-  GROUP BY 1, 2),
-  
-cohort_sizes AS (
-  SELECT gender, period, 
-    first_value(cohort_retained) OVER w AS cohort_size,
-    cohort_retained
-  FROM cohorts
-  WINDOW w AS (PARTITION BY gender ORDER BY period))
-
-SELECT gender, period, cohort_size, cohort_retained,
-   cohort_retained / cohort_size AS pct_retained
-FROM cohort_sizes
-ORDER BY 1, 2
+```{r}
+cohorts <-
+  first_terms |>
+  inner_join(legislators_terms, by = "id_bioguide") |>
+  left_join(year_ends, 
+            join_by(between(y$date, x$term_start, x$term_end))) |>
+  inner_join(legislators, by = "id_bioguide") |>
+  mutate(period = coalesce(year(age(date, first_term)), 0)) |>
+  group_by(gender, period) |>
+  summarize(cohort_retained = n_distinct(id_bioguide),
+            .groups = "drop")
 ```
+
+```{r}
+cohorts |>
+  arrange(period, gender) |>
+  collect(n = 10) |>
+  tt()
+```
+
 
 It's immediately clear that many more males than females have served legislative terms. 
-We can now calculate the `percent_retained` so we can compare the retention for these groups:
+We can now calculate the `pct_retained` so we can compare the retention for these groups:
 
-```{sql}
-#| connection: db
-#| output.var: gender_retained
-WITH
 
-first_terms AS (
-  SELECT id_bioguide, min(term_start) AS first_term
-  FROM legislators_terms 
-  GROUP BY 1),
-  
-year_ends AS (
-  SELECT *  
-  FROM date_dim
-  WHERE month_name = 'December' AND day_of_month = 31),
-  
-cohorts AS (
-  SELECT gender,
-    coalesce(year(age(date, first_term)), 0) AS period,
-    count(DISTINCT id_bioguide) AS cohort_retained
-  FROM first_terms
-  JOIN legislators_terms
-  USING (id_bioguide)
-  LEFT JOIN year_ends 
-  ON date BETWEEN term_start AND term_end
-  JOIN legislators
-  USING (id_bioguide)
-  GROUP BY 1, 2),
-  
-cohort_sizes AS (
-  SELECT gender, period, 
-    first_value(cohort_retained) OVER w AS cohort_size,
-    cohort_retained
-  FROM cohorts
-  WINDOW w AS (PARTITION BY gender ORDER BY period))
+```{r}
+gender_retained <-
+  cohorts |>
+  group_by(gender) |>
+  window_order(period) |>
+  mutate(cohort_size = first(cohort_retained),
+         pct_retained = cohort_retained / cohort_size) |>
+  ungroup() |>
+  select(gender, period, cohort_size, cohort_retained,
+         pct_retained)
 
-SELECT gender, period, cohort_size, cohort_retained,
-  cohort_retained / cohort_size AS pct_retained
-FROM cohort_sizes
-ORDER BY 2, 1
+gender_retained |>
+  arrange(period, gender) |>
+  collect(n = 4) |>
+  tt()
 ```
+
 
 We can see from the results graphed in @fig-gender-retained that retention is higher for female legislators than for their male counterparts for periods 2 through 29.
 The first female legislator did not take office until 1917, when Jeannette Rankin joined the House as a Republican representative from Montana.
@@ -1016,45 +833,35 @@ To make a fairer comparison, we might restrict the legislators included in the a
 We can do this by adding a `WHERE` filter to the `cohorts` CTE.
 Here the results are also restricted to those who started before 2000, to ensure the cohorts have had at least 20 possible years to stay in office:
 
-```{sql}
-#| connection: db
-#| output.var: gender_retained_fairer
-WITH
+```{r}
+cohorts <-
+  first_terms |>
+  filter(between(first_term, '1917-01-01', '1999-12-31')) |>
+  inner_join(legislators_terms, by = "id_bioguide") |>
+  left_join(year_ends, 
+            join_by(between(y$date, x$term_start, x$term_end))) |>
+  inner_join(legislators, by = "id_bioguide") |>
+  mutate(period = coalesce(year(age(date, first_term)), 0)) |>
+  group_by(gender, period) |>
+  summarize(cohort_retained = n_distinct(id_bioguide),
+            .groups = "drop")
+```
 
-first_terms AS (
-  SELECT id_bioguide, min(term_start) AS first_term
-  FROM legislators_terms 
-  GROUP BY 1),
-  
-year_ends AS (
-  SELECT *  
-  FROM date_dim
-  WHERE month_name = 'December' AND day_of_month = 31),
-  
-cohorts AS (
-  SELECT gender,
-    coalesce(year(age(date, first_term)), 0) AS period,
-    count(DISTINCT id_bioguide) AS cohort_retained
-  FROM first_terms
-  JOIN legislators_terms
-  USING (id_bioguide)
-  LEFT JOIN year_ends
-  ON date BETWEEN term_start AND term_end
-  JOIN legislators
-  USING (id_bioguide)
-  WHERE first_term BETWEEN '1917-01-01' AND '1999-12-31'
-  GROUP BY 1, 2),
-  
-cohort_sizes AS (
-  SELECT gender, period, cohort_retained,
-    first_value(cohort_retained) OVER w AS cohort_size
-  FROM cohorts
-  WINDOW w AS (PARTITION BY gender ORDER BY period))
+```{r}
+gender_retained_fairer <-
+  cohorts |>
+  group_by(gender) |>
+  window_order(period) |>
+  mutate(cohort_size = first(cohort_retained),
+         pct_retained = cohort_retained / cohort_size) |>
+  ungroup() |>
+  select(gender, period, cohort_size, cohort_retained,
+         pct_retained)
 
-SELECT gender, period, cohort_size, cohort_retained,
-  cohort_retained / cohort_size AS pct_retained
-FROM cohort_sizes
-ORDER BY 2, 1
+gender_retained_fairer |>
+  arrange(period, gender) |>
+  collect(n = 4) |>
+  tt()
 ```
 
 Male legislators still outnumber female legislators, but by a smaller margin. The retention for the cohorts is graphed in @fig-gender-retained-fairer.
@@ -1094,48 +901,36 @@ We've already seen that there have been relatively few female legislators.
 Cohorting them further by state is highly likely to create some sparse cohorts in which there are very few members.
 Before making code adjustments, let's add `first_state` (calculated in the section on deriving cohorts from the time series) into our previous gender example and look at the results:
 
-```{sql}
-#| connection: db
-#| output.var: gender_retained_sparse
+```{r}
+cohorts <-
+  first_term_states |>
+  filter(between(first_term, '1917-01-01', '1999-12-31')) |>
+  inner_join(legislators_terms, by = "id_bioguide") |>
+  left_join(year_ends, 
+            join_by(between(y$date, x$term_start, x$term_end))) |>
+  inner_join(legislators, by = "id_bioguide") |>
+  mutate(period = coalesce(year(age(date, first_term)), 0)) |>
+  group_by(gender, first_state, period) |>
+  summarize(cohort_retained = n_distinct(id_bioguide),
+            .groups = "drop")
+```
 
-WITH
+```{r}
+gender_retained_sparse <-
+  cohorts |>
+  group_by(gender, first_state) |>
+  window_order(period) |>
+  mutate(cohort_size = first(cohort_retained),
+         pct_retained = cohort_retained / cohort_size) |>
+  ungroup() |>
+  select(gender, first_state, period, cohort_size, cohort_retained,
+         pct_retained)
 
-first_term_states AS (
-  SELECT distinct id_bioguide,
-    min(term_start) OVER w AS first_term,
-    first_value(state) OVER w AS first_state
-  FROM legislators_terms
-  WINDOW w AS (PARTITION BY id_bioguide ORDER BY term_start)),
-  
-year_ends AS (
-  SELECT *  
-  FROM date_dim
-  WHERE month_name = 'December' AND day_of_month = 31),
-  
-cohorts AS (
-  SELECT gender, first_state,
-    coalesce(year(age(date, first_term)), 0) AS period,
-    count(distinct id_bioguide) AS cohort_retained
-  FROM first_term_states
-  JOIN legislators_terms
-  USING (id_bioguide)
-  LEFT JOIN year_ends
-  ON date BETWEEN term_start AND term_end
-  JOIN legislators
-  USING (id_bioguide)
-  WHERE first_term BETWEEN '1917-01-01' AND '1999-12-31'
-  GROUP BY 1, 2, 3),
-  
-cohort_sizes AS (
-  SELECT gender, first_state, period, cohort_retained,
-    first_value(cohort_retained) OVER w AS cohort_size
-  FROM cohorts
-  WINDOW w AS (PARTITION BY gender, first_state ORDER BY period))
-
-SELECT first_state, gender, period, cohort_size, cohort_retained,
-  cohort_retained / cohort_size AS pct_retained
-FROM cohort_sizes
-ORDER BY 1, 3, 2
+gender_retained_sparse |>
+  arrange(first_state, period, gender) |>
+  filter(first_state == "AZ") |>
+  collect(n = 4) |>
+  tt()
 ```
 
 Graphing the results for the first 20 periods, as in @fig-gender-retained-sparse, reveals the sparse cohorts.
@@ -1161,177 +956,59 @@ gender_retained_sparse |>
 
 Now let's look at how to ensure a record for every period so that the query returns zero values for retention instead of nulls.
 The first step is to query for all combinations of periods and cohort attributes, in this case `first_state` and `gender`, with the starting `cohort_size` for each combination.
-This can be done by `JOIN`ing CTE `cohort_sizes` with `periods`, a CTE using `generate_series()` to generate all integers from 0 to 20.
-
-::: {.callout-note}
-# Cross joins 
-
-In place of `JOIN ON 1 = 1` (this could be `JOIN ON (TRUE)`), I use `CROSS JOIN`.
-:::
+This can be done by `JOIN`ing `cohort_sizes` with `periods`, a data frame that uses `generate_series()` to generate all integers from 0 to 20.
 
 This is a handy way to force a Cartesian `JOIN` when the two subqueries don't have any fields in common:
 
-```{sql}
-#| connection: db
-WITH
-
-first_term_states AS (
-  SELECT distinct id_bioguide,
-    min(term_start) OVER w AS first_term,
-    first_value(state) OVER w AS first_state
-  FROM legislators_terms
-  WINDOW w AS (PARTITION BY id_bioguide ORDER BY term_start)),
-  
-year_ends AS (
-  SELECT *  
-  FROM date_dim
-  WHERE month_name = 'December' AND day_of_month = 31),
-
-cohorts AS (
-  SELECT gender, first_state,
-    coalesce(year(age(date, first_term)), 0) AS period,
-    count(distinct id_bioguide) AS cohort_retained
-  FROM first_term_states
-  JOIN legislators_terms
-  USING (id_bioguide)
-  LEFT JOIN year_ends 
-  ON date BETWEEN term_start AND term_end
-  JOIN legislators
-  USING (id_bioguide)
-  WHERE first_term BETWEEN '1917-01-01' AND '1999-12-31'
-  GROUP BY 1, 2, 3),
-
-cohort_sizes AS (
-  SELECT DISTINCT gender, first_state,
-    first_value(cohort_retained) OVER w AS cohort_size
-  FROM cohorts
-  WINDOW w AS (PARTITION BY gender, first_state ORDER BY period)),
-
-periods AS (
-  SELECT generate_series AS period 
-  FROM generate_series(0, 20, 1)),
-
-cohort_sizes_filled AS (
-  SELECT DISTINCT gender, first_state, period, cohort_size
-  FROM cohort_sizes
-  CROSS JOIN periods)
-  
-SELECT gender, first_state, period, cohort_size,
-  coalesce(cohort_retained, 0) AS cohort_retained,
-  coalesce(cohort_retained, 0) / cohort_size AS pct_retained
-FROM cohort_sizes_filled
-LEFT JOIN cohorts
-USING (gender, first_state, period)
-ORDER BY 1, 3, 2
+```{r}
+periods <- tbl(db, 
+               sql("(SELECT generate_series AS period 
+                    FROM generate_series(0, 20, 1))"))
+```
+```{r}
+cohort_sizes_filled <-
+  cohorts |>
+  group_by(gender, first_state) |>
+  window_order(period) |>
+  mutate(cohort_size = first(cohort_retained)) |>
+  ungroup() |>
+  distinct(gender, first_state, cohort_size) |>
+  cross_join(periods)
 ```
 
 The next step is to `JOIN` this back to the actual periods in office, with a `LEFT JOIN` to ensure all the time periods remain in the final result:
 
-We can then pivot the results and confirm that a value exists for each cohort for each period:
-
-::: {.callout-note}
-# Missing query
-
-In the original text, the query used to generate the following is omitted.
-
-I create the table below by replacing the main query above with the following:
-
-```sql
-SELECT gender, first_state,
-  max(CASE WHEN period = 0 THEN pct_retained END) as yr0,
-  max(CASE WHEN period = 2 THEN pct_retained END) as yr2,
-  max(CASE WHEN period = 4 THEN pct_retained END) as yr4,
-  max(CASE WHEN period = 6 THEN pct_retained END) as yr6,
-  max(CASE WHEN period = 8 THEN pct_retained END) as yr8,
-  max(CASE WHEN period = 10 THEN pct_retained END) as yr10
-FROM pct_retained
-WHERE first_state IN ('AL', 'AR', 'CA') AND gender IN ('F')
-GROUP BY 1, 2
-ORDER BY 1, 2
+```{r}
+pct_retained <-
+  cohort_sizes_filled |>
+  left_join(cohorts, join_by(gender, first_state, period)) |>
+  mutate(cohort_retained = coalesce(cohort_retained, 0),
+         pct_retained = cohort_retained / cohort_size) |> 
+  select(gender, first_state, period, cohort_size, cohort_retained,
+         pct_retained)
 ```
 
-:::
+We can then pivot the results and confirm that a value exists for each cohort for each period:
 
-```{sql}
-#| connection: db
-#| echo: false
-WITH
-
-first_term_states AS (
-  SELECT distinct id_bioguide,
-    min(term_start) OVER w AS first_term,
-    first_value(state) OVER w AS first_state
-  FROM legislators_terms
-  WINDOW w AS (PARTITION BY id_bioguide ORDER BY term_start)),
-  
-year_ends AS (
-  SELECT *  
-  FROM date_dim
-  WHERE month_name = 'December' AND day_of_month = 31),
-
-cohorts AS (
-  SELECT gender, first_state,
-    coalesce(year(age(date, first_term)), 0) AS period,
-    count(DISTINCT id_bioguide) AS cohort_retained
-  FROM first_term_states
-  JOIN legislators_terms
-  USING (id_bioguide)
-  LEFT JOIN year_ends
-  ON date BETWEEN term_start AND term_end
-  JOIN legislators
-  USING (id_bioguide)
-  WHERE first_term BETWEEN '1917-01-01' AND '1999-12-31'
-  GROUP BY 1, 2, 3),
-
-cohort_sizes AS (
-  SELECT DISTINCT gender, first_state,
-    first_value(cohort_retained) OVER w AS cohort_size
-  FROM cohorts
-  WINDOW w AS (PARTITION BY gender, first_state ORDER BY period)),
-
-periods AS (
-  SELECT generate_series AS period 
-  FROM generate_series(0, 20, 1)),
-
-cohort_sizes_filled AS (
-  SELECT DISTINCT gender, first_state, period, cohort_size
-  FROM cohort_sizes
-  CROSS JOIN periods),
-  
-pct_retained AS (
-  SELECT gender, first_state, period, cohort_size,
-    coalesce(cohort_retained, 0) AS cohort_retained,
-    coalesce(cohort_retained, 0) / cohort_size AS pct_retained
-  FROM cohort_sizes_filled
-  LEFT JOIN cohorts
-  USING (gender, first_state, period))
-
-SELECT gender, first_state,
-  max(CASE WHEN period = 0 THEN pct_retained END) as yr0,
-  max(CASE WHEN period = 2 THEN pct_retained END) as yr2,
-  max(CASE WHEN period = 4 THEN pct_retained END) as yr4,
-  max(CASE WHEN period = 6 THEN pct_retained END) as yr6,
-  max(CASE WHEN period = 8 THEN pct_retained END) as yr8,
-  max(CASE WHEN period = 10 THEN pct_retained END) as yr10
-FROM pct_retained
-WHERE first_state IN ('AL', 'AR', 'CA') AND gender IN ('F')
-GROUP BY 1, 2
-ORDER BY 1, 2
+```{r}
+pct_retained |>
+  select(gender, first_state, period, pct_retained) |>
+  filter(period %in% !!seq(0, 10, 2)) |>
+  pivot_wider(names_from = period,
+              values_from = pct_retained,
+              names_prefix = "yr",
+              names_sort = TRUE) |>
+  filter(first_state %in% c('AL', 'AR', 'CA'),
+         gender == 'F') |>
+  arrange(first_state) |>
+  collect() |>
+  tt()
 ```
 
 Notice that at this point, the SQL code has gotten quite long.
 One of the harder parts of writing SQL for cohort retention analysis is keeping all of the logic straight and the code organized, a topic I'll discuss more in Chapter 8. 
 When building up retention code, I find it helpful to go step-by-step, checking results along the way.
 I also spot-check individual cohorts to validate that the final result is accurate.
-
-::: {.callout-note}
-# Long queries and CTEs
-
-Indeed the query is getting long.
-The CTE version is a little shorter because `first_term_states` is defined just once here, but twice in the original query (once as `a` and once as `d`).
-Also, because we can query any of the CTEs, it is much easier to keep the logic straight here than it is with the subqueries.
-
-:::
 
 Cohorts can be defined in many ways. 
 So far, we've normalized all our cohorts to the first date they appear in the time series data.
@@ -1362,56 +1039,43 @@ We can hardcode any date in 2000 as the `first_term`, since we will later check 
 The `min_start` of the terms falling in this window is also calculated for use in a later step:
 
 
-```{sql}
-#| connection: db
-SELECT DISTINCT id_bioguide, term_type, 
-  DATE '2000-01-01' AS first_term,
-  min(term_start) AS min_start
-FROM legislators_terms 
-WHERE term_start <= '2000-12-31' AND term_end >= '2000-01-01'
-GROUP BY 1, 2, 3
+```{r}
+first_terms <-
+  legislators_terms |>
+  filter(term_start <= "2000-12-31", 
+         term_end >= "2000-01-01") |>
+  mutate(first_term = as.Date("2000-01-01")) |>
+  group_by(id_bioguide, term_type, first_term) |>
+  summarize(min_start = min(term_start), .groups = "drop") 
 ```
 
 We can then plug this into our retention code, with two adjustments.
 First, an additional `JOIN` criterion between `first_terms` and the `legislators_terms` table is added in order to return only terms that started on or after the `min_start` date.
 Second, an additional filter is added to `year_ends` so that it only returns dates in 2000 or later:
 
-```{sql}
-#| connection: db
-#| output.var: pct_retained_2000
-WITH
+```{r}
+cohorts <-
+  first_terms |>
+  inner_join(legislators_terms |> select(-term_type),
+             join_by(id_bioguide, y$term_start >= x$min_start)) |>
+  left_join(year_ends |> filter(year(date) >= 2000), 
+            join_by(between(y$date, x$term_start, x$term_end))) |>
+  inner_join(legislators, by = "id_bioguide") |>
+  mutate(period = coalesce(year(age(date, first_term)), 0)) |>
+  group_by(term_type, period) |>
+  summarize(cohort_retained = n_distinct(id_bioguide),
+            .groups = "drop")
+```
 
-first_terms AS (
-  SELECT DISTINCT id_bioguide, term_type,
-    DATE '2000-01-01' AS first_term,
-    min(term_start) AS min_start
-  FROM legislators_terms 
-  WHERE term_start <= '2000-12-31' AND term_end >= '2000-01-01'
-  GROUP BY 1, 2, 3),
-  
-year_ends AS (
-  SELECT *  
-  FROM date_dim
-  WHERE month_name = 'December' AND day_of_month = 31 AND year >= 2000),
-  
-cohorts AS (
-  SELECT a.term_type,
-    coalesce(year(age(date, first_term)), 0) AS period,
-    count(DISTINCT a.id_bioguide) AS cohort_retained
-  FROM first_terms a
-  JOIN legislators_terms b
-  ON a.id_bioguide = b.id_bioguide AND b.term_start >= a.min_start
-  LEFT JOIN year_ends  
-  ON date BETWEEN term_start AND term_end
-  GROUP BY 1,2)
-  
-SELECT term_type, period,
-  first_value(cohort_retained) OVER w AS cohort_size,
-  cohort_retained,
-  cohort_retained / first_value(cohort_retained) OVER w AS pct_retained
-FROM cohorts
-WINDOW w AS (PARTITION BY term_type ORDER BY period) 
-ORDER BY 2, 1
+```{r}
+pct_retained_2000 <-
+  cohorts |>
+  group_by(term_type) |>
+  window_order(period) |>
+  mutate(cohort_size = first(cohort_retained),
+         pct_retained = cohort_retained / cohort_size) |>
+  ungroup() |>
+  select(term_type, period, cohort_size, cohort_retained, pct_retained)
 ```
 
 @fig-pct-retained-2000 shows that despite longer terms for senators, retention among the two cohorts was similar, and was actually worse for senators after 10 years.
@@ -1461,73 +1125,67 @@ The number of periods can be `SELECT`ed either by calculating an average or typi
 In this example, we'll look at the share of legislators who survived in office for a decade or more after their first term started.
 Since we don't need to know the specific dates of each term, we can start by calculating the first and last `term_start` dates, using `min` and `max` aggregations:
 
-```{sql}
-#| connection: db
-SELECT id_bioguide,
-  min(term_start) AS first_term,
-  max(term_start) AS last_term
-FROM legislators_terms
-GROUP BY 1
+```{r}
+first_last_terms <-
+  legislators_terms |>
+  group_by(id_bioguide) |>
+  summarize(first_term = min(term_start, na.rm = TRUE),
+            last_term = max(term_start, na.rm = TRUE),
+            .groups = "drop")
 ```
 
-Next, we add `century()` to find the century of `min(term_start)`, and we calculate the tenure as the number of years between the `min` and `max` `term_start`s found with the `age` function:
+Next, we add `first_century`, the century of `first_term`, and `tenure` as the number of years between the `first_term` and `last_term`:
 
-```{sql}
-#| connection: db
-SELECT id_bioguide,
-  century(min(term_start)) AS first_century,
-  min(term_start) AS first_term,
-  max(term_start) AS last_term,
-  year(age(max(term_start), min(term_start))) AS tenure
-FROM legislators_terms
-GROUP BY 1
+```{r}
+first_centuries <-
+  first_last_terms |>
+  mutate(first_century = century(first_term),
+         tenure = year(age(last_term, first_term)))
 ```
 
-Finally, we calculate the `cohort_size` with a count of all the legislators, as well as calculating the number who survived for at least 10 years by using a `CASE` statement and `count` aggregation.
+Finally, we calculate the `cohort_size` with a count of all the legislators, as well as calculating the number who survived for at least 10 years by using a `case_when` statement and `n_distinct()`.
 The percent who survived is found by dividing these two values:
 
-```{sql}
-#| connection: db
-WITH first_terms AS (
-  SELECT id_bioguide,
-    century(min(term_start)) AS first_century,
-    min(term_start) AS first_term,
-    max(term_start) AS last_term,
-    year(age(max(term_start), min(term_start))) AS tenure
-  FROM legislators_terms
-  GROUP BY 1)
+**Here `na.rm = TRUE` matters!**
 
-SELECT first_century,
-  count(DISTINCT id_bioguide) AS cohort_size,
-  count(DISTINCT CASE WHEN tenure >= 10 THEN id_bioguide END) AS survived_10,
-  count(DISTINCT CASE WHEN tenure >= 10 THEN id_bioguide END) / 
-    count(DISTINCT id_bioguide) AS pct_survived_10
-FROM first_terms a
-GROUP BY 1
-ORDER BY 1
+```{r}
+first_centuries |>
+  group_by(first_century) |>
+  summarize(cohort_size = n_distinct(id_bioguide, na.rm = TRUE),
+            survived_10 = n_distinct(case_when(tenure >= 10 ~ id_bioguide),
+                                     na.rm = TRUE),
+            .groups = "drop") |>
+  mutate(pct_survived_10 = survived_10 / cohort_size) |>
+  arrange(first_century) |>
+  collect() |>
+  tt()
 ```
 
 Since terms may or may not be consecutive, we can also calculate the share of legislators in each century who survived for five or more total terms.
 In the subquery, add a count to find the total number of terms per legislator. 
 Then in the outer query, divide the number of legislators with five or more terms by the total cohort size:
 
-```{sql}
-#| connection: db
-WITH total_terms AS (
-  SELECT id_bioguide,
-    century(min(term_start)) AS first_century,
-    count(term_start) AS total_terms,
-    FROM legislators_terms
-  GROUP BY 1)
+```{r}
+total_terms <-
+  legislators_terms |>
+  group_by(id_bioguide) |>
+  summarize(first_century = century(min(term_start)),
+            total_terms = count(term_start),
+            .groups = "drop")
+```
 
-SELECT first_century,
-  count(DISTINCT id_bioguide) AS cohort_size,
-  count(DISTINCT CASE WHEN total_terms >= 5 THEN id_bioguide END) AS survived_5,
-  count(DISTINCT CASE WHEN total_terms >= 5 THEN id_bioguide END) / 
-    count(DISTINCT id_bioguide) AS pct_survived_5_terms
-FROM total_terms
-GROUP BY 1
-ORDER BY 1
+
+```{r}
+total_terms |>
+  group_by(first_century) |>
+  summarize(cohort_size = n_distinct(id_bioguide, na.rm = TRUE),
+            survived_5 = n_distinct(case_when(total_terms >= 5 ~ id_bioguide),
+                                     na.rm = TRUE),
+            .groups = "drop") |>
+  mutate(pct_survived_5_terms = survived_5 / cohort_size) |>
+  arrange(first_century) |>
+  collect() |>
+  tt()
 ```
 
 Ten years or five terms is somewhat arbitrary.
@@ -1536,30 +1194,23 @@ Here, we calculate the survivorship for each number of terms from 1 to 20.
 This is accomplished through a Cartesian `JOIN` to a subquery that contains those integers derived by the `generate_series` function:
 
 
-```{sql}
-#| connection: db
-#| output.var: surv_century
-WITH total_terms AS (
-  SELECT id_bioguide,
-    century(min(term_start)) AS first_century,
-    count(term_start) AS total_terms,
-  FROM legislators_terms
-  GROUP BY 1),
+```{r}
+surv_century <-
+  total_terms |>
+  cross_join(periods)|> 
+  rename(terms = period) |>
+  filter(terms > 0) |>
+  group_by(first_century, terms) |>
+  summarize(cohort_size = n_distinct(id_bioguide, na.rm = TRUE),
+            cohort_survived = n_distinct(case_when(total_terms >= terms ~ id_bioguide),
+                                     na.rm = TRUE),
+            .groups = "drop") |>
+  mutate(pct_survived = cohort_survived / cohort_size) 
 
-periods AS (
-  SELECT generate_series AS terms 
-  FROM generate_series(0, 20, 1))
-  
-SELECT first_century, terms,
-  count(DISTINCT id_bioguide) AS cohort,
-  count(DISTINCT CASE WHEN total_terms >= terms THEN id_bioguide 
-                     END) AS cohort_survived,
-  count(DISTINCT CASE WHEN total_terms >= terms THEN id_bioguide END) /
-    count(DISTINCT id_bioguide) AS pct_survived
-FROM total_terms
-CROSS JOIN periods
-GROUP BY 1, 2
-ORDER BY 1, 2
+surv_century |>
+  arrange(first_century, terms) |>
+  collect(n = 4) |>
+  tt()
 ```
 
 The results are graphed in @fig-surv-century. 
@@ -1606,119 +1257,104 @@ For example, a university might want to see how many students enrolled in a seco
 To demonstrate returnship analysis, we can ask a new question of the legislators data set: how many legislators have more than one term type, and specifically, what share of them start as representatives and go on to become senators (some senators later become representatives, but that is much less common).
 Since relatively few make this transition, we'll cohort legislators by the century in which they first became a representative.
 
+
+
+```{r}
+rep_first_terms <-
+  legislators_terms |>
+  filter(term_type == 'rep') |>
+  group_by(id_bioguide) |>
+  summarize(first_term = min(term_start, na.rm = TRUE),
+            .groups = "drop")
+```
+
 The first step is to find the cohort size for each century, using the CTE and `century()` calculations seen previously, for only those with `term_type = 'rep'`:
 
-```{sql}
-#| connection: db
-WITH 
-rep_first_terms AS (
-  SELECT id_bioguide, min(term_start) AS first_term
-  FROM legislators_terms
-  WHERE term_type = 'rep'
-  GROUP BY 1)
-SELECT century(first_term) AS cohort_century,
-  count(id_bioguide) AS reps
-FROM rep_first_terms
-GROUP BY 1
-ORDER BY 1
+```{r}
+rep_centuries <-
+  rep_first_terms |>
+  mutate(cohort_century = century(first_term)) |>
+  group_by(cohort_century) |>
+  summarize(reps = count(id_bioguide),
+            .groups = "drop")
+
+rep_centuries |>
+  arrange(cohort_century) |>
+  collect() |>
+  tt()
 ```
+
 
 Next we'll perform a similar calculation, with a `JOIN` to the `legislators_terms` table, to find the representatives who later became senators.
 This is accomplished with the clauses `term_type = 'sen'` and `term_start > first_term`:
 
-```{sql}
-#| connection: db
-WITH 
-rep_first_terms AS (
-  SELECT id_bioguide, min(term_start) AS first_term
-  FROM legislators_terms
-  WHERE term_type = 'rep'
-  GROUP BY 1)
-  
-SELECT century(first_term) AS cohort_century,
-  count(DISTINCT id_bioguide) AS rep_and_sen
-FROM rep_first_terms
-JOIN legislators_terms
-USING (id_bioguide)
-WHERE term_type = 'sen' and term_start > first_term
-GROUP BY 1
-ORDER BY 1
+```{r}
+rep_sen_centuries <-
+  rep_first_terms |>
+  inner_join(legislators_terms, by = join_by(id_bioguide)) |>
+  filter(term_type == 'sen', 
+         term_start > first_term) |>
+  mutate(cohort_century = century(first_term)) |>
+  group_by(cohort_century) |>
+  summarize(rep_and_sen = n_distinct(id_bioguide),
+            .groups = "drop")
+
+rep_sen_centuries |>
+  arrange(cohort_century) |>
+  collect() |>
+  tt()
 ```
 
 Finally, we `JOIN` these two subqueries together and calculate the percent of representatives who became senators.
 A `LEFT JOIN` is used; this clause is typically recommended to ensure that all cohorts are included whether or not the subsequent event happened.
 If there is a century in which no representatives became senators, we still want to include that century in the result set:
 
-```{sql}
-#| connection: db
-WITH 
-rep_first_terms AS (
-  SELECT id_bioguide, min(term_start) AS first_term
-  FROM legislators_terms
-  WHERE term_type = 'rep'
-  GROUP BY 1),
-  
-rep_centuries AS (
-  SELECT century(first_term) AS cohort_century,
-    count(id_bioguide) AS reps
-  FROM rep_first_terms
-  GROUP BY 1),
-    
-rep_sen_centuries AS (
-  SELECT date_part('century', first_term) AS cohort_century,
-    count(DISTINCT id_bioguide) AS rep_and_sen
-  FROM rep_first_terms
-  JOIN legislators_terms
-  USING (id_bioguide)
-  WHERE term_type = 'sen' AND term_start > first_term
-  GROUP BY 1)
-  
-SELECT cohort_century, rep_and_sen / reps AS pct_rep_and_sen
-FROM rep_centuries
-LEFT JOIN rep_sen_centuries
-USING (cohort_century)
-ORDER BY 1
+```{r}
+rep_centuries |>
+  left_join(rep_sen_centuries, by = join_by(cohort_century)) |>
+  mutate(pct_rep_and_sen = rep_and_sen / reps) |>
+  select(cohort_century, pct_rep_and_sen) |>
+  arrange(cohort_century) |>
+  collect() |>
+  tt()
 ```
 
 Representatives from the 18th century were most likely to become senators.
 However, we have not yet applied a time box to ensure a fair comparison.
 While we can safely assume that all legislators who served in the 18th and 19th centuries are no longer living, many of those who were first elected in the 20th and 21st centuries are still in the middle of their careers.
 Adding the filter `WHERE age(term_start, first_term) <= INTERVAL '10 years'` to CTE `rep_sen_centuries` creates a time box of 10 years.
-Note that the window can easily be made larger or smaller by changing the constant in the interval. An additional filter applied to CTE `rep_centuries`, `WHERE first_term <= '2009-12-31'`, excludes those who were less than 10 years into their careers when the data set was assembled:
+Note that the window can easily be made larger or smaller by changing the constant in the interval.
+An additional filter applied to `rep_centuries`, `WHERE first_term <= '2009-12-31'`, excludes those who were less than 10 years into their careers when the data set was assembled:
 
-```{sql}
-#| connection: db
-WITH 
-rep_first_terms AS (
-  SELECT id_bioguide, min(term_start) AS first_term
-  FROM legislators_terms
-  WHERE term_type = 'rep'
-  GROUP BY 1),
-  
-rep_centuries AS (
-  SELECT century(first_term) AS cohort_century,
-      count(id_bioguide) as reps
-    FROM rep_first_terms
-    WHERE first_term <= '2009-12-31'
-    GROUP BY 1),
-    
-rep_sen_centuries AS (
-  SELECT century(first_term) AS cohort_century,
-    count(DISTINCT id_bioguide) AS rep_and_sen
-  FROM rep_first_terms
-  JOIN legislators_terms
-  USING (id_bioguide)
-  WHERE term_type = 'sen' 
-    AND term_start > first_term
-    AND age(term_start, first_term) <= INTERVAL '10 years'
-  GROUP BY 1)
+```{r}
+rep_centuries <-
+  rep_first_terms |>
+  filter(first_term <= "2009-12-31") |>
+  mutate(cohort_century = century(first_term)) |>
+  group_by(cohort_century) |>
+  summarize(reps = count(id_bioguide),
+            .groups = "drop")
 
-SELECT cohort_century, 
-  rep_and_sen / reps AS pct_rep_and_sen
-FROM rep_centuries
-LEFT JOIN rep_sen_centuries
-USING (cohort_century)
-ORDER BY 1
+rep_sen_centuries <-
+  rep_first_terms |>
+  inner_join(legislators_terms, by = join_by(id_bioguide)) |>
+  filter(term_type == 'sen', 
+         term_start > first_term,
+         age(term_start, first_term) <= years(10L)) |>
+  mutate(cohort_century = century(first_term)) |>
+  group_by(cohort_century) |>
+  summarize(rep_and_sen = n_distinct(id_bioguide),
+            .groups = "drop")
+```
+
+```{r}
+rep_centuries |>
+  left_join(rep_sen_centuries, by = join_by(cohort_century)) |>
+  mutate(pct_rep_and_sen = rep_and_sen / reps) |>
+  select(cohort_century, pct_rep_and_sen) |>
+  arrange(cohort_century) |>
+  collect() |>
+  tt()
 ```
 
 With this new adjustment, the 18th century still had the highest share of representatives becoming senators within 10 years, but the 21st century has the second-highest share, and the 20th century had a higher share than the 19th.
@@ -1727,47 +1363,38 @@ Since 10 years is somewhat arbitrary, we might also want to compare several time
 One option is to run the query several times with different intervals and note the results.
 Another option is to calculate multiple windows in the same result set by using a set of `CASE` statements inside of `count(DISTINCT x)` aggregations to form the intervals, rather than specifying the interval in the `WHERE` clause:
 
-```{sql}
-#| connection: db
-WITH 
-rep_first_terms AS (
-  SELECT id_bioguide, min(term_start) AS first_term
-  FROM legislators_terms
-  WHERE term_type = 'rep'
-  GROUP BY 1),
-  
-rep_centuries AS (
-  SELECT century(first_term) AS cohort_century,
-      count(id_bioguide) AS reps
-    FROM rep_first_terms
-    WHERE first_term <= '2009-12-31'
-    GROUP BY 1),
-    
-rep_sen_centuries AS (
-  SELECT century(first_term) AS cohort_century,
-    count(DISTINCT CASE WHEN age(term_start, first_term) 
-                              <= interval '5 years' 
-                         THEN id_bioguide END) AS rep_and_sen_5_yrs,
-    count(DISTINCT CASE WHEN age(term_start, first_term) 
-                              <= interval '10 years' 
-                         THEN id_bioguide END) AS rep_and_sen_10_yrs,
-    count(DISTINCT CASE WHEN age(term_start, first_term) 
-                              <= interval '15 years' 
-                         THEN id_bioguide END) AS rep_and_sen_15_yrs
-  FROM rep_first_terms
-  JOIN legislators_terms
-  USING (id_bioguide)
-  WHERE term_type = 'sen' AND term_start > first_term
-  GROUP BY 1)
+```{r}
+terms <-
+  periods |>
+  filter(period %in% c(5, 10, 15)) |>
+  rename(term = period)
 
-SELECT cohort_century,
-  rep_and_sen_5_yrs / reps as pct_5_yrs,
-  rep_and_sen_10_yrs / reps as pct_10_yrs,
-  rep_and_sen_15_yrs / reps as pct_15_yrs
-FROM rep_centuries
-LEFT JOIN rep_sen_centuries
-USING (cohort_century)
-ORDER BY 1
+rep_sen_centuries <-
+  rep_first_terms |>
+  inner_join(legislators_terms, by = join_by(id_bioguide)) |>
+  filter(term_type == 'sen', 
+         term_start > first_term) |>
+  cross_join(terms) |>
+  mutate(tenure = age(term_start, first_term),
+         id_bioguide = case_when(tenure <= years(term) ~ id_bioguide),
+         cohort_century = century(first_term)) |>
+  group_by(cohort_century, term) |>
+  summarize(rep_and_sen = n_distinct(id_bioguide, na.rm = TRUE),
+            .groups = "drop")
+```
+
+```{r}
+rep_centuries |>
+  left_join(rep_sen_centuries, by = join_by(cohort_century)) |>
+  mutate(pct_rep_and_sen = rep_and_sen / reps) |>
+  pivot_wider(id_cols = cohort_century,
+              names_from = term,
+              names_glue = "pct_{term}_yrs",
+              names_sort = TRUE,
+              values_from = pct_rep_and_sen) |>
+  arrange(cohort_century) |>
+  collect() |>
+  tt()
 ```
 
 With this output, we can see how the share of representatives who became senators evolved over time, both within each cohort and across cohorts.
@@ -1775,56 +1402,44 @@ In addition to the table format, graphing the output often reveals interesting t
 In @fig-decades, the cohorts based on century are replaced with cohorts based on the first decade, and the trends over 10 and 20 years are shown.
 Conversion of representatives to senators during the first few decades of the new US legislature was clearly different from patterns in the years since.
 
-```{sql}
-#| connection: db
-#| include: false
-#| output.var: df_fig_4_12
-WITH 
-rep_first_terms AS (
-  SELECT id_bioguide, min(term_start) AS first_term
-  FROM legislators_terms
-  WHERE term_type = 'rep'
-  GROUP BY 1),
+```{r}
+rep_decades <-
+  rep_first_terms |>
+  filter(first_term <= "2009-12-31") |>
+  mutate(cohort_decade = decade(first_term)) |>
+  group_by(cohort_decade) |>
+  summarize(reps = count(id_bioguide),
+            .groups = "drop")
 
-rep_cohorts AS (
-  SELECT date_part('decade', first_term) AS cohort,
-      count(id_bioguide) as reps
-    FROM rep_first_terms
-    WHERE first_term <= '2009-12-31'
-    GROUP BY 1),
-    
-rep_sen_cohorts AS (
-  SELECT date_part('decade', first_term) AS cohort,
-    count(DISTINCT
-            CASE WHEN age(term_start, first_term) <= interval '10 years' 
-                 THEN id_bioguide END) AS rep_and_sen_10_yrs,
-    count(DISTINCT 
-            CASE WHEN age(term_start, first_term) <= interval '20 years' 
-                 THEN id_bioguide END) AS rep_and_sen_20_yrs
-  FROM rep_first_terms
-  JOIN legislators_terms
-  USING (id_bioguide)
-  WHERE term_type = 'sen' AND term_start > first_term
-  GROUP BY 1)
+terms <-
+  periods |>
+  filter(period %in% c(10, 20)) |>
+  rename(term = period)
 
-SELECT cohort,
-  rep_and_sen_10_yrs / reps AS pct_10_yrs,
-  rep_and_sen_20_yrs / reps AS pct_20_yrs
-FROM rep_cohorts
-LEFT JOIN rep_sen_cohorts
-USING (cohort)
-ORDER BY 1
+rep_sen_decades <-
+  rep_first_terms |>
+  inner_join(legislators_terms, by = join_by(id_bioguide)) |>
+  filter(term_type == 'sen', 
+         term_start > first_term) |>
+  cross_join(terms) |>
+  mutate(tenure = age(term_start, first_term),
+         id_bioguide = case_when(tenure <= years(term) ~ id_bioguide),
+         cohort_decade = decade(first_term)) |>
+  group_by(cohort_decade, term) |>
+  summarize(rep_and_sen = n_distinct(id_bioguide, na.rm = TRUE),
+            .groups = "drop")
 ```
 
 ```{r}
 #| echo: false
 #| label: fig-decades
 #| fig-cap: "Trend of the share of representatives for each cohort, defined by starting decade, who later became senators"
-df_fig_4_12 |>
-  pivot_longer(cols = -cohort) |>
-  mutate(period = str_replace(name, "^pct_(\\d+)_yrs", "\\1 years")) |>
-  ggplot(aes(x = cohort, y = value,
-             colour = period, group = period)) +
+rep_decades |>
+  left_join(rep_sen_decades, by = join_by(cohort_decade)) |>
+  mutate(pct_rep_and_sen = rep_and_sen / reps,
+         term = as.character(term)) |>
+  ggplot(aes(x = cohort_decade, y = pct_rep_and_sen,
+             colour = term, group = term)) +
   geom_line() +
   ylab("% became senator") +
   xlab("Cohort decade")
@@ -1850,63 +1465,35 @@ The cumulative calculations used in this type of analysis are most often `count`
 We will again use the time box concept to ensure apples-to-apples comparisons between cohorts.
 Let's look at the number of terms started within 10 years of the first `term_start`, cohorting the legislators by century and type of first term:
 
-```{sql}
-#| connection: db
-WITH first_terms AS (
-  SELECT DISTINCT id_bioguide,
-    first_value(term_type) OVER w AS first_type,
-    min(term_start) OVER w AS first_term,
-    min(term_start) OVER w + INTERVAL '10 years' AS first_plus_10
-  FROM legislators_terms
-  WINDOW w AS (PARTITION BY id_bioguide ORDER BY term_start))
+```{r}
+first_terms <-
+  legislators_terms |>
+  group_by(id_bioguide) |>
+  window_order(term_start) |>
+  summarize(first_type = first(term_type),
+            first_term = min(term_start, na.rm = TRUE)) |>
+  mutate(first_plus_10 = first_term + years(10)) |>
+  ungroup()
 
-SELECT century(first_term) AS century,
-  first_type,
-  count(DISTINCT a.id_bioguide) AS cohort,
-  count(term_start) AS terms
-FROM first_terms a
-LEFT JOIN legislators_terms b
-ON a.id_bioguide = b.id_bioguide 
-  AND term_start BETWEEN first_term AND first_plus_10
-GROUP BY 1, 2
-ORDER BY 1, 2
+cohort_data <-
+  first_terms |>
+  left_join(legislators_terms,
+            join_by(id_bioguide,
+                    between(y$term_start,
+                            x$first_term,
+                            x$first_plus_10))) |>
+  mutate(century = century(first_term)) |>
+  group_by(century, first_type) |>
+  summarize(cohort = n_distinct(id_bioguide),
+            terms = count(term_start),
+            .groups = "drop") |>
+  mutate(terms_per_leg = terms / cohort)
+
+cohort_data |>
+  arrange(century, first_type) |>
+  collect() |>
+  tt()
 ```
-
-::: {.callout-note}
-# Inequalities and `LEFT JOIN`s
-
-You will notice that I used `a.id_bioguide = b.id_bioguide` in place of `USING(id_bioguide)` in the query above.
-This is because we have to choose between a `USING` join clause or an `ON` join clause; we can't mix within a single join.
-As we want to join on `term_start BETWEEN first_term AND first_plus_10`, we cannot use a `USING` join.
-
-It might be tempting to specify `USING (id_bioguide)` and use `WHERE term_start BETWEEN first_term AND first_plus_10`, but this approach will not be equivalent if we're using a `LEFT JOIN`, as the `WHERE` will effectively make the join an `INNER JOIN`.
-
-In this case it turns out that the `LEFT JOIN` is not having any effect, as can be seen from the following query using `INNER JOIN`, `USING` and `WHERE`:
-
-```{sql}
-#| connection: db
-WITH first_terms AS (
-  SELECT DISTINCT id_bioguide,
-    first_value(term_type) OVER w AS first_type,
-    min(term_start) OVER w AS first_term,
-    min(term_start) OVER w + INTERVAL '10 years' AS first_plus_10
-  FROM legislators_terms
-  WINDOW w AS (PARTITION BY id_bioguide ORDER BY term_start))
-
-SELECT century(first_term) AS century,
-  first_type,
-  count(DISTINCT id_bioguide) AS cohort,
-  count(term_start) AS terms
-FROM first_terms
-INNER JOIN legislators_terms
-USING (id_bioguide)
-WHERE term_start BETWEEN first_term AND first_plus_10
-GROUP BY 1, 2
-ORDER BY 1, 2
-```
-
-:::
-
 
 The largest cohort is that of representatives first elected in the 19th century, but the cohort with the largest number of terms started within 10 years is that of representatives first elected in the 20th century.
 This type of calculation can be useful for understanding the overall contribution of a cohort to an organization.T
@@ -1916,37 +1503,17 @@ Calculations we might want to make include average actions per person, average o
 To normalize by the cohort size, simply divide by the starting cohort, which we've done previously with retention, survivorship, and returnship.
 Here we do that and also pivot the results into table form for easier comparisons:
 
-```{sql}
-#| connection: db
-WITH 
-first_terms AS (
-  SELECT DISTINCT id_bioguide,
-    first_value(term_type) OVER w AS first_type,
-    min(term_start) OVER w AS first_term,
-    min(term_start) OVER w + interval '10 years' AS first_plus_10
-  FROM legislators_terms
-  WINDOW w AS (PARTITION BY id_bioguide ORDER BY term_start)),
-
-cohort_data AS (
-  SELECT century(first_term) AS century,
-      first_type,
-      count(DISTINCT a.id_bioguide) AS cohort,
-      count(term_start) AS terms,
-      count(term_start) / count(distinct a.id_bioguide) AS terms_per_leg
-    FROM first_terms a
-    LEFT JOIN legislators_terms b 
-    ON a.id_bioguide = b.id_bioguide 
-      AND term_start BETWEEN first_term AND first_plus_10
-    GROUP BY 1, 2)
-    
-SELECT century,
-  max(CASE WHEN first_type = 'rep' THEN cohort END) AS rep_cohort,
-  max(CASE WHEN first_type = 'rep' THEN terms_per_leg END) AS avg_rep_terms,
-  max(CASE WHEN first_type = 'sen' THEN cohort END) AS sen_cohort,
-  max(CASE WHEN first_type = 'sen' THEN terms_per_leg END) AS avg_sen_terms
-FROM cohort_data
-GROUP BY 1
-ORDER BY 1
+```{r}
+cohort_data |>
+  select(century, first_type,	cohort, terms_per_leg) |>
+  rename(terms = terms_per_leg) |>
+  pivot_wider(names_from = first_type,
+              values_from = c(cohort, terms),
+              names_glue = "{first_type}_{.value}",
+              names_sort = TRUE) |>
+  arrange(century) |>
+  collect() |>
+  tt()
 ```
 
 With the cumulative terms normalized by the cohort size, we can now confirm that representatives first elected in the 20th century had the highest average number of terms, while those who started in the 19th century had the fewest number of terms on average.
@@ -2020,131 +1587,90 @@ On any given date, users from a variety of cohorts are present.
 We can use cross-sectional analysis to examine them, like layers of sediment, to reveal new insights.
 In the next example, we'll create a time series of the share of legislators from each cohort for each year in the data set.
 
-The first step is to find the number of legislators in office each year by JOINing the legislators table to the date_dim, WHERE the date from the date_dim is between the start and end dates of each term. Here we use December 31 for each year to find the legislators in office at each year's end:
+The first step is to find the number of legislators in office each year by JOINing the legislators table to the `date_dim`, WHERE the date from the `date_dim` is between the start and end dates of each term.
+Here we use December 31 for each year to find the legislators in office at each year's end:
 
-```{sql}
-#| connection: db
-WITH 
-year_ends AS (
-  SELECT *  
-  FROM date_dim
-  WHERE month_name = 'December' AND day_of_month = 31 AND year <= 2019)
+```{r}
+year_ends <-
+  date_dim |>
+  filter(month_name == 'December', 
+         day_of_month == 31,
+         year <= 2019)
 
-SELECT date, count(DISTINCT id_bioguide) AS legislators
-FROM legislators_terms
-JOIN year_ends
-ON date BETWEEN term_start AND term_end
-GROUP BY 1
-ORDER BY 1
+cohort_data <-
+  legislators_terms |>
+  inner_join(year_ends,
+             join_by(between(y$date, x$term_start, x$term_end)))
+
+cohort_data |>
+  group_by(date) |>
+  summarize(legislators = n_distinct(id_bioguide)) |>
+  arrange(date) |>
+  collect(n = 3) |>
+  tt()
 ```
 
 Next, we add in the century cohorting criterion by `JOIN`ing to `first_terms`:
 
-```{sql}
-#| connection: db
-WITH 
-first_terms AS (
-   SELECT id_bioguide, min(term_start) as first_term
-    FROM legislators_terms
-    GROUP BY 1),
+```{r}
+first_terms <-
+  legislators_terms |>
+  group_by(id_bioguide) |>
+  summarize(first_term = min(term_start, na.rm = TRUE),
+            .groups = "drop")
 
-year_ends AS (
-  SELECT *  
-  FROM date_dim
-  WHERE month_name = 'December' AND day_of_month = 31 AND year <= 2019),
-    
-cohorts AS (
-  SELECT date,
-    century(first_term) AS century,
-    count(DISTINCT id_bioguide) AS legislators
-  FROM legislators_terms
-  JOIN year_ends
-  ON date BETWEEN term_start AND term_end
-  JOIN first_terms
-  USING (id_bioguide)
-  GROUP BY 1, 2)
-  
-SELECT *
-FROM cohorts
-ORDER BY 1
+cohorts <-
+  cohort_data |>
+  inner_join(first_terms, by = "id_bioguide") |>
+  mutate(century = century(first_term)) |>
+  group_by(date, century) |>
+  summarize(legislators = n_distinct(id_bioguide),
+            .groups = "drop")
+```
+
+```{r}
+cohorts |>
+  arrange(date) |>
+  collect(n = 3) |>
+  tt()
 ```
 
 Finally, we calculate the percent of total `legislators` in each year that the century cohort represents.
 This can be done in a couple of ways, depending on the shape of output desired.
 The first way is to keep a row for each `date` and `century` combination and use a `sum` window function in the denominator of the percentage calculation:
 
-```{sql}
-#| connection: db
-WITH 
-first_terms AS (
-   SELECT id_bioguide, min(term_start) as first_term
-    FROM legislators_terms
-    GROUP BY 1),
-
-year_ends AS (
-  SELECT *  
-  FROM date_dim
-  WHERE month_name = 'December' AND day_of_month = 31 AND year <= 2019),
-    
-cohorts AS (
-  SELECT date,
-    century(first_term) AS century,
-    count(DISTINCT id_bioguide) AS legislators
-  FROM legislators_terms
-  JOIN year_ends
-  ON date BETWEEN term_start AND term_end
-  JOIN first_terms
-  USING (id_bioguide)
-  GROUP BY 1, 2)
+```{r}
+pct_centuries <-
+  cohorts |>
+  group_by(date) |>
+  mutate(cohort = sum(legislators),
+         pct_century = legislators / cohort) |>
+  ungroup()
+```
   
-SELECT date, century,
-  legislators,
-  sum(legislators) OVER w AS cohort,
-  legislators / sum(legislators) OVER w AS pct_century
-FROM cohorts
-WINDOW w AS (PARTITION BY date)
-ORDER BY 1 DESC
+```{r}
+pct_centuries |>
+  filter(date >= "2018-12-31") |>
+  arrange(date, century) |>
+  collect(n = 4) |>
+  tt()
 ```
 
 The second approach results in one row per year, with a column for each century, a table format that may be easier to scan for trends:
 
-```{sql}
-#| connection: db
-#| output.var: df_fig_4_13
-WITH 
-first_terms AS (
-   SELECT id_bioguide, min(term_start) as first_term
-    FROM legislators_terms
-    GROUP BY 1),
-
-year_ends AS (
-  SELECT *  
-  FROM date_dim
-  WHERE month_name = 'December' AND day_of_month = 31 AND year <= 2019),
-    
-cohorts AS (
-  SELECT date,
-    century(first_term) AS century,
-    count(DISTINCT id_bioguide) AS legislators
-  FROM legislators_terms
-  JOIN year_ends
-  ON date BETWEEN term_start AND term_end
-  JOIN first_terms
-  USING (id_bioguide)
-  GROUP BY 1, 2)
-
-SELECT date,
-  coalesce(sum(CASE WHEN century = 18 THEN legislators END)
-          / sum(legislators), 0) as pct_18,
-  coalesce(sum(CASE WHEN century = 19 THEN legislators END)
-          / sum(legislators), 0) as pct_19,
-  coalesce(sum(CASE WHEN century = 20 THEN legislators END)
-          / sum(legislators), 0) as pct_20,
-  coalesce(sum(CASE WHEN century = 21 THEN legislators END)
-          / sum(legislators), 0) as pct_21
-FROM cohorts
-GROUP BY 1
-ORDER BY 1 DESC
+```{r}
+pct_centuries |>
+  pivot_wider(id_cols = "date",
+              names_from = "century",
+              names_prefix = "pct_",
+              names_sort = TRUE,
+              values_from = "pct_century",
+              values_fill = 0) |>
+  select(date, starts_with("pct_")) |>
+  filter(date >= "2017-12-31") |>
+  arrange(date) |>
+  collect() |>
+  tt()
 ```
 
 ```{r}
@@ -2159,11 +1685,10 @@ int_to_century <- function(vec) {
 #| echo: false
 #| label: fig-4-13
 #| fig-cap: "Percent of legislators each year, by century first elected"
-df_fig_4_13 |>
-  pivot_longer(cols = -date) |>
-  mutate(century = str_replace(name, "^pct_(\\d+)", "\\1")) |>
+pct_centuries |>
+  collect() |>
   mutate(century = int_to_century(century)) |>
-  ggplot(aes(x = date, y = value * 100,
+  ggplot(aes(x = date, y = pct_century * 100,
              fill = century, group = century)) +
   geom_area() +
   theme(legend.position = "inside", 
@@ -2184,96 +1709,44 @@ The first step is to calculate, for each year, the cumulative number of years in
 Since there can be gaps between terms when legislators are voted out or leave office for other reasons, we'll first find each year in which the legislator was in office at the end of the year in `cohort_data`.
 Then we'll use a `count` window function, with the window covering the rows unbounded preceding, or all prior rows for that legislator, and `CURRENT ROW`:
 
-```{sql}
-#| connection: db
-WITH 
-
-year_ends AS (
-  SELECT *  
-  FROM date_dim
-  WHERE month_name = 'December' AND day_of_month = 31 AND year <= 2019),
-  
-cohort_data AS (
-  SELECT DISTINCT id_bioguide, date
-  FROM legislators_terms
-  JOIN year_ends
-  ON date BETWEEN term_start AND term_end),
-
-cohorts AS (
-  SELECT id_bioguide, date, count(date) OVER w AS cume_years
-  FROM cohort_data
-  WINDOW w AS (PARTITION BY id_bioguide 
-               ORDER BY date
-               ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW))
-SELECT *
-FROM cohorts
-ORDER BY 1, 2 DESC
+```{r}
+cohorts <-
+  cohort_data |>
+  group_by(id_bioguide) |>
+  window_order(date) |>
+  mutate(cume_years = cumsum(as.integer(!is.na(date)))) |>
+  ungroup() |>
+  window_order() |>
+  select(id_bioguide, date, cume_years)
 ```
+
+
 Next, `count` the number of legislators for each combination of `date` and `cume_years` to create a distribution:
 
-```{sql}
-#| connection: db
-WITH 
+```{r}
+cohort_stats <-
+  cohorts |>
+  group_by(date, cume_years) |>
+  summarize(legislators = n_distinct(id_bioguide),
+            .groups = "drop") |>
+  arrange(date, cume_years) 
 
-year_ends AS (
-  SELECT *  
-  FROM date_dim
-  WHERE month_name = 'December' AND day_of_month = 31 AND year <= 2019),
-  
-cohort_data AS (
-  SELECT DISTINCT id_bioguide, date
-  FROM legislators_terms
-  JOIN year_ends
-  ON date BETWEEN term_start AND term_end),
-
-cohorts AS (
-  SELECT id_bioguide, date, count(date) OVER w AS cume_years
-  FROM cohort_data
-  WINDOW w AS (PARTITION BY id_bioguide 
-               ORDER BY date
-               ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW))
-
-SELECT date, cume_years,
-  count(DISTINCT id_bioguide) AS legislators
-FROM cohorts
-GROUP BY 1, 2
-ORDER BY 1
+cohort_stats |>
+  collect(n = 4) |>
+  tt()
 ```
+
 Before calculating the percentage for each tenure per year and adjusting the presentation format, we might want to consider grouping the tenures.
 A quick profiling of our results so far reveals that in some years, almost 40 different tenures are represented.
 This will likely be difficult to visualize and interpret:
 
-```{sql}
-#| connection: db
-WITH 
-
-year_ends AS (
-  SELECT *  
-  FROM date_dim
-  WHERE month_name = 'December' AND day_of_month = 31 AND year <= 2019),
-  
-cohort_data AS (
-  SELECT DISTINCT id_bioguide, date
-  FROM legislators_terms
-  JOIN year_ends
-  ON date BETWEEN term_start AND term_end),
-
-cohorts AS (
-  SELECT id_bioguide, date, count(date) OVER w AS cume_years
-  FROM cohort_data
-  WINDOW w AS (PARTITION BY id_bioguide 
-               ORDER BY date
-               ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW)),
-               
-cohort_stats AS (
-  SELECT date, cume_years, count(DISTINCT id_bioguide) AS legislators
-  FROM cohorts
-  GROUP BY 1, 2)            
-
-SELECT date, count(*) AS tenures
-FROM cohort_stats
-GROUP BY 1
-ORDER BY 1 DESC
+```{r}
+cohort_stats |>
+  group_by(date) |>
+  summarize(tenures = n(), .groups = "drop") |>
+  arrange(desc(date)) |>
+  collect(n = 3) |>
+  tt()
 ```
 As a result, we may want to group the values.
 There is no single right way to group tenures.
@@ -2281,46 +1754,23 @@ If there are organizational definitions of tenure groups, go ahead and use them.
 Otherwise, I usually try to break them up into three to five groups of roughly equal size.
 Here we'll group the tenures into four cohorts, where `cume_years` is less than or equal to 4 years, between 5 and 10 years, between 11 and 20 years, and equal to or more than 21 years:
 
-```{sql}
-#| connection: db
-#| output.var: df_fig_4_14
-WITH 
-
-year_ends AS (
-  SELECT *  
-  FROM date_dim
-  WHERE month_name = 'December' AND day_of_month = 31 AND year <= 2019),
-  
-cohort_data AS (
-  SELECT DISTINCT id_bioguide, date
-  FROM legislators_terms
-  JOIN year_ends
-  ON date BETWEEN term_start AND term_end),
-
-cohorts AS (
-  SELECT id_bioguide, date, count(date) OVER w AS cume_years
-  FROM cohort_data
-  WINDOW w AS (PARTITION BY id_bioguide 
-               ORDER BY date
-               ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW)),
-               
-cohort_stats AS (
-  SELECT date,
-    CASE WHEN cume_years <= 4 THEN '1 to 4'
-         WHEN cume_years <= 10 THEN '5 to 10'
-         WHEN cume_years <= 20 THEN '11 to 20'
-         ELSE '21+' END AS tenure,
-    count(DISTINCT id_bioguide) AS legislators
-  FROM cohorts
-  GROUP BY 1, 2) 
-  
-SELECT date, tenure,
-  legislators / sum(legislators) OVER w AS pct_legislators 
-FROM cohort_stats
-WINDOW w AS (PARTITION BY date) 
-ORDER BY 1 DESC, 2
+```{r}
+df_fig_4_14 <-
+  cohorts |>  
+  collect() |>
+  mutate(tenure = cut(cume_years, 
+                      breaks = c(0, 5, 11, 21, Inf), 
+                      labels = c("1 to 4", "5 to 10", "11 to 20",
+                                 "21+"),
+                      right = FALSE)) |>
+  group_by(date, tenure) |>
+  summarize(legislators = n_distinct(id_bioguide),
+            .groups = "drop") |>
+  group_by(date) |>
+  mutate(pct_legislators = legislators / sum(legislators))
 ```
-The graphing of the results in **Figure 4-14** shows that in the early years of the country, most legislators had very little tenure.
+
+The graphing of the results in @fig-4-14 shows that in the early years of the country, most legislators had very little tenure.
 In more recent years, the share of legislators with 21 or more years in office has been increasing.
 There are also interesting periodic increases in 1-to-4-year-tenure legislators that may reflect shifts in political trends.
 
@@ -2328,23 +1778,20 @@ There are also interesting periodic increases in 1-to-4-year-tenure legislators 
 #| echo: false
 #| label: fig-4-14
 #| fig-cap: "Percent of legislators by number of years in office"
-df_fig_4_14 <- as_tibble(df_fig_4_14)
-
 df_fig_4_14 |>
-  mutate(tenure = fct_rev(factor(tenure, 
-                                 levels = c("1 to 4", "5 to 10", 
-                                            "11 to 20", "21+")))) |>
+  mutate(tenure = fct_rev(tenure)) |>
   ggplot(aes(x = date, y = pct_legislators * 100,
              fill = tenure)) +
   geom_area() +
+  guides(fill = guide_legend(reverse = TRUE)) +
   theme(legend.position = "inside", 
         legend.direction = "horizontal",
         legend.position.inside = c(.4, .15),
         legend.box.just = "left") +
   ylab("") +
   xlab("")
+  
 ```
-
 
 A cross section of a population at any point in time is made up of members from multiple cohorts.
 Creating a time series of these cross sections is another interesting way of analyzing trends.
