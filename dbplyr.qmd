@@ -1,9 +1,12 @@
 # Cohort Analysis -- `dbplyr` version
 
 ::: {.callout-note}
-# `dbplyr` Version
+#### `dbplyr` Version
 
 This version of the chapter builds on @sec-ctes by converting SQL queries to `dbplyr` code.
+In @sec-original and @sec-ctes, I suppressed some of the details of the code, such as the loading of R packages and creation of the two tables---`legislators` and `legislators_terms`---in the DuckDB database used to crunch the numbers.
+I also omitted the R code used to produce the plots in those chapters.
+I include those details here so that the code can be run by readers to produce the results observed here.
 
 :::
 
@@ -31,7 +34,7 @@ Innate qualities include birth year and country of origin, or the year a company
 When these are used, we need to be careful to cohort only on the value on the starting date, or else entities can jump between cohort groups.
 
 ::: {.callout-tip}
-## Cohort or Segment?
+#### Cohort or Segment?
 
 These two terms are often used in similar ways, or even interchangeably, but it's worth drawing a distinction between them for the sake of clarity.
 A *cohort* is a group of users (or other entities) who have a common starting date and are followed over time.
@@ -94,18 +97,38 @@ library(knitr)
 ```
 
 ```{r}
+#| include: false
+# options("tinytable_tt_digits" = 4)
+
+print.tbl_sql <- function(x, ...) {
+  collect(x, n = 4) |> 
+    tt(...) |>
+    knitr::knit_print()
+}
+
+registerS3method("print", "tbl_sql", print.tbl_sql)
+```
+
+
+```{r}
 #| include: true
 db <- dbConnect(duckdb::duckdb())
 ```
+
+::: {.callout-note}
+#### Loading parquet files
+
+The small function `load_parquet()` loads data from a parquet file into DuckDB.
+A similar function was used (behind the scenes) in @sec-original and @sec-ctes.
+
+:::
 
 ```{r}
 #| include: true
 load_parquet <- function (conn, table, data_dir = "data") {
     file_path <- file.path(data_dir, paste0(table, ".parquet"))
-    df_sql <- paste0("SELECT * FROM read_parquet('", file_path, 
-        "')")
-    dplyr::tbl(conn, dplyr::sql(df_sql)) |>
-      compute(name = table)
+    df_sql <- paste0("SELECT * FROM read_parquet('", file_path, "')")
+    dplyr::tbl(conn, dplyr::sql(df_sql)) 
 }
 ```
 
@@ -190,7 +213,7 @@ This section will show how to create a retention analysis, add cohort groupings 
 ### SQL for a Basic Retention Curve
 
 ::: {.callout-note}
-# Converting code to `dbplyr`
+#### Converting code to `dbplyr`
 
 It is generally straightforward to convert SQL code to equivalent `dbplyr` code.
 Note that `dbplyr` code generally looks quite similar to `dplyr` code, so we will occasion refer to `dbplyr` code as simply `dplyr`.
@@ -224,18 +247,6 @@ first_terms <-
             .groups = "drop")
 ```
 
-::: {.callout-note}
-# Handling functions
-
-Some functions are recognized by `dbplyr` and translated to their SQL equivalents.
-For example `n_distinct(x)` is translated to `count(DISTINCT x)`
-
-Functions that are not recognized by `dbplyr` are passed along as is to SQL.
-For example, if there were no `year()` or `age()` recognized by `dbplyr`, then 
-
-:::
-
-and join it to the time series.
 The `age()` function is applied to calculate the intervals between each `term_start` and the `first_term` for each legislator.
 Applying `year()` to the result transforms this into the number of yearly periods.
 Since elections happen every two or six years, we'll use years as the time interval to calculate the periods.
@@ -251,7 +262,14 @@ cohorts <-
 ```
 
 ::: {.callout-note}
-# Viewing the SQL translation
+#### Handling functions
+
+Some functions are recognized by `dbplyr` and translated to their SQL equivalents.
+For example `n_distinct(x)` is translated to `count(DISTINCT x)`
+
+Functions that are not recognized by `dbplyr` are passed along as is to SQL.
+For example, if there were no `year()` recognized by `dbplyr`, then it would be passed long to DuckDB for handling.
+In fact, `age()` is handled in this way, as will be seen below.
 
 We can use `show_query()` to see the actual translated SQL.
 Here we can see that `year()` is translated to `EXTRACT(year FROM age(term_start, first_term))`.
@@ -264,7 +282,7 @@ cohorts |>
 ```
 
 ::: {.callout-note}
-# Using `collect()`
+#### Using `collect()`
 
 
 :::
@@ -272,10 +290,9 @@ cohorts |>
 The count of legislators with records for that period is the number retained:
 
 ```{r}
+#| render: !expr function(x, ...) print.tbl_sql(x, align = "lr")
 cohorts |>
-  arrange(period) |>
-  collect(n = 10) |>
-  tt()
+  arrange(period)
 ```
 
 ::: {.callout-tip}
@@ -301,7 +318,7 @@ first_value(cohort_retained) over (order by period) as cohort_size
 ```
 
 ::: {.callout-note}
-# Accessing variables
+#### Accessing variables
 
 Much simpler!
 
@@ -320,9 +337,7 @@ cohort_stats <-
 
 ```{r}
 cohort_stats |>
-  arrange(period) |>
-  collect(n = 10) |>
-  tt()
+  arrange(period)
 ```
 
 We now have a retention calculation, and we can see that there is a big drop-off between the 100% of legislators retained in period 0, or on their start date, and the share with another term record that starts a year later.
@@ -349,9 +364,7 @@ cohort_stats |>
   pivot_wider(names_from = period,
               values_from = pct_retained,
               names_prefix = "yr",
-              names_sort = TRUE) |>
-  collect() |>
-  tt()
+              names_sort = TRUE)
 ```
 
 Retention appears to be quite low, and from the graph we can see that it is jagged in the first few years. 
@@ -505,9 +518,7 @@ cohorts <-
                                term_type == 'sen' ~ term_start + years(6L))) |>
   select(id_bioguide, first_term, term_start, term_end)
 
-cohorts |>
-  collect(n = 10) |>
-  tt()
+cohorts
 ```
 
 This block of code can then be plugged into the retention code to derive the `period` and `pct_retained`.
@@ -528,8 +539,7 @@ cohorts <-
   select(id_bioguide, first_term, term_start, term_end)
 
 cohorts |>
-  arrange(id_bioguide, term_start) |>
-  collect(n = 10)
+  arrange(id_bioguide, term_start)
 ```
 
 This code block can then be plugged into the retention code.
@@ -570,8 +580,7 @@ cohorts <-
             .groups = "drop")
 
 cohorts |>
-  arrange(first_year, period) |>
-  collect(n = 10)
+  arrange(first_year, period)
 ```
 
 Data in `cohorts` are then used to calculate `cohort_size` and `pct_retained`.
@@ -586,9 +595,7 @@ cohorts |>
   ungroup() |>
   select(first_year, period, cohort_size, cohort_retained,
          pct_retained) |>
-  arrange(first_year, period) |>
-  collect(n = 10) |>
-  tt()
+  arrange(first_year, period)
 ```
 
 This data set includes over two hundred starting years, too many to easily graph or examine in a table.
@@ -596,7 +603,7 @@ Next we'll look at a less granular interval and cohort the legislators by the ce
 This change is easily made by substituting `century()` for `year()` in the `cohorts` CTE.
 
 ::: {.callout-warning}
-# Centuries
+#### Centuries
 
 The original text says:
 
@@ -644,9 +651,7 @@ cen_pct_retaineds <-
          pct_retained)
 
 cen_pct_retaineds |>
-  arrange(first_century, period) |>
-  collect(n = 10) |>
-  tt()
+  arrange(first_century, period)
 ```
 
 The results are graphed in @fig-cen-pct-retained.
@@ -730,9 +735,7 @@ state_pct_retaineds <-
          pct_retained)
 
 state_pct_retaineds |>
-  arrange(first_state, period) |>
-  collect(n = 10) |>
-  tt()
+  arrange(first_state, period) 
 ```
 
 The retention curves for the five states with the highest total number of legislators are graphed in @fig-state-pct-retaineds.
@@ -784,9 +787,7 @@ cohorts <-
 
 ```{r}
 cohorts |>
-  arrange(period, gender) |>
-  collect(n = 10) |>
-  tt()
+  arrange(period, gender)
 ```
 
 
@@ -806,9 +807,7 @@ gender_retained <-
          pct_retained)
 
 gender_retained |>
-  arrange(period, gender) |>
-  collect(n = 4) |>
-  tt()
+  arrange(period, gender)
 ```
 
 
@@ -859,9 +858,7 @@ gender_retained_fairer <-
          pct_retained)
 
 gender_retained_fairer |>
-  arrange(period, gender) |>
-  collect(n = 4) |>
-  tt()
+  arrange(period, gender)
 ```
 
 Male legislators still outnumber female legislators, but by a smaller margin. The retention for the cohorts is graphed in @fig-gender-retained-fairer.
@@ -928,9 +925,7 @@ gender_retained_sparse <-
 
 gender_retained_sparse |>
   arrange(first_state, period, gender) |>
-  filter(first_state == "AZ") |>
-  collect(n = 4) |>
-  tt()
+  filter(first_state == "AZ") 
 ```
 
 Graphing the results for the first 20 periods, as in @fig-gender-retained-sparse, reveals the sparse cohorts.
@@ -1000,9 +995,7 @@ pct_retained |>
               names_sort = TRUE) |>
   filter(first_state %in% c('AL', 'AR', 'CA'),
          gender == 'F') |>
-  arrange(first_state) |>
-  collect() |>
-  tt()
+  arrange(first_state) 
 ```
 
 Notice that at this point, the SQL code has gotten quite long.
@@ -1156,9 +1149,7 @@ first_centuries |>
                                      na.rm = TRUE),
             .groups = "drop") |>
   mutate(pct_survived_10 = survived_10 / cohort_size) |>
-  arrange(first_century) |>
-  collect() |>
-  tt()
+  arrange(first_century)
 ```
 
 Since terms may or may not be consecutive, we can also calculate the share of legislators in each century who survived for five or more total terms.
@@ -1183,9 +1174,7 @@ total_terms |>
                                      na.rm = TRUE),
             .groups = "drop") |>
   mutate(pct_survived_5_terms = survived_5 / cohort_size) |>
-  arrange(first_century) |>
-  collect() |>
-  tt()
+  arrange(first_century)
 ```
 
 Ten years or five terms is somewhat arbitrary.
@@ -1208,9 +1197,7 @@ surv_century <-
   mutate(pct_survived = cohort_survived / cohort_size) 
 
 surv_century |>
-  arrange(first_century, terms) |>
-  collect(n = 4) |>
-  tt()
+  arrange(first_century, terms)
 ```
 
 The results are graphed in @fig-surv-century. 
@@ -1279,9 +1266,7 @@ rep_centuries <-
             .groups = "drop")
 
 rep_centuries |>
-  arrange(cohort_century) |>
-  collect() |>
-  tt()
+  arrange(cohort_century)
 ```
 
 
@@ -1300,9 +1285,7 @@ rep_sen_centuries <-
             .groups = "drop")
 
 rep_sen_centuries |>
-  arrange(cohort_century) |>
-  collect() |>
-  tt()
+  arrange(cohort_century) 
 ```
 
 Finally, we `JOIN` these two subqueries together and calculate the percent of representatives who became senators.
@@ -1314,9 +1297,7 @@ rep_centuries |>
   left_join(rep_sen_centuries, by = join_by(cohort_century)) |>
   mutate(pct_rep_and_sen = rep_and_sen / reps) |>
   select(cohort_century, pct_rep_and_sen) |>
-  arrange(cohort_century) |>
-  collect() |>
-  tt()
+  arrange(cohort_century) 
 ```
 
 Representatives from the 18th century were most likely to become senators.
@@ -1352,9 +1333,7 @@ rep_centuries |>
   left_join(rep_sen_centuries, by = join_by(cohort_century)) |>
   mutate(pct_rep_and_sen = rep_and_sen / reps) |>
   select(cohort_century, pct_rep_and_sen) |>
-  arrange(cohort_century) |>
-  collect() |>
-  tt()
+  arrange(cohort_century) 
 ```
 
 With this new adjustment, the 18th century still had the highest share of representatives becoming senators within 10 years, but the 21st century has the second-highest share, and the 20th century had a higher share than the 19th.
@@ -1392,9 +1371,7 @@ rep_centuries |>
               names_glue = "pct_{term}_yrs",
               names_sort = TRUE,
               values_from = pct_rep_and_sen) |>
-  arrange(cohort_century) |>
-  collect() |>
-  tt()
+  arrange(cohort_century)
 ```
 
 With this output, we can see how the share of representatives who became senators evolved over time, both within each cohort and across cohorts.
@@ -1490,9 +1467,7 @@ cohort_data <-
   mutate(terms_per_leg = terms / cohort)
 
 cohort_data |>
-  arrange(century, first_type) |>
-  collect() |>
-  tt()
+  arrange(century, first_type)
 ```
 
 The largest cohort is that of representatives first elected in the 19th century, but the cohort with the largest number of terms started within 10 years is that of representatives first elected in the 20th century.
@@ -1511,9 +1486,7 @@ cohort_data |>
               values_from = c(cohort, terms),
               names_glue = "{first_type}_{.value}",
               names_sort = TRUE) |>
-  arrange(century) |>
-  collect() |>
-  tt()
+  arrange(century)
 ```
 
 With the cumulative terms normalized by the cohort size, we can now confirm that representatives first elected in the 20th century had the highest average number of terms, while those who started in the 19th century had the fewest number of terms on average.
@@ -1546,7 +1519,7 @@ Cross-sectional analysis can be insightful, generating hypotheses for further in
 On the negative side, a form of selection bias called survivorship bias usually exists, which can lead to false conclusions.
 
 ::: {.callout-warning}
-# Survivorship bias
+#### Survivorship bias
 
 The note on survivorship bias in the original text is problematic because the second and third paragraphs do not provide examples that clearly illustrate the phenomenon of survivorship bias.
 
@@ -1563,7 +1536,7 @@ In this case, we could characterize the issue as a survivorship bias that could 
 :::
 
 ::: {.callout-note}
-# Survivorship bias
+#### Survivorship bias
 
 "Let's look at our best customers and see what they have in common."
 This seemingly innocent and well-intentioned idea can lead to some very problematic conclusions.
@@ -1605,9 +1578,7 @@ cohort_data <-
 cohort_data |>
   group_by(date) |>
   summarize(legislators = n_distinct(id_bioguide)) |>
-  arrange(date) |>
-  collect(n = 3) |>
-  tt()
+  arrange(date)
 ```
 
 Next, we add in the century cohorting criterion by `JOIN`ing to `first_terms`:
@@ -1630,9 +1601,7 @@ cohorts <-
 
 ```{r}
 cohorts |>
-  arrange(date) |>
-  collect(n = 3) |>
-  tt()
+  arrange(date) 
 ```
 
 Finally, we calculate the percent of total `legislators` in each year that the century cohort represents.
@@ -1651,9 +1620,7 @@ pct_centuries <-
 ```{r}
 pct_centuries |>
   filter(date >= "2018-12-31") |>
-  arrange(date, century) |>
-  collect(n = 4) |>
-  tt()
+  arrange(date, century)
 ```
 
 The second approach results in one row per year, with a column for each century, a table format that may be easier to scan for trends:
@@ -1668,9 +1635,7 @@ pct_centuries |>
               values_fill = 0) |>
   select(date, starts_with("pct_")) |>
   filter(date >= "2017-12-31") |>
-  arrange(date) |>
-  collect() |>
-  tt()
+  arrange(date) 
 ```
 
 ```{r}
@@ -1731,9 +1696,7 @@ cohort_stats <-
             .groups = "drop") |>
   arrange(date, cume_years) 
 
-cohort_stats |>
-  collect(n = 4) |>
-  tt()
+cohort_stats
 ```
 
 Before calculating the percentage for each tenure per year and adjusting the presentation format, we might want to consider grouping the tenures.
@@ -1744,9 +1707,7 @@ This will likely be difficult to visualize and interpret:
 cohort_stats |>
   group_by(date) |>
   summarize(tenures = n(), .groups = "drop") |>
-  arrange(desc(date)) |>
-  collect(n = 3) |>
-  tt()
+  arrange(desc(date))
 ```
 As a result, we may want to group the values.
 There is no single right way to group tenures.
@@ -1754,21 +1715,54 @@ If there are organizational definitions of tenure groups, go ahead and use them.
 Otherwise, I usually try to break them up into three to five groups of roughly equal size.
 Here we'll group the tenures into four cohorts, where `cume_years` is less than or equal to 4 years, between 5 and 10 years, between 11 and 20 years, and equal to or more than 21 years:
 
+
+
 ```{r}
 df_fig_4_14 <-
   cohorts |>  
   collect() |>
   mutate(tenure = cut(cume_years, 
                       breaks = c(0, 5, 11, 21, Inf), 
-                      labels = c("1 to 4", "5 to 10", "11 to 20",
-                                 "21+"),
+                      labels = c("1 to 4", "5 to 10", "11 to 20", "21+"),
                       right = FALSE)) |>
   group_by(date, tenure) |>
   summarize(legislators = n_distinct(id_bioguide),
             .groups = "drop") |>
   group_by(date) |>
-  mutate(pct_legislators = legislators / sum(legislators))
+  mutate(pct_legislators = legislators / sum(legislators)) |>
+  ungroup()
 ```
+
+::: {.callout-note}
+#### Using `cut()`
+
+I "cheated" a little in the code above, as I brought the data into R using `collect()` so I could apply `cut()` to put the data into bins.
+
+Is there a way to bin the data using SQL without resorting to complex `CASE WHEN` statements?
+A natural way to do this is to use the relational nature of SQL and create a table of bins that is then joined to the data.
+Note that I keep `cut` in the data so that `fct_reorder()` can use it to organize the data correctly for graphing.
+
+```{r}
+bins <- 
+  tibble(bin = c("1 to 4", "5 to 10", "11 to 20", "21+"),
+         cut = c(0, 5, 11, 21)) |>
+  copy_to(db, df = _, name = "bins", overwrite = TRUE) |>
+  mutate(bin_min = cut, bin_max = coalesce(lead(cut), Inf))
+
+df_fig_4_14 <-
+  cohorts |>  
+  inner_join(bins, 
+             join_by(cume_years >= bin_min, cume_years < bin_max)) |>
+  rename(tenure = bin) |>
+  group_by(date, tenure, cut) |>
+  summarize(legislators = n_distinct(id_bioguide),
+            .groups = "drop") |>
+  group_by(date) |>
+  mutate(pct_legislators = legislators / sum(legislators)) |>
+  ungroup()
+```
+
+:::
 
 The graphing of the results in @fig-4-14 shows that in the early years of the country, most legislators had very little tenure.
 In more recent years, the share of legislators with 21 or more years in office has been increasing.
@@ -1779,7 +1773,8 @@ There are also interesting periodic increases in 1-to-4-year-tenure legislators 
 #| label: fig-4-14
 #| fig-cap: "Percent of legislators by number of years in office"
 df_fig_4_14 |>
-  mutate(tenure = fct_rev(tenure)) |>
+  collect() |>
+  mutate(tenure = fct_reorder(tenure, cut, .desc = TRUE)) |>
   ggplot(aes(x = date, y = pct_legislators * 100,
              fill = tenure)) +
   geom_area() +
