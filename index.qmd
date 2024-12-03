@@ -1,3 +1,23 @@
-# Preface {.unnumbered}
+# Introduction
 
 This "book" is an iterative reworking of Chapter 4 of @tanimura2021sql.
+I start with @sec-original, which is a rendition of the original Chapter 4 using [Quarto](https://quarto.org).
+From a conversation with the author, my understanding is that @tanimura2021sql was written as a Google Docs document with copied-and-pasted output from SQL (for tabular output) and Tableau or Python (for plots).
+In contrast I am able to reproduce Chapter 4 without leaving the confines of RStudio ... and with *no* copying-and-pasting.
+
+I then move on to @sec-ctes, which is a reworking of @sec-original using [common table expressions](https://www.postgresql.org/docs/current/queries-with.html) (CTEs) in place of subqueries.
+I have argued [elsewhere](https://github.com/iangow/notes/blob/main/ctes.pdf) that CTEs make for simpler and more [accurate SQL](https://www.google.com/books/edition/SQL_and_Relational_Theory/BCjkCgAAQBAJ?hl=en) than subqueries.^[In fact, the example I use to illustrate this point comes from Chapter 4 of @tanimura2021sql.]
+I also think that CTEs improve the chapter from a pedagogical perspective, as the queries, and their constituents, are much clearer.
+
+@sec-dbplyr builds on @sec-ctes by translating the CTE-based queries into equivalent `dbplyr` code.
+The `dbplyr` package is a largely behind-the-scenes R package that is invoked by `dplyr` code when the data source is a **remote data frame**.
+The `dplyr` package is arguably the foundation for the [Tidyverse](https://www.tidyverse.org), an "an opinionated collection of R packages designed for data science ... [that] share an underlying design philosophy, grammar, and data structures."^[The Tidyverse was earlier  known as the [Hadleyverse](https://rstudio-pubs-static.s3.amazonaws.com/164023_6c3a7560d1c84ed1a4ba30ad4b6d0097.html#/) after its principal architect, [Hadley Wickham](https://en.wikipedia.org/wiki/Hadley_Wickham).]
+As I wrote [here](https://iangow.github.io/far_book/sql-primer.html), `dplyr` has deep connections with SQL and `dbplyr` brings these connections to life by literally translating code written using `dplyr` functions into SQL.
+
+But `dbplyr` is more than just a way for users of `dplyr` to access SQL data sources without having to learn a new language.
+First, even if one is working with local data sources, `dbplyr` allows one to replace the in-memory "back-end" of R with much more performant back-ends, such as that provided by DuckDB.
+I have found cases where performance increases a thousand-fold by pushing the data from local data frames using `dplyr` to DuckDB with no more than a couple of lines of code.^[For example, the query producing `risk_asymmetry` [here](https://iangow.github.io/far_book/rdd.html#bloomfield2021va) took 15 minutes before I moved the query inside the database---either PostgreSQL or DuckDB---where it took about one second.]
+
+Second, `dbplyr` allows one to do things that cannot be done easily with `dplyr`.
+For example, using `dbplyr`-specific functions such as `window_frame()` and `window_order()` opens up the rich world of window functions in a way that is not possible using `dplyr` alone.
+An illustration of this is provided in our [book chapter on the seminal "FFJR" paper](https://iangow.github.io/far_book/ffjr.html) where `window_frame()` makes it easy to compute total dividends for the 12 months before and then the 12 months after a stock split.^[While there are packages that allow such rolling averages, these are outside the Tidyverse itself and likely do not offer the same performance in many cases.] 

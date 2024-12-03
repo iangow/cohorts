@@ -1,4 +1,4 @@
-# Cohort Analysis -- Original {#sec-original}
+# Cohorts - the original chapter {#sec-original}
 
 In Chapter 3 we covered time series analysis.
 With those techniques in hand, we will now turn to a related type of analysis with many business and other applications: cohort analysis.

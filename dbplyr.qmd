@@ -1,4 +1,4 @@
-# Cohort Analysis -- `dbplyr` version
+# Cohort using `dbplyr` {#sec-dbplyr}
 
 ::: {.callout-note}
 #### `dbplyr` Version

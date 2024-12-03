@@ -1,4 +1,4 @@
-# Cohort Analysis -- CTE Version {#sec-ctes}
+# Cohorts using CTEs {#sec-ctes}
 
 ::: {.callout-note}
 # CTE Version
