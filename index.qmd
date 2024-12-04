@@ -14,10 +14,49 @@ The `dbplyr` package is a largely behind-the-scenes R package that is invoked by
 The `dplyr` package is arguably the foundation for the [Tidyverse](https://www.tidyverse.org), an "an opinionated collection of R packages designed for data science ... [that] share an underlying design philosophy, grammar, and data structures."^[The Tidyverse was earlier  known as the [Hadleyverse](https://rstudio-pubs-static.s3.amazonaws.com/164023_6c3a7560d1c84ed1a4ba30ad4b6d0097.html#/) after its principal architect, [Hadley Wickham](https://en.wikipedia.org/wiki/Hadley_Wickham).]
 As I wrote [here](https://iangow.github.io/far_book/sql-primer.html), `dplyr` has deep connections with SQL and `dbplyr` brings these connections to life by literally translating code written using `dplyr` functions into SQL.
 
+## Why `dbplyr`?
+
 But `dbplyr` is more than just a way for users of `dplyr` to access SQL data sources without having to learn a new language.
 First, even if one is working with local data sources, `dbplyr` allows one to replace the in-memory "back-end" of R with much more performant back-ends, such as that provided by DuckDB.
 I have found cases where performance increases a thousand-fold by pushing the data from local data frames using `dplyr` to DuckDB with no more than a couple of lines of code.^[For example, the query producing `risk_asymmetry` [here](https://iangow.github.io/far_book/rdd.html#bloomfield2021va) took 15 minutes before I moved the query inside the database---either PostgreSQL or DuckDB---where it took about one second.]
 
 Second, `dbplyr` allows one to do things that cannot be done easily with `dplyr`.
 For example, using `dbplyr`-specific functions such as `window_frame()` and `window_order()` opens up the rich world of window functions in a way that is not possible using `dplyr` alone.
-An illustration of this is provided in our [book chapter on the seminal "FFJR" paper](https://iangow.github.io/far_book/ffjr.html) where `window_frame()` makes it easy to compute total dividends for the 12 months before and then the 12 months after a stock split.^[While there are packages that allow such rolling averages, these are outside the Tidyverse itself and likely do not offer the same performance in many cases.] 
+An illustration of this is provided in our [book chapter on the seminal "FFJR" paper](https://iangow.github.io/far_book/ffjr.html) where `window_frame()` makes it easy to compute total dividends for the 12 months before and then the 12 months after a stock split.^[While there are packages that allow such rolling averages, these are outside the Tidyverse itself and likely do not offer the same performance in many cases.]
+
+My view is that `dbplyr` is the "killer app" of the Tidyverse.
+Combining the power of SQL (and more) with the ability to make documents using Quarto and plots using `ggplot2` and all the statistical power of R means one rarely has to leave the confines of RStudio (or whatever interface you choose) to get all sorts of things done.
+
+I also think that writing SQL queries using `dbplyr` is easier than writing SQL directly.
+And there are few limitations to `dbplyr` relative to SQL.
+An illustration of this can be seen [here](https://iangow.github.io/sql_book/), where I translate essentially all of the SQL queries @tanimura2021sql into equivalent `dplyr`/`dbplyr` queries.^[I say *essentially* all because it seems I did not translate all the queries from Chapter 4 of @tanimura2021sql; but I do those translations here.]
+
+While Python is the preferred data science platform of many users, I think `dplyr` is one reason to learn a little R.
+There is no exact equivalent of `dplyr`/`dbplyr` in Python.
+While a user of `dplyr` could generally use [pandas](https://wesmckinney.com/book/) to achieve many of the same tasks, one cannot point pandas to an SQL data source and almost seamlessly move to a database back-end.
+While libraries like Ibis have recently emerged to allow users to interact with a variety of database backends in a consistent way that feels a lot like using `dplyr`, a user of pandas would need to learn new approaches.^[In some ways, pandas is supplies functionality that comes with base R, so comparing it with `dplyr` is not entirely appropriate. But I think the comparison is valid is that many data analysts using Python in 2024 would use pandas in the same way that many data analysts using R would use `dplyr`.]
+
+## Thoughts on Chapter 4 of @tanimura2021sql
+
+I am a big fan of @tanimura2021sql.
+Too many books on SQL are written as though the readers will become database administrators.
+As such they tend to start with `CREATE TABLE` statements and discussions of designing databases.
+While I think such an approach covers materials that data analysts might ultimately benefit from knowing, it's the wrong place to start for someone who wants to learn how to analyse data.
+In this regard, @tanimura2021sql is excellent, as its aimed squarely at data analysts, not database administrators.
+
+Another feature of @tanimura2021sql that I like is that it is very hands-on, with data and code being made availale to allow readers to run all queries shown in the book.
+Furthermore, the queries generally use real data, including data on US legislators (explored here), UFO sightings, and earthquakes.
+While the setting might sound exotic,  @tanimura2021sql does an excellent job of motivating the business contexts in which the analyses examined would be relevant.
+For example, retention analysis might be used to study factors that affect whether customers renew subscriptions.
+
+However, there are weaknesses.
+The first weakness is that not all readers will see the parallels between analysing data on the tenures of legislators and business contexts such as customer retention as easily as the author, Cathy Tanimura, evidently does.^[There's a certain genius behind the data sets that Tanimura selects for each chapter.]
+
+Second, speaking specifically to Chapter 4 of @tanimura2021sql, at 54 pages, the chapter is very long.
+I suspect that even very dedicated readers would take a long time to work through that chapter and that many readers would struggle to recall the early parts of the chapter by the time they got to the end.
+
+Third, the ideas covered in Chapter 4 are difficult and at times the presentation seems difficult to follow.
+For example, the chapter starts out with an incorrect query before showing how to do things correctly, then working through several permutations before returning to discussion of incorrect approaches (i.e., cross-sectional analyses that introduce possible survivorship biases).
+I feel that the complexity is increased by the use of subqueries, which makes the parallels between the various analyses less clear.
+
+So one aim of this "book" is to develop an alternative approach to the analysis that is clearer for readers.
