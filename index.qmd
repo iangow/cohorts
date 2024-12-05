@@ -11,7 +11,7 @@ I also think that CTEs improve the chapter from a pedagogical perspective, as th
 
 @sec-dbplyr builds on @sec-ctes by translating the CTE-based queries into equivalent `dbplyr` code.
 The `dbplyr` package is a largely behind-the-scenes R package that is invoked by `dplyr` code when the data source is a **remote data frame**.
-The `dplyr` package is arguably the foundation for the [Tidyverse](https://www.tidyverse.org), an "an opinionated collection of R packages designed for data science ... [that] share an underlying design philosophy, grammar, and data structures."^[The Tidyverse was earlier  known as the [Hadleyverse](https://rstudio-pubs-static.s3.amazonaws.com/164023_6c3a7560d1c84ed1a4ba30ad4b6d0097.html#/) after its principal architect, [Hadley Wickham](https://en.wikipedia.org/wiki/Hadley_Wickham).]
+The `dplyr` package is arguably the foundation for the [Tidyverse](https://www.tidyverse.org), an "an opinionated collection of R packages designed for data science ... [that] share an underlying design philosophy, grammar, and data structures."^[The Tidyverse was earlier  known as the [Hadleyverse](https://rstudio-pubs-static.s3.amazonaws.com/164023_6c3a7560d1c84ed1a4ba30ad4b6d0097.html#/) after its principal architect, [Hadley Wickham](https://enz.wikipedia.org/wiki/Hadley_Wickham).]
 As I wrote [here](https://iangow.github.io/far_book/sql-primer.html), `dplyr` has deep connections with SQL and `dbplyr` brings these connections to life by literally translating code written using `dplyr` functions into SQL.
 
 ## Why `dbplyr`?
@@ -60,3 +60,40 @@ For example, the chapter starts out with an incorrect query before showing how t
 I feel that the complexity is increased by the use of subqueries, which makes the parallels between the various analyses less clear.
 
 So one aim of this "book" is to develop an alternative approach to the analysis that is clearer for readers.
+
+## DuckDB and learning SQL
+
+Apart from an orientation to database administrators, another weakness of books on SQL is that inevitably need to deal with at least one implmentation of SQL if readers are to have the opportunity to run SQL code themselves.
+PostgreSQL, SQL Server, MySQL, and SQLite are popular choices.
+
+@tanimura2021sql uses PostgreSQL, a solid choice given its rich type system, modern SQL dialect and price (it's free).
+Nonetheless, a reader of @tanimura2021sql needs to install PostgreSQL, set up a server, download data, then edit and run SQL scripts to stand up a database.
+This is a barrier to entry, particularly for a data analyst who is looking to learn SQL to do analysis.
+
+@debarros2022practical also uses PostgreSQL.
+He starts with a couple of chapters on setting up PostgreSQL and the usual `CREATE TABLE` fare.
+
+@beaulieu2020learning uses MySQL and Chapter 2 of that book is the usual "creating and populating a datadase" with discussion of data types and `CREATE TABLE` queries.
+
+Another option would be SQL Server, a Microsoft product.
+A student of SQL might encounter SQL Server because many teaching SQL would come from a corporate IT background, where Microsoft has cornered the market by catering to the interests of IT departments rather than the needs of end-users.
+But this is a non-starter if you're using MacOS or Linux.^[Even installing an ODBC driver for SQL Server requires compiling code on MacOS because Microsoft doesn't deign to provide a packaged driver itself.]
+
+PostgreSQL, SQL Server, and MySQL all require a user to set up an database server to use them.
+@nield2016getting calls these **centralized databases**.
+In contrast, SQLite can be run inside another process, such as withing Python or R.
+While this obviously lowers the set-up costs, my casual search for SQL learning materials suggest that SQLite is not an especially popular system for authors of such materials.
+
+@nield2016getting is one resource that uses SQLite, which he calls a **lightweight database**.
+While Chapter 3 of @nield2016getting looks a lot like similarly situated chapters in other books, though the simplicity that SQLite brings is evident from the absence of `CREATE TABLE` discussion in that chapter.
+
+Of course, SQLite has some weaknesses.
+Its type system is relatively weak, especially relative to PostgreSQL, which supports a rich set of types for date-times, geometry, JSON, XML, as well as arrays and functions related to these.
+While the SQL offered by SQLite used to lack features of PostgreSQL, such as [window functions](https://www.sqlite.org/windowfunctions.html), recent versions of SQLite appear to have closed the gap significantly.
+Still gaps remain, such as the lack of support for regular expression functions.
+
+DuckDB is another lightweight database.
+Probably not as lightweight as SQLite.
+But rich SQL a lot like PostgreSQL.
+Also a lot of features
+
