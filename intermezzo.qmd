@@ -24,12 +24,14 @@ library(DBI)
 library(tidyverse)
 library(dbplyr)
 library(ggplot2)
-library(knitr)
+library(farr)
 ```
 
 ```{r}
 #| include: false
 # options("tinytable_tt_digits" = 4)
+Sys.setenv(DATA_DIR = "data")
+
 library(tinytable)
 
 print.tbl_sql <- function(x, ...) {
@@ -45,15 +47,6 @@ registerS3method("print", "tbl_sql", print.tbl_sql)
 ```{r}
 #| include: true
 db <- dbConnect(duckdb::duckdb())
-```
-
-```{r}
-#| include: true
-load_parquet <- function (conn, table, data_dir = "data") {
-    file_path <- file.path(data_dir, paste0(table, ".parquet"))
-    df_sql <- paste0("SELECT * FROM read_parquet('", file_path, "')")
-    dplyr::tbl(conn, dplyr::sql(df_sql)) 
-}
 ```
 
 ```{r}
