@@ -13,6 +13,7 @@ book:
     - original_sql.qmd
     - ctes_comments.qmd
     - dbplyr.qmd
+    - intermezzo.qmd
     - references.qmd
 
 bibliography: references.bib
