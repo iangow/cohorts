@@ -29,11 +29,19 @@ library(farr)
 
 ```{r}
 #| include: false
+#| eval: true
 # options("tinytable_tt_digits" = 4)
 Sys.setenv(DATA_DIR = "data")
 
 library(tinytable)
 
+options(tinytable_theme_spacing_rowsep = 0.0)
+options(tinytable_theme_spacing_colsep = 0.1)
+```
+
+```{r}
+#| include: false
+#| eval: false
 print.tbl_sql <- function(x, ...) {
   collect(x, n = 10) |> 
     tt(...) |>
@@ -55,9 +63,17 @@ legislators_terms <- load_parquet(db, "legislators_terms")
 legislators <- load_parquet(db, "legislators")
 ```
 
+In addition to the two tables above, in this chapter I will use an additional data frame with data on congressional terms.
+
+```{r}
+congress_terms <- load_parquet(db, "congress_terms")
+```
+
 ## Survival data: The basic building block
 
 @singer2003longitudinal [p. 306] suggest that "researchers use **survival analysis** in a variety of contexts that share a common characterisit: interest centers on describing *whether events occur* or *when events occur*."
+
+### Survival: Once-only events
 
 Often analytical simplicity is obtained by defining the event in such a way that it can happen at most once.
 @singer2003longitudinal provide examples such as time to relapse among recently treated alcoholic and age at first suicide ideation.
@@ -89,6 +105,7 @@ max_term_start
 
 As we can see there are no terms in the data *starting* after the November 2020 election, suggesting that the data were extracted before terms related to that election started.
 Looking at the `term_end` dates, we see that no member of the House of Representatives (`term_type == "rep"`) has a term ending after 
+
 ```{r}
 legislators_terms |>
   filter(term_end >= max_term_start) |>
@@ -102,9 +119,9 @@ For simplicity, I just assume that the extraction date *was* that date.
 extract_date <- "2020-11-03"
 ```
 
-Once we recognize that the data were extracted on `extract_date`, we can consider all `term_end` dates after that date as merely *expected* `term_end` dates, as subsequent events might have led to some members of Congress to finish their terms early.
-For this reason, it is arguably more appropriate to code such `term_end` values as "don't know" or `NA`.
-This is especially so when we view `last_term` as representing the 
+Once we fix `extract_date`, we should consider all `term_end` dates after that date as merely *expected* `term_end` dates, as subsequent events might have led to some members of Congress to finish their terms early.
+For this reason, it is arguably more appropriate to code such `term_end` values as "don't know" or `NA` (`NULL` in SQL).
+This is especially so when we view `last_term` as representing the end of a legislator' career, as 
 
 ```{r}
 survival_data <-
@@ -113,20 +130,284 @@ survival_data <-
   summarize(entry_date = min(term_start, na.rm = TRUE),
             exit_date = max(term_end, na.rm = TRUE),
             .groups = "drop") |>
-  mutate(first_century = century(entry_date), .before = 1,
-         exit_date = if_else(exit_date >= extract_date, 
+  mutate(exit_date = if_else(exit_date >= extract_date, 
                              NA, exit_date))
 
 survival_data
 ```
 
-## Survival data with cohorts: The canonical form
+### Creating stints
 
-and cohorts formed based on `first_century`, one of the cohort variables studied in @sec-original
+The Oxford English Dictionary defines a **stint** as "a person's fixed or allotted period of work."
+For current purposes, I define a stint as a continuous period in office either as a representive or as a senator including periods that comprise multiple terms.
+As always, it is helpful to look at the data.
+I start with data in `legislators_terms` related to Nancy Pelosi, a long-serving representative from California.
 
-- Cohort: One or more columns that identify the cohort to which an individual belongs.
+```{r}
+pelosi_terms <-
+  legislators_terms |> 
+  filter(id_bioguide == "P000197") |>
+  select(id_bioguide, term_type, term_start, term_end, state, district)
+```
+
+```{r}
+#| echo: false
+#| label: tbl-pelosi-terms
+#| tbl-cap: Congression terms of Nancy Pelosi
+pelosi_terms |>
+  arrange(term_start) |> 
+  collect() |>
+  tt() |>
+  style_tt(fontsize = 0.8) |>
+  theme_tt("spacing")
+```
+
+As can be seen in @tbl-pelosi-terms, Nancy Pelosi had served continuously since 1987.^[The `legislators_terms` data set ends before Pelosi's term ending in January 2021. From that data set, it is not clear that Pelosi was elected to additional terms beginning in 2021 and 2023.]
+She started out as the repsentative for California's 5th congressional district, then for its 8th, then for its 12th.^[According to [Wikipedia](https://en.wikipedia.org/wiki/Nancy_Pelosi#Electoral_history), the shifts from one district to another were due to redistricting, or the redrawing of electoral boundaries as population numbers changed.]
+
+It might seem from Nancy Pelosi's later terms that we could identify continuing stints by comparing `term_start` with the preceding `term_end` value and coding two terms as part of the same stint if the dates are the same.
+This approach would work, for example, for the term starting `2019-01-03` and the preceding term starting the previous day.
+
+However in the following code, we calculate `gap`, the number of days between the end of the previous term and the start of the current one, and see that there is often a non-zero gap between terms as coded in the `legislators_terms` data set.
+
+```{r}
+pelosi_term_gaps <-
+  pelosi_terms |>
+  group_by(id_bioguide) |>
+  window_order(term_start) |>
+  mutate(gap = term_start - lag(term_end)) |>
+  ungroup() |>
+  select(id_bioguide, term_type, term_start, term_end, gap)
+```
+
+```{r}
+#| echo: false
+#| label: tbl-pelosi-term-gaps
+#| tbl-cap: Congression terms of Nancy Pelosi with `gap`
+pelosi_term_gaps |>
+  arrange(term_start) |>
+  collect(n = 8) |>
+  tt() |>
+  theme_tt("spacing")
+```
+
+In @tbl-pelosi-term-gaps, we can see that there are gaps of as much as 4 days between the end of one term and the start of the next.
+This suggests that one approach might be to consider two terms to be part of the same stint if there is just a short gap between them.
+But what is a "short gap" for this purpose?
+Would four days suffice?
+Looking at the terms of James Abdnor (`id_bioguide == "A000009")`) in @tbl-bbdnor-term-gaps suggests not.
+
+```{r}
+#| echo: false
+#| label: tbl-bbdnor-term-gaps
+#| tbl-cap: Congression terms of  James Abdnor
+legislators_terms |>
+  filter(id_bioguide == "A000009") |>
+  group_by(id_bioguide) |>
+  window_order(term_start) |>
+  mutate(gap = term_start - lag(term_end)) |>
+  ungroup() |>
+  select(id_bioguide, term_type, term_start, term_end, gap) |>
+  arrange(term_start) |>
+  collect() |>
+  tt() |>
+  theme_tt("spacing")
+```
+
+So maybe a month (say 30 days)?
+Looking at the terms of John Quincy Adams (`id_bioguide == "A000009")`) in @tbl-bbdnor-term-gaps, it seems this would not work.
+
+```{r}
+#| echo: false
+#| label: tbl-adams-term-gaps
+#| tbl-cap: Congression terms of John Quincy Adams
+legislators_terms |>
+  filter(id_bioguide == "A000041") |>
+  group_by(id_bioguide) |>
+  window_order(term_start) |>
+  mutate(gap = term_start - lag(term_end)) |>
+  ungroup() |>
+  select(id_bioguide, term_type, term_start, term_end, gap) |>
+  arrange(term_start) |>
+  collect() |>
+  tt() |>
+  theme_tt("spacing")
+```
+
+What's going on here?
+If we go to the [website of the United States Senate](https://www.senate.gov/legislative/DatesofSessionsofCongress.htm), we can see that sessions of Congress often began later in the year in the 19th century.
+
+One option would be to scrape that website and use data thus collected to classify terms as beginning at the start of one Congress as continuing stints that ended with the end of the previous Congress.
+
+```{r}
+terms_merged <-
+  legislators_terms |>
+  inner_join(congress_terms,
+             join_by(overlaps(term_start, term_end,
+                              term_start, term_end,
+                              bounds = "[)")),
+             suffix = c("", "_congress")) |>
+  mutate(full_term_start = term_start == term_start_congress,
+         full_term_end = term_end == term_end_congress,
+         full_term = full_term_start & full_term_end)
+```
+
+```{r}
+terms_merged |> 
+  filter(term_type == 'rep') |> 
+  select(matches("term_"), full_term, congress) |> 
+  filter(!full_term_start, term_number > 1)
+```
+
+But we effectively have these data already.
+
+```{r}
+legislators_terms |>
+  filter(term_type == 'rep') |>
+  count(term_start) |>
+  count(n, name = "n_events") |>
+  arrange(n)
+```
+
+
+```{r}
+congress_terms <-
+  legislators_terms |>
+  filter(term_type == 'rep') |>
+  count(term_start) |>
+  filter(n >= 65) |>
+  window_order(term_start) |>
+  mutate(congress_length = lead(term_start) - term_start) 
+
+congress_terms |>
+  ggplot(aes(x = congress_length)) +
+  geom_histogram()
+```
+
+```{r}
+legislators_terms |>
+  filter(term_type == 'rep') |>
+  count(term_start) |>
+  filter(n == 65)
+```
 
 
 
+```{r}
+gap_data <-
+  legislators_terms |>
+  group_by(id_bioguide) |>
+  window_order(term_start) |>
+  mutate(gap = term_start - lag(term_end),
+         same_year = year(term_start) == year(lag(term_end)),
+         new_stint = is.na(same_year) | !same_year,
+         stint_number = cumsum(as.integer(new_stint))) |>
+  ungroup() |>
+  arrange(id_bioguide, term_start) |>
+  select(id_bioguide, term_type, term_start, term_end, 
+         same_year, gap, new_stint, stint_number) |>
+  compute()
+
+gap_data |>
+  filter(same_year) |>
+  ggplot(aes(x = gap)) +
+  geom_histogram()
+```
+
+### Survival: Events that can happen more than once
 
 
+
+## Adding cohorts: The canonical form
+
+```{sql}
+#| connection: db
+CREATE OR REPLACE TABLE date_dim AS
+WITH dates AS 
+  (
+    SELECT generate_series::date AS date
+    FROM generate_series(DATE '1770-01-01', 
+                         DATE '2030-12-31',
+                         INTERVAL '1 day') )
+SELECT date, 
+  strftime(date, '%B') AS month_name,
+  strftime(date, '%-d') AS day_of_month,
+  year(date) AS year
+FROM dates;
+```
+
+```{r}
+date_dim <- tbl(db, "date_dim")
+```
+
+```{r}
+year_ends <-
+  date_dim |>
+  filter(month_name == 'December', day_of_month == 31) |>
+  select(date)
+```
+
+### Cohorts considered in @tanimura2021sql
+
+There are several different cohorts uses in analyses in Chapter 4 of @tanimura2021sql.
+Note that not all analyses involve cohorts. For example, pp. 170--171.
+
+ - `first_year`
+ - `first_century` (also called `cohort_century` or `century`)
+ - `first_state`
+ - `gender`
+ - `first_state` and `gender`
+ - `term_type`
+ - `first_century` and `first_type`
+ - `date` (last day of the year) and `century` (`last_century`?)
+ 
+If you read @sec-original carefully, you will see that any individual legislator is placed in no more than one cohort in any analysis.
+As such one particulaly clean (and clear) approach would create a table comprising the individual identifier (`id_bioguide`) and the cohort assignment for each individual.
+For example, the following code creates a `first_centuries` with cohort assignments for `first_century`.
+
+```{r}
+first_centuries <-
+  legislators_terms |>
+  group_by(id_bioguide) |>
+  summarize(first_century = century(min(term_start, na.rm = TRUE)),
+            .groups = "drop")
+```
+
+### Census dates
+
+Why do we need to use census dates?
+
+One reason would seem to be to accounting for breaks in tenures.
+Is this intentional in all cases?
+
+Another reason would appear to relate to data collection strategies.
+
+Finally, is there something about discretizing the data on periods?
+
+```{r}
+cohorts <-
+  first_centuries |>
+  inner_join(survival_data, by = "id_bioguide") |>
+  mutate(exit_date = coalesce(exit_date, extract_date)) |>
+  left_join(year_ends, 
+             join_by(between(y$date, x$entry_date, x$exit_date))) |>
+  mutate(period = coalesce(year(age(date, entry_date)), 0)) |>
+  group_by(first_century, period) |>
+  summarize(cohort_retained = n_distinct(id_bioguide),
+            .groups = "drop")
+```
+
+```{r}
+cen_pct_retaineds <-
+  cohorts |>
+  group_by(first_century) |>
+  window_order(period) |>
+  mutate(cohort_size = first(cohort_retained),
+         pct_retained = cohort_retained / cohort_size) |>
+  ungroup() |>
+  select(first_century, period, cohort_size, cohort_retained,
+         pct_retained)
+
+cen_pct_retaineds |>
+  arrange(first_century, period)
+```
