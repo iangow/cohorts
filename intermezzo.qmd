@@ -247,8 +247,8 @@ terms_merged <-
                               term_start, term_end,
                               bounds = "[)")),
              suffix = c("", "_congress")) |>
-  mutate(full_term_start = term_start == term_start_congress,
-         full_term_end = term_end == term_end_congress,
+  mutate(full_term_start = term_start <= term_start_congress,
+         full_term_end = term_end >= term_end_congress,
          full_term = full_term_start & full_term_end)
 ```
 
