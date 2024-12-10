@@ -44,6 +44,7 @@ congress_sessions <-
 
 congress_terms <-
   congress_sessions |>
+  filter(session != "S") |>
   group_by(congress) |>
   summarize(term_start = min(begin_date),
             .groups = "drop") |>
