@@ -1215,7 +1215,7 @@ In addition to presence on a specific date, analysis is often interested in ques
 These can all be answered with code that is similar to retention and is well suited to just about any cohorting criteria you like.
 Let's take a look at the first of these, survivorship.
 
-### Survivorship
+### Survivorship {#sec-survivorship}
 
 Survivorship, also called survival analysis, is concerned with questions about how long something lasts, or the duration of time until a particular event such as churn or death.
 Survivorship analysis can answer questions about the share of the population that is likely to remain past a certain amount of time.

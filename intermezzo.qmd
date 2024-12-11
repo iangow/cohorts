@@ -86,7 +86,7 @@ Often analytical simplicity is obtained by defining the event in such a way that
 While one could track alcoholics over an extended period that allows them the opportunity to relapse, re-enter treatment, and then perhaps relapse again, by defining relapse as the first such event after treatment, it can occur at most once.
 In other settings, events occur at most once for each individual (e.g., death for most individual humans).
 
-I suggest that the most basic form of data for survival analysis is a table with the following columns:
+I suggest that the canonical form of data for survival analysis is a table with the following columns:
 
  - Identifier: One more columns that identify the individuals in the sample.
  In the legislator data, this would be `id_bioguide`.
@@ -142,15 +142,34 @@ survival_data <-
 survival_data
 ```
 
-### Censuses: Events that can happen more than once
+Most queries involving cohorts in @sec-original do not use a survivorship approach.^[Most queries uses what I call a census-date approach that I discuss in @sec-census-date.]
+The queries using a survivorship approach are given in @sec-survivorship.
+
+Interestingly, @tanimura2021sql [p. 124] suggests that what distinguishes survivorship analysis is that "instead of calculating whether an entity was present in a certain period [as in retention analyis], we calculate whether the entity is present in that period or later in the time series."
+With a *senso strictu* survivorship analysis where the "event" is death, the event only occurs once.
+So if an individual is alive both before and after a given date, then that individual must be alive on that date and there is no distinction between an entity being present in a certain period and that entity being present in that period or later in the time series.
+Similar logic applies to other once-only events such as first relapse or first ideation of suicide: if the event had not occurred by a date later than $t$, then it has not occurred by $t$.
+As such the primary distinction I make here is the same distinction as that made in @tanimura2021sql.
+
+Before moving on to discuss the census-date approach, I spend some time considering the approaches used in @sec-survivorship.
+The first query [@tanimura2021sql, p. 154--155] effectively organizes the data into the canonical form for survival data with `first_century` as the cohort, except that the exit date is measured as `term_start` for each legislator's last term.^[The choice of `term_start` rather than `term_end` is an odd one that is justified by the notion that "we don't need to know the specific dates of each term" because of a focus on "the share of legislators who survived in office for a decade or more after their first term started" [@tanimura2021sql, p. 154].
+Of course, a two-term senator will serve for 12 years, but the tenure calculated in this way would be six years rather than 12, which would seem to be a serious error.]
+In effect, any gaps in a legislator's term are filled in in the sense that any legislator with a term covering any period after five years would be deemed to have "survived" for five years.
+
+What is not clear from @tanimura2021sql is why one would prefer "survivorship" analysis (with filling-in) over "retention" analysis, as there is no real context given for the queries.
+One example that is given does not help much: "if we are concerned about the number of students who are still in school after a certain number of years, we could look for the absence of a graduation event in a data set" [p. 154].
+But suppose our cohort comprises students who begin high school, where high school is understood as covering grades 9 through 12.
+It would not seem correct to treat a student who completed grades 9 and 10, then dropped out for a year before returning to complete the eleventh grade and then dropping out again as having "survived" four years of high school.
+
+### Events that can happen more than once: The census-date approach {#sec-census-date}
 
 In many contexts, the event of interest will be a once-only event.
-In some cases, the one-off nature of the event will be a function of the underlying realities (e.g., *senso strictu* survivorship analysis in which individuals only die ones).
+In some cases, the one-off nature of the event will be a function of the underlying realities (e.g., *senso strictu* survivorship analysis in which individuals only die once).
 In other cases, the one-off nature of the event will derive from the definition employed by the researcher (e.g., first relapse in the study of alcoholism above).
 The latter set might be driven by what is of greatest interest to researchers, or the definition may lead to simplifications with analytical benefits.
 
 However in many cases it will be important to recognize that events can occur for an individual more than once.
-A subscription streaming service such as Netflix or Max might have customers who sign up for a monthly subscription, drop off some months later, then rejoin at a later date.
+A subscription streaming service such as Netflix or Max will have customers who sign up for a monthly subscription, drop off some months later, then rejoin at a later date.
 Ignoring this behaviour in analysis would be problematic if it is common enough to represent a significant portion of a service's business.
 
 There are two approaches to addressing these situations.
@@ -158,9 +177,11 @@ One approach is to focus analysis on "whether the cohort member has a record in 
 There is a little ambiguity embedded in this sentence regarding how the term "period" is defined.
 One definition turns on dates specific to an individual, such as age, which is typically reckoned as the number of birthdays an individual has experienced.^[Things might be different for people born on 29 February.]
 Another definition, which I call the **census-date approach**, reckons periods using a common date across individuals or cohorts.
-Th
 
-### Stints: Events that can happen more than once
+Each census-date analysis in @sec-original uses 31 December of each year as the census date.
+For reasons we will learn about in @sec-stints, the choice of 31 December is appropriate because the *apparent* gaps that appear in the tenures of legislators in certain parts of the year do not affect 31 December.
+
+### Events that can happen more than once: Stints {#sec-stints}
 
 The Oxford English Dictionary defines a **stint** as "a person's fixed or allotted period of work."
 For current purposes, I define a stint as a continuous period in office either as a representive or as a senator including periods that comprise multiple terms.
@@ -220,7 +241,10 @@ pelosi_term_gaps |>
 
 
 In @tbl-pelosi-term-gaps, we can see that there are gaps of as much as 4 days between the end of one term and the start of the next.
-This suggests that one approach might be to consider two terms to be part of the same stint if there is just a short gap between them.
+These gaps would be problematic for a census-date approach that used 4 January as the census date, as Nancy Pelosi would appear not to be a legislator in 1993, 1997, or 1999.
+In contrast, the census-date approach using 31 December would not be affected by these gaps.
+
+The shortness of the gaps above raises the possibility that one approach would be to consider two terms to be part of the same stint if there is just a short gap between them.
 But what is a "short gap" for this purpose?
 Would four days suffice?
 Looking at the terms of James Abdnor (`id_bioguide == "A000009")`) in @tbl-bbdnor-term-gaps suggests not.
