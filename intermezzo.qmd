@@ -3,19 +3,25 @@
 I take a brief pause in this chapter to organize some bigger-picture thoughts about Chapter 4 of @tanimura2021sql.
 
 My first thought is that the distinctions between each pair of the four types of cohort analysis identified by @tanimura2021sql [p. 124] are not equally sharp or stark.
-For example, the distinction between retention and survivorship appears to turn on whether the activity engaged involves "repeated actions" or not.
+One distinction between retention and survivorship appears to turn on whether the activity engaged involves "repeated actions" or not.
 While this distinction certainly matters from a data analysis perspective, it's not clear that it's central to the analysis and my inclination is to view survivorship as the more fundamental idea underlying both.
 
-Returnship, the third type of cohort analysis identified by @tanimura2021sql, seems to be one of repeated actions occurring "more than some minimum threshold of times", thus putting it close to retention and thus also falling under survivorship.
+A more important distinction between retention and survivorship analysis in the taxonomy of Chapter 4 of @tanimura2021sql relates to whether a cohort member can exit the data and return at a later date.
+@tanimura2021sql [p. 124] suggests that retention analysis is "concerned with whether the cohort member has a record in the time series on a particular date, expressed as a number of periods from the starting date."
+This description allows for an individual to be in the sample at time $0$ and time $2$ even if not in the sample at time $1$.
+Elsewhere @tanimura2021sql [p. 127] suggests that often "a cohort can lose but cannot gain new members once it is formed."
+I argue that the distinction between analyses where exit can happen only once from those where re-entry is possible is a more fundamental distinction and I discuss it in more detail below.
+
+Returnship, the third type of cohort analysis identified by @tanimura2021sql, seems to be one of repeated actions occurring "more than some minimum threshold of times", thus putting it close to retention.
 
 Finally, cumulative analyses "are concered with the total number of times or amounts measured at one or more fixed time windows".
 In a sense, returnship seems to involve counting over windows, while cumulative analysis likely requires summing of some measure.
 Given that a count is simply a sum of ones that indicate an action, this suggests that returnship is often perhaps a species of cumulative analysis.
 
+**Rewrite this paragraph once structure is understood.**
 @tanimura2021sql seems to concur regarding the existence of fundamental links between the four types of analysis, but elects to treat retention as the basic building block.
-My inclination is to consider survivorship as the elemental analysis and to build up from there.
-My hunch is that a lot of the work in Chapter 4 of @tanimura2021sql can be better understood if one begins each analysis with a step that organizes the cohort data into a canonical structure.
-
+While there is merit to this view, my inclination is to consider survivorship as the elemental analysis and to build up from there.
+My hunch is that a lot of the work in Chapter 4 of @tanimura2021sql can be better understood if one begins each analysis with a step that organizes survivorship data into a canonical structure.
 
 ```{r}
 #| warning: false
@@ -136,11 +142,32 @@ survival_data <-
 survival_data
 ```
 
-### Creating stints
+### Censuses: Events that can happen more than once
+
+In many contexts, the event of interest will be a once-only event.
+In some cases, the one-off nature of the event will be a function of the underlying realities (e.g., *senso strictu* survivorship analysis in which individuals only die ones).
+In other cases, the one-off nature of the event will derive from the definition employed by the researcher (e.g., first relapse in the study of alcoholism above).
+The latter set might be driven by what is of greatest interest to researchers, or the definition may lead to simplifications with analytical benefits.
+
+However in many cases it will be important to recognize that events can occur for an individual more than once.
+A subscription streaming service such as Netflix or Max might have customers who sign up for a monthly subscription, drop off some months later, then rejoin at a later date.
+Ignoring this behaviour in analysis would be problematic if it is common enough to represent a significant portion of a service's business.
+
+There are two approaches to addressing these situations.
+One approach is to focus analysis on "whether the cohort member has a record in the time series on a particular date, expressed as a number of periods from the starting date" [@tanimura2021sql, p. 124].
+There is a little ambiguity embedded in this sentence regarding how the term "period" is defined.
+One definition turns on dates specific to an individual, such as age, which is typically reckoned as the number of birthdays an individual has experienced.^[Things might be different for people born on 29 February.]
+Another definition, which I call the **census-date approach**, reckons periods using a common date across individuals or cohorts.
+Th
+
+### Stints: Events that can happen more than once
 
 The Oxford English Dictionary defines a **stint** as "a person's fixed or allotted period of work."
 For current purposes, I define a stint as a continuous period in office either as a representive or as a senator including periods that comprise multiple terms.
-As always, it is helpful to look at the data.
+The critical thing for current purposes is that one can have more than one stint as a legislator.
+One could have one stint as representative, followed by a stint as senator, followed by a second stint as representative.
+
+As always, to better understand the issues one faces in practice, it is helpful to look at real data.
 I start with data in `legislators_terms` related to Nancy Pelosi, a long-serving representative from California.
 
 ```{r}
@@ -191,6 +218,7 @@ pelosi_term_gaps |>
   theme_tt("spacing")
 ```
 
+
 In @tbl-pelosi-term-gaps, we can see that there are gaps of as much as 4 days between the end of one term and the start of the next.
 This suggests that one approach might be to consider two terms to be part of the same stint if there is just a short gap between them.
 But what is a "short gap" for this purpose?
@@ -236,8 +264,8 @@ legislators_terms |>
 
 What's going on here?
 If we go to the [website of the United States Senate](https://www.senate.gov/legislative/DatesofSessionsofCongress.htm), we can see that sessions of Congress often began later in the year in the 19th century.
-
-One option would be to scrape that website and use data thus collected to classify terms as beginning at the start of one Congress as continuing stints that ended with the end of the previous Congress.
+Furthermore, the `term_start` data in `legislators_terms` appear to be based on the dates on which legislative sessions started.
+Data on these dates---derived from the United States Senate website---are contained in `congress_terms`.
 
 ```{r}
 terms_merged <-
@@ -250,6 +278,40 @@ terms_merged <-
   mutate(full_term_start = term_start <= term_start_congress,
          full_term_end = term_end >= term_end_congress,
          full_term = full_term_start & full_term_end)
+```
+
+```{r}
+stints_raw <-
+  legislators_terms |>
+  group_by(id_bioguide, term_type) |>
+  window_order(term_start) |>
+  mutate(same_year = year(term_start) == year(lag(term_end)),
+         new_stint = is.na(same_year) | !same_year) |>
+  group_by(id_bioguide) |>
+  window_order(term_start) |>
+  mutate(stint_number = cumsum(as.integer(new_stint))) |>
+  ungroup() |>
+  arrange(id_bioguide, term_start) |>
+  select(id_bioguide, term_type, term_start, term_end, 
+         same_year, new_stint, stint_number) |>
+  compute()
+```
+
+
+
+```{r}
+stints <-
+  stints_raw |>
+  group_by(id_bioguide, term_type, stint_number) |>
+  summarize(stint_start = min(term_start, na.rm = TRUE),
+            stint_end = max(term_end, na.rm = TRUE)) |>
+  ungroup()
+```
+
+```{r}
+stints |> 
+  filter(id_bioguide == "A000041") |> 
+  arrange(stint_start)
 ```
 
 ```{r}
@@ -314,7 +376,7 @@ gap_data |>
   geom_histogram()
 ```
 
-### Survival: Events that can happen more than once
+
 
 
 
