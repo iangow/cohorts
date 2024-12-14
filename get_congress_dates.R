@@ -54,6 +54,7 @@ congress_terms <-
                               term_end_month, "-03"))) |>
   mutate(term_end = case_when(term_end == "1927-03-03" ~ as.Date("1927-03-04"),
                               .default = term_end)) |>
+  select(congress, term_start, term_end) |>
   arrange(congress)
 
 congress_terms |>

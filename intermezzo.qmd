@@ -14,7 +14,7 @@ I argue that the distinction between analyses where exit can happen only once fr
 
 Returnship, the third type of cohort analysis identified by @tanimura2021sql, seems to be one of repeated actions occurring "more than some minimum threshold of times", thus putting it close to retention.
 
-Finally, cumulative analyses "are concered with the total number of times or amounts measured at one or more fixed time windows".
+Finally, cumulative analyses "are concerned with the total number of times or amounts measured at one or more fixed time windows".
 In a sense, returnship seems to involve counting over windows, while cumulative analysis likely requires summing of some measure.
 Given that a count is simply a sum of ones that indicate an action, this suggests that returnship is often perhaps a species of cumulative analysis.
 
@@ -31,6 +31,7 @@ library(tidyverse)
 library(dbplyr)
 library(ggplot2)
 library(farr)
+library(jsonlite)
 ```
 
 ```{r}
@@ -47,10 +48,11 @@ options(tinytable_theme_spacing_colsep = 0.1)
 
 ```{r}
 #| include: false
-#| eval: false
+#| eval: true
 print.tbl_sql <- function(x, ...) {
   collect(x, n = 10) |> 
     tt(...) |>
+    theme_tt("spacing") |>
     knitr::knit_print()
 }
 
@@ -92,55 +94,6 @@ I suggest that the canonical form of data for survival analysis is a table with 
  In the legislator data, this would be `id_bioguide`.
  - Entry date: The relevant start date for the individual
  - Event date: The date, if any, on which the relevant event occurs for the individual.
- 
-Note that we will often not observe event dates for many observations due to **censoring**.
-While events may be inevitable for any given individual (the proverbial death and taxes), such events need not occur during the period covered by the sample under study.
-This fact may not always be obvious from the data set in question.
-
-To illustrate this point, I consider the legislators data .
-It is important to recognize that the data in `legislators` and `legislators_terms` were obtained at some unspecified date in the past.
-
-```{r}
-max_term_start <-
-  legislators_terms |>
-  summarize(max(term_start, na.rm = TRUE)) |>
-  pull()
-
-max_term_start
-```
-
-As we can see there are no terms in the data *starting* after the November 2020 election, suggesting that the data were extracted before terms related to that election started.
-Looking at the `term_end` dates, we see that no member of the House of Representatives (`term_type == "rep"`) has a term ending after 
-
-```{r}
-legislators_terms |>
-  filter(term_end >= max_term_start) |>
-  count(term_type, term_end) |>
-  arrange(term_type, term_end)
-```
-
-For simplicity, I just assume that the extraction date *was* that date.
-
-```{r}
-extract_date <- "2020-11-03"
-```
-
-Once we fix `extract_date`, we should consider all `term_end` dates after that date as merely *expected* `term_end` dates, as subsequent events might have led to some members of Congress to finish their terms early.
-For this reason, it is arguably more appropriate to code such `term_end` values as "don't know" or `NA` (`NULL` in SQL).
-This is especially so when we view `last_term` as representing the end of a legislator' career, as 
-
-```{r}
-survival_data <-
-  legislators_terms |>
-  group_by(id_bioguide) |>
-  summarize(entry_date = min(term_start, na.rm = TRUE),
-            exit_date = max(term_end, na.rm = TRUE),
-            .groups = "drop") |>
-  mutate(exit_date = if_else(exit_date >= extract_date, 
-                             NA, exit_date))
-
-survival_data
-```
 
 Most queries involving cohorts in @sec-original do not use a survivorship approach.^[Most queries uses what I call a census-date approach that I discuss in @sec-census-date.]
 The queries using a survivorship approach are given in @sec-survivorship.
@@ -168,6 +121,129 @@ For example, @singer2003longitudinal "focuses exclusively on the most common and
 While such models are beyond the scope of this book, they can be implemented once an analyst has organized the data into the canonical form for survival data.
 My focus here is on organizing data for analysis.
 
+### Survival: Censoring
+ 
+Note that we will often not observe event dates for many observations due to **censoring**.
+While events may be inevitable for any given individual (the proverbial death and taxes), such events need not occur during the period covered by the sample under study.
+This fact may not always be obvious from the data set in question.
+
+To illustrate this point, I consider the legislators data .
+It is important to recognize that the data in `legislators` and `legislators_terms` were obtained at some unspecified date in the past.
+
+```{r}
+max_term_start <-
+  legislators_terms |>
+  summarize(max(term_start, na.rm = TRUE)) |>
+  pull()
+
+max_term_start
+```
+
+As we can see there are no terms in the data *starting* after the November 2020 election, suggesting that the data were extracted before terms related to that election started.
+Looking at the `term_end` dates, we see that no member of the House of Representatives (`term_type == "rep"`) has a term ending after 3 January 2021.
+
+```{r}
+legislators_terms |>
+  filter(term_end >= max_term_start) |>
+  count(term_type, term_end) |>
+  arrange(term_type, term_end)
+```
+
+As we are in "the future" with regard to whenever the legislators data were extracted, we can gain some insight into when the data were collected by looking at the data we can get today from the GitHub repository from which the data were obtained.
+The data on legislators' terms are divided into two JSON files---one for current legislators and one for past legislators.
+Using JSON wrangling of the kind I have [written about in the past](https://github.com/iangow/notes/blob/main/sec_submissions.pdf), `get_terms()` processes either of these two files and returns a data frame.
+
+```{r}
+get_terms <- function(file) {
+
+  url <- str_c("https://theunitedstates.io/congress-legislators/", file)
+  
+  tibble(json = list(read_json(url))) |>
+    unnest_longer(json) |>
+    unnest_wider(json) |>
+    select(id, terms) |>
+    unnest_wider(id) |> 
+    select(bioguide, terms) |>
+    unnest_longer(terms) |>
+    unnest_wider(terms) |>
+    select(bioguide, type, start, end, state, district, party, url,  class) |>
+    rename_with(\(x) str_c("term_", x), c(type, start, end)) |>
+    rename(id_bioguide = bioguide)
+}
+```
+
+I apply `get_terms()` twice to get the data and combine them and push them to the DuckDB database instance containing the older data sets we have.
+
+```{r}
+updated_terms <-
+  get_terms("legislators-current.json") |>
+  bind_rows(get_terms("legislators-historical.json")) |>
+  copy_to(db, df = _, name = "updated_terms", overwrite = TRUE)
+```
+
+Finally, I join the old and new data and look for case where the updated `term_end` differs from that in the older data set.
+Such cases are shown in @tbl-changed-term-ends.
+
+```{r}
+#| label: tbl-changed-term-ends
+#| tbl-cap: Legislators with changed `term_end` values in updated data
+legislators |>
+  select(id_bioguide, full_name) |>
+  inner_join(updated_terms, by = "id_bioguide") |>
+  inner_join(legislators_terms,
+             by = c("id_bioguide", "term_start"),
+             suffix = c("_updated", "")) |>
+  filter(term_end != term_end_updated) |>
+  select(full_name, term_type, term_start, term_end,
+         term_end_updated) |>
+  arrange(term_end_updated) 
+```
+
+Looking at the table, we see that the earliest updated `term_end` relates to John Lewis, a civil rights icon and long-time legislator who passed away on 17 July 2020.
+It seems reasonable to assume that the data were collated prior to that date and, lacking more precise information, I assume that the extraction date was 30 June 2020.
+
+```{r}
+extract_date <- as.Date("2020-06-30")
+```
+
+Once we fix `extract_date`, we should consider all `term_end` dates after that date as merely *expected* `term_end` dates, as subsequent events might have led to some members of Congress to finish their terms early.
+For this reason, it might seem appropriate to code such `term_end` values as "don't know" or `NA` (`NULL` in SQL).
+This is especially so when we view `last_term` as representing the end of a legislator' career, as we simply don't know when a legislator's career will end.
+But coding the data in this way would lead to a loss of the information impounded in the fact that a legislator's term has extended at least as far as 30 June 2020.
+For this reason, the standard approach is to code `term_end` as the last observed date and create an indicator variable that informs users of the data that the data have been censored for this observation.
+The following code creates `survival_data`, a data frame containing legislator data in canonical survival form.
+A sample of these data is provided in @tbl-survival-canonical.
+
+```{r}
+survival_data <-
+  legislators_terms |>
+  group_by(id_bioguide) |>
+  summarize(entry_date = min(term_start, na.rm = TRUE),
+            exit_date = max(term_end, na.rm = TRUE),
+            .groups = "drop") |>
+  mutate(censored = exit_date > extract_date,
+         exit_date = if_else(censored, extract_date, exit_date))
+```
+
+```{r}
+#| label: tbl-survival-canonical
+#| tbl-cap: Legislator data in canonical survival form
+survival_data
+```
+
+@tanimura2021sql does not address the issue of censoring.
+This likely reflects the emphasis of that book on preparing data for descriptive analysis in business contexts rather than on more sophisticated statistical analysis, such as that appearing in scientific journals.
+However, it is important to account for censoring for many practical business questions.
+For instance, Chapter 7 of @tanimura2021sql discusses experimental analysis and one could imagine looking at the effects on customer retention of some marketing initiative using A/B testing of the kind studied there.
+In this sitation, it will be common for the retention periods for some customers to be censored.
+
+It is worth noting that what I am calling a canonical form for survival data differs from what @singer2003longitudinal call the **person-level** form of data.
+The main difference in the person-level form seen in Figure 10.4 of @singer2003longitudinal [p. 353] is that (using variable names from our current context) `entry_date` and `exit_date` have been converted into a "time to event" form reflecting the number of units of time between `entry_date` and `exit_date`.
+One corollary of this aspect of the person-level form is, as pointed out by @singer2003longitudinal [p. 310], a need to specify a "metric for clocking time" (e.g., days or years).
+With the canonical data form I present here, I effectively *defer* the need to choose the metric; as will be seen one cannot *avoid* this choice.
+
+
+
 ### Events that can happen more than once: The census-date approach {#sec-census-date}
 
 In many contexts, the event of interest will be a once-only event.
@@ -191,9 +267,10 @@ For reasons we will learn about in @sec-stints, the choice of 31 December is app
 ### Events that can happen more than once: Stints {#sec-stints}
 
 The Oxford English Dictionary defines a **stint** as "a person's fixed or allotted period of work."
-For current purposes, I define a stint as a continuous period in office either as a representive or as a senator including periods that comprise multiple terms.
+In the current context, I define a stint as a continuous period in office either as a representive or as a senator including periods that comprise multiple terms.
 The critical thing for current purposes is that one can have more than one stint as a legislator.
 One could have one stint as representative, followed by a stint as senator, followed by a second stint as representative.
+An alternative term a stint might be a **spell**, as used by @singer2003longitudinal [p. 311] in a quote above.
 
 As always, to better understand the issues one faces in practice, it is helpful to look at real data.
 I start with data in `legislators_terms` related to Nancy Pelosi, a long-serving representative from California.
@@ -219,11 +296,13 @@ pelosi_terms |>
 
 As can be seen in @tbl-pelosi-terms, Nancy Pelosi had served continuously since 1987.^[The `legislators_terms` data set ends before Pelosi's term ending in January 2021. From that data set, it is not clear that Pelosi was elected to additional terms beginning in 2021 and 2023.]
 She started out as the repsentative for California's 5th congressional district, then for its 8th, then for its 12th.^[According to [Wikipedia](https://en.wikipedia.org/wiki/Nancy_Pelosi#Electoral_history), the shifts from one district to another were due to redistricting, or the redrawing of electoral boundaries as population numbers changed.]
+In other words, Pelosi has had a single stint as a legislator.
 
 It might seem from Nancy Pelosi's later terms that we could identify continuing stints by comparing `term_start` with the preceding `term_end` value and coding two terms as part of the same stint if the dates are the same.
-This approach would work, for example, for the term starting `2019-01-03` and the preceding term starting the previous day.
+This approach would work, for example, for the term starting `2019-01-03` and the preceding term ending the same day.
 
-However in the following code, we calculate `gap`, the number of days between the end of the previous term and the start of the current one, and see that there is often a non-zero gap between terms as coded in the `legislators_terms` data set.
+However, if we calculate `gap`, the number of days between the end of the previous term and the start of the current one, we see that there is often a non-zero gap between terms as coded in the `legislators_terms` data set.
+This can be seen in @tbl-pelosi-term-gaps, which presents data from `pelosi_term_gaps` calculated below.
 
 ```{r}
 pelosi_term_gaps <-
@@ -246,9 +325,8 @@ pelosi_term_gaps |>
   theme_tt("spacing")
 ```
 
-
 In @tbl-pelosi-term-gaps, we can see that there are gaps of as much as 4 days between the end of one term and the start of the next.
-These gaps would be problematic for a census-date approach that used 4 January as the census date, as Nancy Pelosi would appear not to be a legislator in 1993, 1997, or 1999.
+These gaps would be problematic for a census-date approach that used 4 January as the census date, as Nancy Pelosi would appear *not* to be a legislator on that date in 1993, 1997, or 1999.
 In contrast, the census-date approach using 31 December would not be affected by these gaps.
 
 The shortness of the gaps above raises the possibility that one approach would be to consider two terms to be part of the same stint if there is just a short gap between them.
@@ -259,13 +337,14 @@ Looking at the terms of James Abdnor (`id_bioguide == "A000009")`) in @tbl-bbdno
 ```{r}
 #| echo: false
 #| label: tbl-bbdnor-term-gaps
-#| tbl-cap: Congression terms of  James Abdnor
+#| tbl-cap: Congression terms of James Abdnor
 legislators_terms |>
   filter(id_bioguide == "A000009") |>
   group_by(id_bioguide) |>
   window_order(term_start) |>
   mutate(gap = term_start - lag(term_end)) |>
   ungroup() |>
+  window_order() |>
   select(id_bioguide, term_type, term_start, term_end, gap) |>
   arrange(term_start) |>
   collect() |>
@@ -274,7 +353,7 @@ legislators_terms |>
 ```
 
 So maybe a month (say 30 days)?
-Looking at the terms of John Quincy Adams (`id_bioguide == "A000009")`) in @tbl-bbdnor-term-gaps, it seems this would not work.
+Looking at the terms of John Quincy Adams (`id_bioguide == "A000041")`) in @tbl-bbdnor-term-gaps, it seems this would not work.
 
 ```{r}
 #| echo: false
@@ -299,17 +378,16 @@ Furthermore, the `term_start` data in `legislators_terms` appear to be based on 
 Data on these dates---derived from the United States Senate website---are contained in `congress_terms`.
 
 ```{r}
-terms_merged <-
-  legislators_terms |>
-  inner_join(congress_terms,
-             join_by(overlaps(term_start, term_end,
-                              term_start, term_end,
-                              bounds = "[)")),
-             suffix = c("", "_congress")) |>
-  mutate(full_term_start = term_start <= term_start_congress,
-         full_term_end = term_end >= term_end_congress,
-         full_term = full_term_start & full_term_end)
+congress_terms
 ```
+
+```{r}
+congress_terms |> 
+  window_order(term_start) |> 
+  count(same_year = year(term_start) != year(lag(term_end)))
+```
+
+
 
 ```{r}
 stints_raw <-
@@ -335,80 +413,42 @@ stints <-
   stints_raw |>
   group_by(id_bioguide, term_type, stint_number) |>
   summarize(stint_start = min(term_start, na.rm = TRUE),
-            stint_end = max(term_end, na.rm = TRUE)) |>
-  ungroup()
+            stint_end = max(term_end, na.rm = TRUE),
+            .groups = "drop")
 ```
 
 ```{r}
-stints |> 
-  filter(id_bioguide == "A000041") |> 
-  arrange(stint_start)
+legislators |>
+  select(id_bioguide, full_name) |>
+  inner_join(stints, by = "id_bioguide") |> 
+  filter(id_bioguide %in% c("P000197", "A000009", "A000041")) |> 
+  arrange(id_bioguide, stint_start)
 ```
 
 ```{r}
-terms_merged |> 
-  filter(term_type == 'rep') |> 
-  select(matches("term_"), full_term, congress) |> 
-  filter(!full_term_start, term_number > 1)
+stints |> count(stint_number)
 ```
-
-But we effectively have these data already.
-
 ```{r}
-legislators_terms |>
-  filter(term_type == 'rep') |>
-  count(term_start) |>
-  count(n, name = "n_events") |>
-  arrange(n)
+six_stinters <-
+  stints |>
+  filter(stint_number == 6) |>
+  distinct(id_bioguide) |>
+  inner_join(legislators, by = "id_bioguide") |>
+  select(id_bioguide, full_name) |>
+  inner_join(stints, by = "id_bioguide") |> 
+  arrange(id_bioguide, stint_start) 
 ```
 
 
 ```{r}
-congress_terms <-
-  legislators_terms |>
-  filter(term_type == 'rep') |>
-  count(term_start) |>
-  filter(n >= 65) |>
-  window_order(term_start) |>
-  mutate(congress_length = lead(term_start) - term_start) 
-
-congress_terms |>
-  ggplot(aes(x = congress_length)) +
-  geom_histogram()
+#| echo: false
+#| label: tbl-six-stints
+#| tbl-cap: Legislators with six stints
+six_stinters |>
+  collect() |>
+  tt() |>
+  theme_tt("spacing")
 ```
-
-```{r}
-legislators_terms |>
-  filter(term_type == 'rep') |>
-  count(term_start) |>
-  filter(n == 65)
-```
-
-
-
-```{r}
-gap_data <-
-  legislators_terms |>
-  group_by(id_bioguide) |>
-  window_order(term_start) |>
-  mutate(gap = term_start - lag(term_end),
-         same_year = year(term_start) == year(lag(term_end)),
-         new_stint = is.na(same_year) | !same_year,
-         stint_number = cumsum(as.integer(new_stint))) |>
-  ungroup() |>
-  arrange(id_bioguide, term_start) |>
-  select(id_bioguide, term_type, term_start, term_end, 
-         same_year, gap, new_stint, stint_number) |>
-  compute()
-
-gap_data |>
-  filter(same_year) |>
-  ggplot(aes(x = gap)) +
-  geom_histogram()
-```
-
-
-
 
 
 ## Adding cohorts: The canonical form
