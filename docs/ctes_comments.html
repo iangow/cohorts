@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>2&nbsp; Cohort Analysis – CTE Version – Cohort analysis</title>
+<title>3&nbsp; Cohorts using CTEs – Cohort analysis</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -135,7 +135,7 @@ div.csl-indent {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./ctes_comments.html"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Cohort Analysis – CTE Version</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./ctes_comments.html"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Cohorts using CTEs</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -163,25 +163,31 @@ div.csl-indent {
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./index.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Preface</span></a>
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./original_sql.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Cohort Analysis – Original</span></span></a>
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Cohorts - the original chapter</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./ctes_comments.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Cohort Analysis – CTE Version</span></span></a>
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Cohorts using CTEs</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./dbplyr.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Cohort Analysis – <code>dbplyr</code> version</span></span></a>
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Cohort using <code>dbplyr</code></span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./intermezzo.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Un intermezzo</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -200,25 +206,25 @@ div.csl-indent {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#cohorts-a-useful-analysis-framework" id="toc-cohorts-a-useful-analysis-framework" class="nav-link active" data-scroll-target="#cohorts-a-useful-analysis-framework"><span class="header-section-number">2.1</span> Cohorts: A Useful Analysis Framework</a></li>
-  <li><a href="#the-legislators-data-set" id="toc-the-legislators-data-set" class="nav-link" data-scroll-target="#the-legislators-data-set"><span class="header-section-number">2.2</span> The Legislators Data Set</a></li>
-  <li><a href="#retention" id="toc-retention" class="nav-link" data-scroll-target="#retention"><span class="header-section-number">2.3</span> Retention</a>
+  <li><a href="#cohorts-a-useful-analysis-framework" id="toc-cohorts-a-useful-analysis-framework" class="nav-link active" data-scroll-target="#cohorts-a-useful-analysis-framework"><span class="header-section-number">3.1</span> Cohorts: A Useful Analysis Framework</a></li>
+  <li><a href="#the-legislators-data-set" id="toc-the-legislators-data-set" class="nav-link" data-scroll-target="#the-legislators-data-set"><span class="header-section-number">3.2</span> The Legislators Data Set</a></li>
+  <li><a href="#retention" id="toc-retention" class="nav-link" data-scroll-target="#retention"><span class="header-section-number">3.3</span> Retention</a>
   <ul class="collapse">
-  <li><a href="#sql-for-a-basic-retention-curve" id="toc-sql-for-a-basic-retention-curve" class="nav-link" data-scroll-target="#sql-for-a-basic-retention-curve"><span class="header-section-number">2.3.1</span> SQL for a Basic Retention Curve</a></li>
-  <li><a href="#adjusting-time-series-to-increase-retention-accuracy" id="toc-adjusting-time-series-to-increase-retention-accuracy" class="nav-link" data-scroll-target="#adjusting-time-series-to-increase-retention-accuracy"><span class="header-section-number">2.3.2</span> Adjusting Time Series to Increase Retention Accuracy</a></li>
-  <li><a href="#cohorts-derived-from-the-time-series-itself" id="toc-cohorts-derived-from-the-time-series-itself" class="nav-link" data-scroll-target="#cohorts-derived-from-the-time-series-itself"><span class="header-section-number">2.3.3</span> Cohorts Derived from the Time Series Itself</a></li>
-  <li><a href="#defining-the-cohort-from-a-separate-table" id="toc-defining-the-cohort-from-a-separate-table" class="nav-link" data-scroll-target="#defining-the-cohort-from-a-separate-table"><span class="header-section-number">2.3.4</span> Defining the Cohort from a Separate Table</a></li>
-  <li><a href="#dealing-with-sparse-cohorts" id="toc-dealing-with-sparse-cohorts" class="nav-link" data-scroll-target="#dealing-with-sparse-cohorts"><span class="header-section-number">2.3.5</span> Dealing with Sparse Cohorts</a></li>
-  <li><a href="#defining-cohorts-from-dates-other-than-the-first-date" id="toc-defining-cohorts-from-dates-other-than-the-first-date" class="nav-link" data-scroll-target="#defining-cohorts-from-dates-other-than-the-first-date"><span class="header-section-number">2.3.6</span> Defining Cohorts from Dates Other Than the First Date</a></li>
+  <li><a href="#sql-for-a-basic-retention-curve" id="toc-sql-for-a-basic-retention-curve" class="nav-link" data-scroll-target="#sql-for-a-basic-retention-curve"><span class="header-section-number">3.3.1</span> SQL for a Basic Retention Curve</a></li>
+  <li><a href="#adjusting-time-series-to-increase-retention-accuracy" id="toc-adjusting-time-series-to-increase-retention-accuracy" class="nav-link" data-scroll-target="#adjusting-time-series-to-increase-retention-accuracy"><span class="header-section-number">3.3.2</span> Adjusting Time Series to Increase Retention Accuracy</a></li>
+  <li><a href="#cohorts-derived-from-the-time-series-itself" id="toc-cohorts-derived-from-the-time-series-itself" class="nav-link" data-scroll-target="#cohorts-derived-from-the-time-series-itself"><span class="header-section-number">3.3.3</span> Cohorts Derived from the Time Series Itself</a></li>
+  <li><a href="#defining-the-cohort-from-a-separate-table" id="toc-defining-the-cohort-from-a-separate-table" class="nav-link" data-scroll-target="#defining-the-cohort-from-a-separate-table"><span class="header-section-number">3.3.4</span> Defining the Cohort from a Separate Table</a></li>
+  <li><a href="#dealing-with-sparse-cohorts" id="toc-dealing-with-sparse-cohorts" class="nav-link" data-scroll-target="#dealing-with-sparse-cohorts"><span class="header-section-number">3.3.5</span> Dealing with Sparse Cohorts</a></li>
+  <li><a href="#defining-cohorts-from-dates-other-than-the-first-date" id="toc-defining-cohorts-from-dates-other-than-the-first-date" class="nav-link" data-scroll-target="#defining-cohorts-from-dates-other-than-the-first-date"><span class="header-section-number">3.3.6</span> Defining Cohorts from Dates Other Than the First Date</a></li>
   </ul></li>
-  <li><a href="#related-cohort-analyses" id="toc-related-cohort-analyses" class="nav-link" data-scroll-target="#related-cohort-analyses"><span class="header-section-number">2.4</span> Related Cohort Analyses</a>
+  <li><a href="#related-cohort-analyses" id="toc-related-cohort-analyses" class="nav-link" data-scroll-target="#related-cohort-analyses"><span class="header-section-number">3.4</span> Related Cohort Analyses</a>
   <ul class="collapse">
-  <li><a href="#survivorship" id="toc-survivorship" class="nav-link" data-scroll-target="#survivorship"><span class="header-section-number">2.4.1</span> Survivorship</a></li>
-  <li><a href="#returnship-or-repeat-purchase-behavior" id="toc-returnship-or-repeat-purchase-behavior" class="nav-link" data-scroll-target="#returnship-or-repeat-purchase-behavior"><span class="header-section-number">2.4.2</span> Returnship, or Repeat Purchase Behavior</a></li>
-  <li><a href="#cumulative-calculations" id="toc-cumulative-calculations" class="nav-link" data-scroll-target="#cumulative-calculations"><span class="header-section-number">2.4.3</span> Cumulative Calculations</a></li>
+  <li><a href="#survivorship" id="toc-survivorship" class="nav-link" data-scroll-target="#survivorship"><span class="header-section-number">3.4.1</span> Survivorship</a></li>
+  <li><a href="#returnship-or-repeat-purchase-behavior" id="toc-returnship-or-repeat-purchase-behavior" class="nav-link" data-scroll-target="#returnship-or-repeat-purchase-behavior"><span class="header-section-number">3.4.2</span> Returnship, or Repeat Purchase Behavior</a></li>
+  <li><a href="#cumulative-calculations" id="toc-cumulative-calculations" class="nav-link" data-scroll-target="#cumulative-calculations"><span class="header-section-number">3.4.3</span> Cumulative Calculations</a></li>
   </ul></li>
-  <li><a href="#cross-section-analysis-through-a-cohort-lens" id="toc-cross-section-analysis-through-a-cohort-lens" class="nav-link" data-scroll-target="#cross-section-analysis-through-a-cohort-lens"><span class="header-section-number">2.5</span> Cross-Section Analysis, through a Cohort Lens</a></li>
-  <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion"><span class="header-section-number">2.6</span> Conclusion</a></li>
+  <li><a href="#cross-section-analysis-through-a-cohort-lens" id="toc-cross-section-analysis-through-a-cohort-lens" class="nav-link" data-scroll-target="#cross-section-analysis-through-a-cohort-lens"><span class="header-section-number">3.5</span> Cross-Section Analysis, through a Cohort Lens</a></li>
+  <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion"><span class="header-section-number">3.6</span> Conclusion</a></li>
   </ul>
 </nav>
     </div>
@@ -227,7 +233,7 @@ div.csl-indent {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title"><span id="sec-ctes" class="quarto-section-identifier"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Cohort Analysis – CTE Version</span></span></h1>
+<h1 class="title"><span id="sec-ctes" class="quarto-section-identifier"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Cohorts using CTEs</span></span></h1>
 </div>
 
 
@@ -274,11 +280,11 @@ Common Table Expressions (CTEs)
 </div>
 <div class="callout-body-container callout-body">
 <p>It should be clear from the queries below what a CTE is. The <a href="https://www.postgresql.org/docs/17/queries-with.html">documentation for PostgreSQL</a> suggests that CTEs “can be thought of as defining temporary tables that exist just for one query.” CTEs are created using the <code>WITH</code> keyword.</p>
-<p>In the queries below, CTEs generally replace subqueries in the the original queries found in <a href="original_sql.html" class="quarto-xref"><span>Chapter 1</span></a>. My view is that CTEs provide a number of benefits over subqueries. First, it allows easy reuse of a subquery in different parts of the query. In some cases, queries in <a href="original_sql.html" class="quarto-xref"><span>Chapter 1</span></a> contain the same subquery two or more times. Such duplication requires more text and likely increases the chances of errors. Second, the use of CTEs facilitates debugging of queries because it is possible to query a CTE in way that is not possible for a nested subquery. Third, I think CTEs produce more transparent SQL code.</p>
+<p>In the queries below, CTEs generally replace subqueries in the the original queries found in <a href="original_sql.html" class="quarto-xref"><span>Chapter 2</span></a>. My view is that CTEs provide a number of benefits over subqueries. First, it allows easy reuse of a subquery in different parts of the query. In some cases, queries in <a href="original_sql.html" class="quarto-xref"><span>Chapter 2</span></a> contain the same subquery two or more times. Such duplication requires more text and likely increases the chances of errors. Second, the use of CTEs facilitates debugging of queries because it is possible to query a CTE in way that is not possible for a nested subquery. Third, I think CTEs produce more transparent SQL code.</p>
 </div>
 </div>
-<section id="cohorts-a-useful-analysis-framework" class="level2" data-number="2.1">
-<h2 data-number="2.1" class="anchored" data-anchor-id="cohorts-a-useful-analysis-framework"><span class="header-section-number">2.1</span> Cohorts: A Useful Analysis Framework</h2>
+<section id="cohorts-a-useful-analysis-framework" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="cohorts-a-useful-analysis-framework"><span class="header-section-number">3.1</span> Cohorts: A Useful Analysis Framework</h2>
 <p>Before we get into the code, I will define what cohorts are, consider the types of questions we can answer with this type of analysis, and describe the components of any cohort analysis.</p>
 <p>A <em>cohort</em> is a group of individuals who share some characteristic of interest, described below, at the time we start observing them. Cohort members are often people but can be any type of entity we want to study: companies, products, or physical world phenomena. Individuals in a cohort may be aware of their membership, just as children in a first-grade class are aware they are part of a peer group of first graders, or participants in a drug trial are aware they are part of a group receiving a treatment. At other times, entities are grouped into cohorts virtually, as when a software company groups all customers acquired in a certain year to study how long they remain customers. It’s always important to consider the ethical implications of cohorting entities without their awareness, if any different treatment is to be applied to them.</p>
 <p><em>Cohort analysis</em> is a useful way to compare groups of entities over time. Many important behaviors take weeks, months, or years to occur or evolve, and cohort analysis is a way to understand these changes. Cohort analysis provides a framework for detecting correlations between cohort characteristics and these long-term trends, which can lead to hypotheses about the causal drivers. For example, customers acquired through a marketing campaign may have different long-term purchase patterns than those who were persuaded by a friend to try a company’s products. Cohort analysis can be used to monitor new cohorts of users or customers and assess how they compare to previous cohorts. Such monitoring can provide an early alert signal that something has gone wrong (or right) for new customers. Cohort analysis is also used to mine historical data. A/B tests, discussed in Chapter 7, are the gold standard for determining causality, but we can’t go back in time and run every test for every question about the past in which we are interested. We should of course be cautious about attaching causal meaning to cohort analysis and instead use cohort analysis as a way to understand customers and generate hypotheses that can be tested rigorously in the future.</p>
@@ -320,17 +326,17 @@ Cumulative calculations are concerned with the total number or amounts measured 
 </dl>
 <p>The four types of cohort analysis allow us to compare subgroups and understand how they differ over time in order to make better product, marketing, and financial decisions. The calculations for the different types are similar, so we will set the stage with retention, and then I’ll show how to modify retention code to calculate the other types. Before we dive into constructing our cohort analysis, let’s take a look at the data set we’ll be using for the examples in this chapter.</p>
 </section>
-<section id="the-legislators-data-set" class="level2" data-number="2.2">
-<h2 data-number="2.2" class="anchored" data-anchor-id="the-legislators-data-set"><span class="header-section-number">2.2</span> The Legislators Data Set</h2>
+<section id="the-legislators-data-set" class="level2" data-number="3.2">
+<h2 data-number="3.2" class="anchored" data-anchor-id="the-legislators-data-set"><span class="header-section-number">3.2</span> The Legislators Data Set</h2>
 <p>The SQL examples in this chapter will use a data set of past and present members of the United States Congress maintained in a GitHub repository. In the US, Congress is responsible for writing laws or legislation, so its members are also known as legislators. Since the data set is a JSON file, I have applied some transformations to produce a more suitable data model for analysis, and I have posted data in a format suitable for following along with the examples in the book’s GitHub <a href="https://oreil.ly/H2tYP">legislators folder</a>.</p>
 <p>The source repository has an excellent data dictionary, so I won’t repeat all the details here. I will provide a few details, however, that should help those who aren’t familiar with the US government to follow along with the analyses in this chapter.</p>
 <p>Congress has two chambers, the Senate (“sen” in the data set) and the House of Representatives (“rep”). Each state has two senators, and they are elected for six-year terms. Representatives are allocated to states based on population; each representative has a district that they alone represent. Representatives are elected for two-year terms. Actual terms in either chamber can be shorter in the event that the legislator dies or is elected or appointed to a higher office. Legislators accumulate power and influence via leadership positions the longer they are in office, and thus standing for re-election is common. Finally, a legislator may belong to a political party, or they may be an “independent”. In the modern era, the vast majority of legislators are Democrats or Republicans, and the rivalry between the two parties is well known. Legislators occasionally change parties while in office.</p>
-<p>For the analyses, we’ll make use of two tables: <code>legislators</code> and <code>legislators_terms</code>. The <code>legislators</code> table contains a list of all the people included in the data set, with birthday, gender, and a set of ID fields that can be used to look up the person in other data sets. The <code>legislators_terms</code> table contains a record for each term in office for each legislator, with start and end date, and other attributes such as chamber and <code>id_bioguide</code> field is used as the unique identifier of a legislator and appears in each table. <a href="dbplyr.html#tbl-leg-sample" class="quarto-xref">Table&nbsp;<span>3.1</span></a> shows a sample of the legislators data. <a href="dbplyr.html#tbl-leg-terms-sample" class="quarto-xref">Table&nbsp;<span>3.2</span></a> shows a sample of the legislators_terms data.</p>
+<p>For the analyses, we’ll make use of two tables: <code>legislators</code> and <code>legislators_terms</code>. The <code>legislators</code> table contains a list of all the people included in the data set, with birthday, gender, and a set of ID fields that can be used to look up the person in other data sets. The <code>legislators_terms</code> table contains a record for each term in office for each legislator, with start and end date, and other attributes such as chamber and <code>id_bioguide</code> field is used as the unique identifier of a legislator and appears in each table. <a href="dbplyr.html#tbl-leg-sample" class="quarto-xref">Table&nbsp;<span>4.1</span></a> shows a sample of the legislators data. <a href="dbplyr.html#tbl-leg-terms-sample" class="quarto-xref">Table&nbsp;<span>4.2</span></a> shows a sample of the legislators_terms data.</p>
 <div class="cell">
 <div id="tbl-leg-sample" class="cell quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-leg-sample-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Table&nbsp;2.1: Sample of the <code>legislators</code> table
+Table&nbsp;3.1: Sample of the <code>legislators</code> table
 </figcaption>
 <div aria-describedby="tbl-leg-sample-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
@@ -338,8 +344,8 @@ Table&nbsp;2.1: Sample of the <code>legislators</code> table
 
     <script>
 
-      function styleCell_xpha2x3elhjx1ratzs90(i, j, css_id) {
-          var table = document.getElementById("tinytable_xpha2x3elhjx1ratzs90");
+      function styleCell_da6hghaeudpado0rapwv(i, j, css_id) {
+          var table = document.getElementById("tinytable_da6hghaeudpado0rapwv");
           var cell = table.rows[i]?.cells[j];  // Safe navigation to avoid errors
           if (cell) {
               console.log(`Styling cell at (${i}, ${j}) with class ${css_id}`);
@@ -349,7 +355,7 @@ Table&nbsp;2.1: Sample of the <code>legislators</code> table
           }
       }
       function insertSpanRow(i, colspan, content) {
-        var table = document.getElementById('tinytable_xpha2x3elhjx1ratzs90');
+        var table = document.getElementById('tinytable_da6hghaeudpado0rapwv');
         var newRow = table.insertRow(i);
         var newCell = newRow.insertCell(0);
         newCell.setAttribute("colspan", colspan);
@@ -357,8 +363,8 @@ Table&nbsp;2.1: Sample of the <code>legislators</code> table
         // this may be unsafe, but innerText does not interpret <br>
         newCell.innerHTML = content;
       }
-      function spanCell_xpha2x3elhjx1ratzs90(i, j, rowspan, colspan) {
-        var table = document.getElementById("tinytable_xpha2x3elhjx1ratzs90");
+      function spanCell_da6hghaeudpado0rapwv(i, j, rowspan, colspan) {
+        var table = document.getElementById("tinytable_da6hghaeudpado0rapwv");
         const targetRow = table.rows[i];
         const targetCell = targetRow.cells[j];
         for (let r = 0; r < rowspan; r++) {
@@ -388,18 +394,18 @@ Table&nbsp;2.1: Sample of the <code>legislators</code> table
       window.addEventListener('load', function () {
           var cellsToStyle = [
             // tinytable style arrays after
-          { positions: [ { i: 0, j: 0 }, { i: 0, j: 2 }, { i: 0, j: 4 }, { i: 0, j: 1 }, { i: 0, j: 3 }, { i: 0, j: 5 },  ], css_id: 'tinytable_css_vb66fd2noo1umxdvv8v2',}, 
-          { positions: [ { i: 19, j: 6 },  ], css_id: 'tinytable_css_rbil3d6fso6ub099h57e',}, 
-          { positions: [ { i: 19, j: 0 }, { i: 19, j: 2 }, { i: 19, j: 4 }, { i: 19, j: 1 }, { i: 19, j: 3 }, { i: 19, j: 5 },  ], css_id: 'tinytable_css_nkk6djtzji9jbo5io6qq',}, 
-          { positions: [ { i: 6, j: 0 }, { i: 3, j: 0 }, { i: 4, j: 0 }, { i: 5, j: 0 }, { i: 10, j: 0 }, { i: 11, j: 0 }, { i: 12, j: 0 }, { i: 13, j: 0 }, { i: 1, j: 0 }, { i: 2, j: 0 }, { i: 16, j: 0 }, { i: 17, j: 0 }, { i: 18, j: 0 }, { i: 12, j: 1 }, { i: 7, j: 0 }, { i: 8, j: 0 }, { i: 9, j: 0 }, { i: 3, j: 1 }, { i: 4, j: 1 }, { i: 5, j: 1 }, { i: 6, j: 1 }, { i: 14, j: 0 }, { i: 15, j: 0 }, { i: 9, j: 1 }, { i: 10, j: 1 }, { i: 11, j: 1 }, { i: 5, j: 2 }, { i: 13, j: 1 }, { i: 1, j: 1 }, { i: 2, j: 1 }, { i: 16, j: 1 }, { i: 17, j: 1 }, { i: 18, j: 1 }, { i: 12, j: 2 }, { i: 7, j: 1 }, { i: 8, j: 1 }, { i: 2, j: 2 }, { i: 3, j: 2 }, { i: 4, j: 2 }, { i: 18, j: 2 }, { i: 6, j: 2 }, { i: 14, j: 1 }, { i: 15, j: 1 }, { i: 9, j: 2 }, { i: 10, j: 2 }, { i: 11, j: 2 }, { i: 5, j: 3 }, { i: 13, j: 2 }, { i: 1, j: 2 }, { i: 15, j: 2 }, { i: 16, j: 2 }, { i: 17, j: 2 }, { i: 11, j: 3 }, { i: 12, j: 3 }, { i: 7, j: 2 }, { i: 8, j: 2 }, { i: 2, j: 3 }, { i: 3, j: 3 }, { i: 4, j: 3 }, { i: 18, j: 3 }, { i: 6, j: 3 }, { i: 14, j: 2 }, { i: 8, j: 3 }, { i: 9, j: 3 }, { i: 10, j: 3 }, { i: 4, j: 4 }, { i: 5, j: 4 }, { i: 13, j: 3 }, { i: 1, j: 3 }, { i: 15, j: 3 }, { i: 16, j: 3 }, { i: 17, j: 3 }, { i: 11, j: 4 }, { i: 12, j: 4 }, { i: 7, j: 3 }, { i: 1, j: 4 }, { i: 2, j: 4 }, { i: 3, j: 4 }, { i: 17, j: 4 }, { i: 18, j: 4 }, { i: 6, j: 4 }, { i: 14, j: 3 }, { i: 8, j: 4 }, { i: 9, j: 4 }, { i: 10, j: 4 }, { i: 4, j: 5 }, { i: 5, j: 5 }, { i: 13, j: 4 }, { i: 14, j: 4 }, { i: 15, j: 4 }, { i: 16, j: 4 }, { i: 10, j: 5 }, { i: 11, j: 5 }, { i: 12, j: 5 }, { i: 7, j: 4 }, { i: 1, j: 5 }, { i: 2, j: 5 }, { i: 3, j: 5 }, { i: 17, j: 5 }, { i: 18, j: 5 }, { i: 6, j: 5 }, { i: 7, j: 5 }, { i: 8, j: 5 }, { i: 9, j: 5 }, { i: 14, j: 5 }, { i: 15, j: 5 }, { i: 16, j: 5 }, { i: 13, j: 5 },  ], css_id: 'tinytable_css_mad4dysaf5zt71eba45f',}, 
-          { positions: [ { i: 0, j: 6 },  ], css_id: 'tinytable_css_jvye0i4hxn19x2ze0t1l',}, 
-          { positions: [ { i: 1, j: 6 }, { i: 2, j: 6 }, { i: 3, j: 6 }, { i: 4, j: 6 }, { i: 5, j: 6 }, { i: 6, j: 6 }, { i: 7, j: 6 }, { i: 8, j: 6 }, { i: 9, j: 6 }, { i: 10, j: 6 }, { i: 11, j: 6 }, { i: 12, j: 6 }, { i: 13, j: 6 }, { i: 14, j: 6 }, { i: 15, j: 6 }, { i: 16, j: 6 }, { i: 17, j: 6 }, { i: 18, j: 6 },  ], css_id: 'tinytable_css_9d5mxatzxwpaudw0vs6w',}, 
+          { positions: [ { i: 19, j: 0 }, { i: 19, j: 2 }, { i: 19, j: 4 }, { i: 19, j: 1 }, { i: 19, j: 3 }, { i: 19, j: 5 },  ], css_id: 'tinytable_css_vkmam6dl3gm2k5l03u3u',}, 
+          { positions: [ { i: 19, j: 6 },  ], css_id: 'tinytable_css_rfvtqzc6pb37k1gdnybj',}, 
+          { positions: [ { i: 6, j: 0 }, { i: 3, j: 0 }, { i: 4, j: 0 }, { i: 5, j: 0 }, { i: 10, j: 0 }, { i: 11, j: 0 }, { i: 12, j: 0 }, { i: 13, j: 0 }, { i: 1, j: 0 }, { i: 2, j: 0 }, { i: 16, j: 0 }, { i: 17, j: 0 }, { i: 18, j: 0 }, { i: 12, j: 1 }, { i: 7, j: 0 }, { i: 8, j: 0 }, { i: 9, j: 0 }, { i: 3, j: 1 }, { i: 4, j: 1 }, { i: 5, j: 1 }, { i: 6, j: 1 }, { i: 14, j: 0 }, { i: 15, j: 0 }, { i: 9, j: 1 }, { i: 10, j: 1 }, { i: 11, j: 1 }, { i: 5, j: 2 }, { i: 13, j: 1 }, { i: 1, j: 1 }, { i: 2, j: 1 }, { i: 16, j: 1 }, { i: 17, j: 1 }, { i: 18, j: 1 }, { i: 12, j: 2 }, { i: 7, j: 1 }, { i: 8, j: 1 }, { i: 2, j: 2 }, { i: 3, j: 2 }, { i: 4, j: 2 }, { i: 18, j: 2 }, { i: 6, j: 2 }, { i: 14, j: 1 }, { i: 15, j: 1 }, { i: 9, j: 2 }, { i: 10, j: 2 }, { i: 11, j: 2 }, { i: 5, j: 3 }, { i: 13, j: 2 }, { i: 1, j: 2 }, { i: 15, j: 2 }, { i: 16, j: 2 }, { i: 17, j: 2 }, { i: 11, j: 3 }, { i: 12, j: 3 }, { i: 7, j: 2 }, { i: 8, j: 2 }, { i: 2, j: 3 }, { i: 3, j: 3 }, { i: 4, j: 3 }, { i: 18, j: 3 }, { i: 6, j: 3 }, { i: 14, j: 2 }, { i: 8, j: 3 }, { i: 9, j: 3 }, { i: 10, j: 3 }, { i: 4, j: 4 }, { i: 5, j: 4 }, { i: 13, j: 3 }, { i: 1, j: 3 }, { i: 15, j: 3 }, { i: 16, j: 3 }, { i: 17, j: 3 }, { i: 11, j: 4 }, { i: 12, j: 4 }, { i: 7, j: 3 }, { i: 1, j: 4 }, { i: 2, j: 4 }, { i: 3, j: 4 }, { i: 17, j: 4 }, { i: 18, j: 4 }, { i: 6, j: 4 }, { i: 14, j: 3 }, { i: 8, j: 4 }, { i: 9, j: 4 }, { i: 10, j: 4 }, { i: 4, j: 5 }, { i: 5, j: 5 }, { i: 13, j: 4 }, { i: 14, j: 4 }, { i: 15, j: 4 }, { i: 16, j: 4 }, { i: 10, j: 5 }, { i: 11, j: 5 }, { i: 12, j: 5 }, { i: 7, j: 4 }, { i: 1, j: 5 }, { i: 2, j: 5 }, { i: 3, j: 5 }, { i: 17, j: 5 }, { i: 18, j: 5 }, { i: 6, j: 5 }, { i: 7, j: 5 }, { i: 8, j: 5 }, { i: 9, j: 5 }, { i: 14, j: 5 }, { i: 15, j: 5 }, { i: 16, j: 5 }, { i: 13, j: 5 },  ], css_id: 'tinytable_css_aggykf3wwamyv4vlexub',}, 
+          { positions: [ { i: 1, j: 6 }, { i: 2, j: 6 }, { i: 3, j: 6 }, { i: 4, j: 6 }, { i: 5, j: 6 }, { i: 6, j: 6 }, { i: 7, j: 6 }, { i: 8, j: 6 }, { i: 9, j: 6 }, { i: 10, j: 6 }, { i: 11, j: 6 }, { i: 12, j: 6 }, { i: 13, j: 6 }, { i: 14, j: 6 }, { i: 15, j: 6 }, { i: 16, j: 6 }, { i: 17, j: 6 }, { i: 18, j: 6 },  ], css_id: 'tinytable_css_5ih8nr73h97f2f514umo',}, 
+          { positions: [ { i: 0, j: 6 },  ], css_id: 'tinytable_css_3czpjgxf5jxp3oxjk1x1',}, 
+          { positions: [ { i: 0, j: 0 }, { i: 0, j: 2 }, { i: 0, j: 4 }, { i: 0, j: 1 }, { i: 0, j: 3 }, { i: 0, j: 5 },  ], css_id: 'tinytable_css_1pm3njlyfnvui5l3mx42',}, 
           ];
 
           // Loop over the arrays to style the cells
           cellsToStyle.forEach(function (group) {
               group.positions.forEach(function (cell) {
-                  styleCell_xpha2x3elhjx1ratzs90(cell.i, cell.j, group.css_id);
+                  styleCell_da6hghaeudpado0rapwv(cell.i, cell.j, group.css_id);
               });
           });
       });
@@ -407,15 +413,15 @@ Table&nbsp;2.1: Sample of the <code>legislators</code> table
 
     <style>
       /* tinytable css entries after */
-      .table td.tinytable_css_vb66fd2noo1umxdvv8v2, .table th.tinytable_css_vb66fd2noo1umxdvv8v2 { font-size: 0.8em; border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; border-bottom: solid #d3d8dc 0.1em; padding-right: 0.1em; padding-bottom: 0em; }
-      .table td.tinytable_css_rbil3d6fso6ub099h57e, .table th.tinytable_css_rbil3d6fso6ub099h57e { font-size: 0.8em; border-bottom: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.1em; }
-      .table td.tinytable_css_nkk6djtzji9jbo5io6qq, .table th.tinytable_css_nkk6djtzji9jbo5io6qq { font-size: 0.8em; border-bottom: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.1em; padding-right: 0.1em; }
-      .table td.tinytable_css_mad4dysaf5zt71eba45f, .table th.tinytable_css_mad4dysaf5zt71eba45f { font-size: 0.8em; padding-right: 0.1em; padding-bottom: 0em; }
-      .table td.tinytable_css_jvye0i4hxn19x2ze0t1l, .table th.tinytable_css_jvye0i4hxn19x2ze0t1l { font-size: 0.8em; border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; border-bottom: solid #d3d8dc 0.1em; padding-bottom: 0em; }
-      .table td.tinytable_css_9d5mxatzxwpaudw0vs6w, .table th.tinytable_css_9d5mxatzxwpaudw0vs6w { font-size: 0.8em; padding-bottom: 0em; }
+      .table td.tinytable_css_vkmam6dl3gm2k5l03u3u, .table th.tinytable_css_vkmam6dl3gm2k5l03u3u { font-size: 0.8em; border-bottom: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.1em; padding-right: 0.1em; }
+      .table td.tinytable_css_rfvtqzc6pb37k1gdnybj, .table th.tinytable_css_rfvtqzc6pb37k1gdnybj { font-size: 0.8em; border-bottom: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.1em; }
+      .table td.tinytable_css_aggykf3wwamyv4vlexub, .table th.tinytable_css_aggykf3wwamyv4vlexub { font-size: 0.8em; padding-right: 0.1em; padding-bottom: 0em; }
+      .table td.tinytable_css_5ih8nr73h97f2f514umo, .table th.tinytable_css_5ih8nr73h97f2f514umo { font-size: 0.8em; padding-bottom: 0em; }
+      .table td.tinytable_css_3czpjgxf5jxp3oxjk1x1, .table th.tinytable_css_3czpjgxf5jxp3oxjk1x1 { font-size: 0.8em; border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; border-bottom: solid #d3d8dc 0.1em; padding-bottom: 0em; }
+      .table td.tinytable_css_1pm3njlyfnvui5l3mx42, .table th.tinytable_css_1pm3njlyfnvui5l3mx42 { font-size: 0.8em; border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; border-bottom: solid #d3d8dc 0.1em; padding-right: 0.1em; padding-bottom: 0em; }
     </style>
     <div class="container">
-      <table class="table table-borderless" id="tinytable_xpha2x3elhjx1ratzs90" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
+      <table class="table table-borderless" id="tinytable_da6hghaeudpado0rapwv" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
         <thead>
         
               <tr>
@@ -614,7 +620,7 @@ Table&nbsp;2.1: Sample of the <code>legislators</code> table
 <div id="tbl-leg-terms-sample" class="cell quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-leg-terms-sample-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Table&nbsp;2.2: Sample of the <code>legislators_terms</code> table
+Table&nbsp;3.2: Sample of the <code>legislators_terms</code> table
 </figcaption>
 <div aria-describedby="tbl-leg-terms-sample-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
@@ -622,8 +628,8 @@ Table&nbsp;2.2: Sample of the <code>legislators_terms</code> table
 
     <script>
 
-      function styleCell_kzgo3ygjuoyjch0iu7t0(i, j, css_id) {
-          var table = document.getElementById("tinytable_kzgo3ygjuoyjch0iu7t0");
+      function styleCell_22urfe2w2bm1q104vto6(i, j, css_id) {
+          var table = document.getElementById("tinytable_22urfe2w2bm1q104vto6");
           var cell = table.rows[i]?.cells[j];  // Safe navigation to avoid errors
           if (cell) {
               console.log(`Styling cell at (${i}, ${j}) with class ${css_id}`);
@@ -633,7 +639,7 @@ Table&nbsp;2.2: Sample of the <code>legislators_terms</code> table
           }
       }
       function insertSpanRow(i, colspan, content) {
-        var table = document.getElementById('tinytable_kzgo3ygjuoyjch0iu7t0');
+        var table = document.getElementById('tinytable_22urfe2w2bm1q104vto6');
         var newRow = table.insertRow(i);
         var newCell = newRow.insertCell(0);
         newCell.setAttribute("colspan", colspan);
@@ -641,8 +647,8 @@ Table&nbsp;2.2: Sample of the <code>legislators_terms</code> table
         // this may be unsafe, but innerText does not interpret <br>
         newCell.innerHTML = content;
       }
-      function spanCell_kzgo3ygjuoyjch0iu7t0(i, j, rowspan, colspan) {
-        var table = document.getElementById("tinytable_kzgo3ygjuoyjch0iu7t0");
+      function spanCell_22urfe2w2bm1q104vto6(i, j, rowspan, colspan) {
+        var table = document.getElementById("tinytable_22urfe2w2bm1q104vto6");
         const targetRow = table.rows[i];
         const targetCell = targetRow.cells[j];
         for (let r = 0; r < rowspan; r++) {
@@ -672,18 +678,18 @@ Table&nbsp;2.2: Sample of the <code>legislators_terms</code> table
       window.addEventListener('load', function () {
           var cellsToStyle = [
             // tinytable style arrays after
-          { positions: [ { i: 19, j: 7 },  ], css_id: 'tinytable_css_ofusr5xnpr94obam1akh',}, 
-          { positions: [ { i: 1, j: 7 }, { i: 2, j: 7 }, { i: 3, j: 7 }, { i: 4, j: 7 }, { i: 5, j: 7 }, { i: 6, j: 7 }, { i: 7, j: 7 }, { i: 8, j: 7 }, { i: 9, j: 7 }, { i: 10, j: 7 }, { i: 11, j: 7 }, { i: 12, j: 7 }, { i: 13, j: 7 }, { i: 14, j: 7 }, { i: 15, j: 7 }, { i: 16, j: 7 }, { i: 17, j: 7 }, { i: 18, j: 7 },  ], css_id: 'tinytable_css_fsnrjimp8y5tywnh9di7',}, 
-          { positions: [ { i: 0, j: 0 }, { i: 0, j: 2 }, { i: 0, j: 4 }, { i: 0, j: 6 }, { i: 0, j: 3 }, { i: 0, j: 5 }, { i: 0, j: 1 },  ], css_id: 'tinytable_css_b3t05do3khzdyxtksk6a',}, 
-          { positions: [ { i: 0, j: 7 },  ], css_id: 'tinytable_css_applqu1r3z1ih4iklkdg',}, 
-          { positions: [ { i: 19, j: 5 }, { i: 19, j: 1 }, { i: 19, j: 3 }, { i: 19, j: 0 }, { i: 19, j: 2 }, { i: 19, j: 4 }, { i: 19, j: 6 },  ], css_id: 'tinytable_css_agemr24waya54d2oj3sx',}, 
-          { positions: [ { i: 6, j: 0 }, { i: 4, j: 0 }, { i: 5, j: 0 }, { i: 10, j: 0 }, { i: 11, j: 0 }, { i: 12, j: 0 }, { i: 13, j: 0 }, { i: 1, j: 0 }, { i: 2, j: 0 }, { i: 3, j: 0 }, { i: 17, j: 0 }, { i: 18, j: 0 }, { i: 12, j: 1 }, { i: 7, j: 0 }, { i: 8, j: 0 }, { i: 9, j: 0 }, { i: 3, j: 1 }, { i: 4, j: 1 }, { i: 5, j: 1 }, { i: 6, j: 1 }, { i: 14, j: 0 }, { i: 15, j: 0 }, { i: 16, j: 0 }, { i: 10, j: 1 }, { i: 11, j: 1 }, { i: 5, j: 2 }, { i: 13, j: 1 }, { i: 1, j: 1 }, { i: 2, j: 1 }, { i: 16, j: 1 }, { i: 17, j: 1 }, { i: 18, j: 1 }, { i: 12, j: 2 }, { i: 7, j: 1 }, { i: 8, j: 1 }, { i: 9, j: 1 }, { i: 3, j: 2 }, { i: 4, j: 2 }, { i: 18, j: 2 }, { i: 6, j: 2 }, { i: 14, j: 1 }, { i: 15, j: 1 }, { i: 9, j: 2 }, { i: 10, j: 2 }, { i: 11, j: 2 }, { i: 5, j: 3 }, { i: 13, j: 2 }, { i: 1, j: 2 }, { i: 2, j: 2 }, { i: 16, j: 2 }, { i: 17, j: 2 }, { i: 11, j: 3 }, { i: 12, j: 3 }, { i: 7, j: 2 }, { i: 8, j: 2 }, { i: 2, j: 3 }, { i: 3, j: 3 }, { i: 4, j: 3 }, { i: 18, j: 3 }, { i: 6, j: 3 }, { i: 14, j: 2 }, { i: 15, j: 2 }, { i: 9, j: 3 }, { i: 10, j: 3 }, { i: 4, j: 4 }, { i: 5, j: 4 }, { i: 13, j: 3 }, { i: 1, j: 3 }, { i: 15, j: 3 }, { i: 16, j: 3 }, { i: 17, j: 3 }, { i: 11, j: 4 }, { i: 12, j: 4 }, { i: 7, j: 3 }, { i: 8, j: 3 }, { i: 2, j: 4 }, { i: 3, j: 4 }, { i: 17, j: 4 }, { i: 18, j: 4 }, { i: 6, j: 4 }, { i: 14, j: 3 }, { i: 8, j: 4 }, { i: 9, j: 4 }, { i: 10, j: 4 }, { i: 4, j: 5 }, { i: 5, j: 5 }, { i: 13, j: 4 }, { i: 1, j: 4 }, { i: 15, j: 4 }, { i: 16, j: 4 }, { i: 10, j: 5 }, { i: 11, j: 5 }, { i: 12, j: 5 }, { i: 7, j: 4 }, { i: 1, j: 5 }, { i: 2, j: 5 }, { i: 3, j: 5 }, { i: 17, j: 5 }, { i: 18, j: 5 }, { i: 6, j: 5 }, { i: 14, j: 4 }, { i: 8, j: 5 }, { i: 9, j: 5 }, { i: 3, j: 6 }, { i: 4, j: 6 }, { i: 5, j: 6 }, { i: 13, j: 5 }, { i: 14, j: 5 }, { i: 15, j: 5 }, { i: 16, j: 5 }, { i: 10, j: 6 }, { i: 11, j: 6 }, { i: 12, j: 6 }, { i: 7, j: 5 }, { i: 1, j: 6 }, { i: 2, j: 6 }, { i: 16, j: 6 }, { i: 17, j: 6 }, { i: 18, j: 6 }, { i: 6, j: 6 }, { i: 7, j: 6 }, { i: 8, j: 6 }, { i: 9, j: 6 }, { i: 14, j: 6 }, { i: 15, j: 6 }, { i: 13, j: 6 },  ], css_id: 'tinytable_css_99qtn2vrplebocup6n9q',}, 
+          { positions: [ { i: 19, j: 7 },  ], css_id: 'tinytable_css_oqk9ev15e192iu8psmxa',}, 
+          { positions: [ { i: 0, j: 7 },  ], css_id: 'tinytable_css_h26lz08g8n65a1c7k6nq',}, 
+          { positions: [ { i: 0, j: 0 }, { i: 0, j: 2 }, { i: 0, j: 4 }, { i: 0, j: 6 }, { i: 0, j: 3 }, { i: 0, j: 5 }, { i: 0, j: 1 },  ], css_id: 'tinytable_css_99pv76ffjnxji0vb9ea7',}, 
+          { positions: [ { i: 1, j: 7 }, { i: 2, j: 7 }, { i: 3, j: 7 }, { i: 4, j: 7 }, { i: 5, j: 7 }, { i: 6, j: 7 }, { i: 7, j: 7 }, { i: 8, j: 7 }, { i: 9, j: 7 }, { i: 10, j: 7 }, { i: 11, j: 7 }, { i: 12, j: 7 }, { i: 13, j: 7 }, { i: 14, j: 7 }, { i: 15, j: 7 }, { i: 16, j: 7 }, { i: 17, j: 7 }, { i: 18, j: 7 },  ], css_id: 'tinytable_css_6nknbochuuj02h1dol6z',}, 
+          { positions: [ { i: 6, j: 0 }, { i: 4, j: 0 }, { i: 5, j: 0 }, { i: 10, j: 0 }, { i: 11, j: 0 }, { i: 12, j: 0 }, { i: 13, j: 0 }, { i: 1, j: 0 }, { i: 2, j: 0 }, { i: 3, j: 0 }, { i: 17, j: 0 }, { i: 18, j: 0 }, { i: 12, j: 1 }, { i: 7, j: 0 }, { i: 8, j: 0 }, { i: 9, j: 0 }, { i: 3, j: 1 }, { i: 4, j: 1 }, { i: 5, j: 1 }, { i: 6, j: 1 }, { i: 14, j: 0 }, { i: 15, j: 0 }, { i: 16, j: 0 }, { i: 10, j: 1 }, { i: 11, j: 1 }, { i: 5, j: 2 }, { i: 13, j: 1 }, { i: 1, j: 1 }, { i: 2, j: 1 }, { i: 16, j: 1 }, { i: 17, j: 1 }, { i: 18, j: 1 }, { i: 12, j: 2 }, { i: 7, j: 1 }, { i: 8, j: 1 }, { i: 9, j: 1 }, { i: 3, j: 2 }, { i: 4, j: 2 }, { i: 18, j: 2 }, { i: 6, j: 2 }, { i: 14, j: 1 }, { i: 15, j: 1 }, { i: 9, j: 2 }, { i: 10, j: 2 }, { i: 11, j: 2 }, { i: 5, j: 3 }, { i: 13, j: 2 }, { i: 1, j: 2 }, { i: 2, j: 2 }, { i: 16, j: 2 }, { i: 17, j: 2 }, { i: 11, j: 3 }, { i: 12, j: 3 }, { i: 7, j: 2 }, { i: 8, j: 2 }, { i: 2, j: 3 }, { i: 3, j: 3 }, { i: 4, j: 3 }, { i: 18, j: 3 }, { i: 6, j: 3 }, { i: 14, j: 2 }, { i: 15, j: 2 }, { i: 9, j: 3 }, { i: 10, j: 3 }, { i: 4, j: 4 }, { i: 5, j: 4 }, { i: 13, j: 3 }, { i: 1, j: 3 }, { i: 15, j: 3 }, { i: 16, j: 3 }, { i: 17, j: 3 }, { i: 11, j: 4 }, { i: 12, j: 4 }, { i: 7, j: 3 }, { i: 8, j: 3 }, { i: 2, j: 4 }, { i: 3, j: 4 }, { i: 17, j: 4 }, { i: 18, j: 4 }, { i: 6, j: 4 }, { i: 14, j: 3 }, { i: 8, j: 4 }, { i: 9, j: 4 }, { i: 10, j: 4 }, { i: 4, j: 5 }, { i: 5, j: 5 }, { i: 13, j: 4 }, { i: 1, j: 4 }, { i: 15, j: 4 }, { i: 16, j: 4 }, { i: 10, j: 5 }, { i: 11, j: 5 }, { i: 12, j: 5 }, { i: 7, j: 4 }, { i: 1, j: 5 }, { i: 2, j: 5 }, { i: 3, j: 5 }, { i: 17, j: 5 }, { i: 18, j: 5 }, { i: 6, j: 5 }, { i: 14, j: 4 }, { i: 8, j: 5 }, { i: 9, j: 5 }, { i: 3, j: 6 }, { i: 4, j: 6 }, { i: 5, j: 6 }, { i: 13, j: 5 }, { i: 14, j: 5 }, { i: 15, j: 5 }, { i: 16, j: 5 }, { i: 10, j: 6 }, { i: 11, j: 6 }, { i: 12, j: 6 }, { i: 7, j: 5 }, { i: 1, j: 6 }, { i: 2, j: 6 }, { i: 16, j: 6 }, { i: 17, j: 6 }, { i: 18, j: 6 }, { i: 6, j: 6 }, { i: 7, j: 6 }, { i: 8, j: 6 }, { i: 9, j: 6 }, { i: 14, j: 6 }, { i: 15, j: 6 }, { i: 13, j: 6 },  ], css_id: 'tinytable_css_6d8fm510t4fibqv5c8b6',}, 
+          { positions: [ { i: 19, j: 5 }, { i: 19, j: 1 }, { i: 19, j: 3 }, { i: 19, j: 0 }, { i: 19, j: 2 }, { i: 19, j: 4 }, { i: 19, j: 6 },  ], css_id: 'tinytable_css_38590smb2tfkp2be4otv',}, 
           ];
 
           // Loop over the arrays to style the cells
           cellsToStyle.forEach(function (group) {
               group.positions.forEach(function (cell) {
-                  styleCell_kzgo3ygjuoyjch0iu7t0(cell.i, cell.j, group.css_id);
+                  styleCell_22urfe2w2bm1q104vto6(cell.i, cell.j, group.css_id);
               });
           });
       });
@@ -691,15 +697,15 @@ Table&nbsp;2.2: Sample of the <code>legislators_terms</code> table
 
     <style>
       /* tinytable css entries after */
-      .table td.tinytable_css_ofusr5xnpr94obam1akh, .table th.tinytable_css_ofusr5xnpr94obam1akh { font-size: 0.8em; border-bottom: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.1em; }
-      .table td.tinytable_css_fsnrjimp8y5tywnh9di7, .table th.tinytable_css_fsnrjimp8y5tywnh9di7 { font-size: 0.8em; padding-bottom: 0em; }
-      .table td.tinytable_css_b3t05do3khzdyxtksk6a, .table th.tinytable_css_b3t05do3khzdyxtksk6a { font-size: 0.8em; border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; border-bottom: solid #d3d8dc 0.1em; padding-right: 0.1em; padding-bottom: 0em; }
-      .table td.tinytable_css_applqu1r3z1ih4iklkdg, .table th.tinytable_css_applqu1r3z1ih4iklkdg { font-size: 0.8em; border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; border-bottom: solid #d3d8dc 0.1em; padding-bottom: 0em; }
-      .table td.tinytable_css_agemr24waya54d2oj3sx, .table th.tinytable_css_agemr24waya54d2oj3sx { font-size: 0.8em; border-bottom: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.1em; padding-right: 0.1em; }
-      .table td.tinytable_css_99qtn2vrplebocup6n9q, .table th.tinytable_css_99qtn2vrplebocup6n9q { font-size: 0.8em; padding-right: 0.1em; padding-bottom: 0em; }
+      .table td.tinytable_css_oqk9ev15e192iu8psmxa, .table th.tinytable_css_oqk9ev15e192iu8psmxa { font-size: 0.8em; border-bottom: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.1em; }
+      .table td.tinytable_css_h26lz08g8n65a1c7k6nq, .table th.tinytable_css_h26lz08g8n65a1c7k6nq { font-size: 0.8em; border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; border-bottom: solid #d3d8dc 0.1em; padding-bottom: 0em; }
+      .table td.tinytable_css_99pv76ffjnxji0vb9ea7, .table th.tinytable_css_99pv76ffjnxji0vb9ea7 { font-size: 0.8em; border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; border-bottom: solid #d3d8dc 0.1em; padding-right: 0.1em; padding-bottom: 0em; }
+      .table td.tinytable_css_6nknbochuuj02h1dol6z, .table th.tinytable_css_6nknbochuuj02h1dol6z { font-size: 0.8em; padding-bottom: 0em; }
+      .table td.tinytable_css_6d8fm510t4fibqv5c8b6, .table th.tinytable_css_6d8fm510t4fibqv5c8b6 { font-size: 0.8em; padding-right: 0.1em; padding-bottom: 0em; }
+      .table td.tinytable_css_38590smb2tfkp2be4otv, .table th.tinytable_css_38590smb2tfkp2be4otv { font-size: 0.8em; border-bottom: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.1em; padding-right: 0.1em; }
     </style>
     <div class="container">
-      <table class="table table-borderless" id="tinytable_kzgo3ygjuoyjch0iu7t0" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
+      <table class="table table-borderless" id="tinytable_22urfe2w2bm1q104vto6" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
         <thead>
         
               <tr>
@@ -916,15 +922,15 @@ Table&nbsp;2.2: Sample of the <code>legislators_terms</code> table
 </div>
 <p>Now that we have an understanding of what cohort analysis is and of the data set we’ll be using for examples, let’s get into how to write SQL for retention analysis. The key question SQL will help us answer is: once representatives take office, how long do they keep their jobs?</p>
 </section>
-<section id="retention" class="level2" data-number="2.3">
-<h2 data-number="2.3" class="anchored" data-anchor-id="retention"><span class="header-section-number">2.3</span> Retention</h2>
+<section id="retention" class="level2" data-number="3.3">
+<h2 data-number="3.3" class="anchored" data-anchor-id="retention"><span class="header-section-number">3.3</span> Retention</h2>
 <p>One of the most common types of cohort analysis is retention analysis. To retain is to keep or continue something. Many skills need to be practiced to be retained. Businesses usually want their customers to keep purchasing their products or using their services, since retaining customers is more profitable than acquiring new ones. Employers want to retain their employees, because recruiting replacements is expensive and time consuming. Elected officials seek reelection in order to continue working on the priorities of their constituents.</p>
 <p>The main question in retention analysis is whether the starting size of the cohort—number of subscribers or employees, amount spent, or another key metric—will remain constant, decay, or increase over time. When there is an increase or a decrease, the amount and speed of change are also interesting questions. In most retention analyses, the starting size will tend to decay over time, since a cohort can lose but cannot gain new members once it is formed. Revenue is an interesting exception, since a cohort of customers can spend more in subsequent months than they did in the first month collectively, even if some of them churn.</p>
 <p>Retention analysis uses the count of entities or sum of money or actions present in the data set for each period from the starting date, and it normalizes by dividing this number by the count or sum of entities, money, or actions in the first time period. The result is expressed as a percentage, and retention in the starting period is always 100%. Over time, retention based on counts generally declines and can never exceed 100%, whereas money- or action-based retention, while often declining, can increase and be greater than 100% in a time period. Retention analysis output is typically displayed in either table or graph form, which is referred to as a retention curve. We’ll see a number of examples of retention curves later in this chapter.</p>
 <p>Graphs of retention curves can be used to compare cohorts. The first characteristic to pay attention to is the shape of the curve in the initial few periods, where there is often an initial steep drop. For many consumer apps, losing half a cohort in the first few months is common. A cohort with a curve that is either more or less steep than others can indicate changes in the product or customer acquisition source that merit further investigation. A second characteristic to look for is whether the curve flattens after some number of periods or continues declining rapidly to zero. A flattening curve indicates that there is a point in time from which most of the cohort that remains stays indefinitely. A retention curve that inflects upward, sometimes called a smile curve, can occur if cohort members return or reactivate after falling out of the data set for some period. Finally, retention curves that measure subscription revenue are monitored for signs of increasing revenue per customer over time, a sign of a healthy SaaS software business.</p>
 <p>This section will show how to create a retention analysis, add cohort groupings from the time series itself and other tables, and handle missing and sparse data that can occur in time series data. With this framework in hand, you’ll learn in the subsequent section how to make modifications to create the other related types of cohort analysis. As a result, this section on retention will be the longest one in the chapter, as you build up code and develop your intuition about the calculations.</p>
-<section id="sql-for-a-basic-retention-curve" class="level3" data-number="2.3.1">
-<h3 data-number="2.3.1" class="anchored" data-anchor-id="sql-for-a-basic-retention-curve"><span class="header-section-number">2.3.1</span> SQL for a Basic Retention Curve</h3>
+<section id="sql-for-a-basic-retention-curve" class="level3" data-number="3.3.1">
+<h3 data-number="3.3.1" class="anchored" data-anchor-id="sql-for-a-basic-retention-curve"><span class="header-section-number">3.3.1</span> SQL for a Basic Retention Curve</h3>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> id_bioguide, <span class="fu">min</span>(term_start) <span class="kw">AS</span> first_term</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> legislators_terms </span>
@@ -940,44 +946,44 @@ Table&nbsp;2.2: Sample of the <code>legislators_terms</code> table
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: left;">B000944</td>
-<td style="text-align: left;">1993-01-05</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">C000127</td>
-<td style="text-align: left;">1993-01-05</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">C001070</td>
+<td style="text-align: left;">K000367</td>
 <td style="text-align: left;">2007-01-04</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">F000469</td>
-<td style="text-align: left;">2019-01-03</td>
+<td style="text-align: left;">I000024</td>
+<td style="text-align: left;">1987-01-06</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">S000770</td>
+<td style="text-align: left;">R000307</td>
+<td style="text-align: left;">1981-01-05</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">W000805</td>
+<td style="text-align: left;">2009-01-06</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">A000055</td>
 <td style="text-align: left;">1997-01-07</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">B001261</td>
-<td style="text-align: left;">2007-06-25</td>
+<td style="text-align: left;">B000490</td>
+<td style="text-align: left;">1993-01-05</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">M001183</td>
-<td style="text-align: left;">2010-11-15</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">B001230</td>
-<td style="text-align: left;">1999-01-06</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">B001270</td>
+<td style="text-align: left;">B001277</td>
 <td style="text-align: left;">2011-01-05</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">B001251</td>
-<td style="text-align: left;">2004-07-21</td>
+<td style="text-align: left;">B000575</td>
+<td style="text-align: left;">1997-01-07</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">B000755</td>
+<td style="text-align: left;">1997-01-07</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">C000059</td>
+<td style="text-align: left;">1993-01-05</td>
 </tr>
 </tbody>
 </table>
@@ -1131,7 +1137,7 @@ Window aliases
 <span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> cohort_stats</span>
 <span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a><span class="kw">ORDER</span> <span class="kw">BY</span> <span class="dv">1</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>We now have a retention calculation, and we can see that there is a big drop-off between the 100% of legislators retained in period 0, or on their start date, and the share with another term record that starts a year later. Graphing the results, as in <a href="dbplyr.html#fig-retained" class="quarto-xref">Figure&nbsp;<span>3.1</span></a>, demonstrates how the curve flattens and eventually goes to zero, as even the longest-serving legislators eventually retire or die.</p>
+<p>We now have a retention calculation, and we can see that there is a big drop-off between the 100% of legislators retained in period 0, or on their start date, and the share with another term record that starts a year later. Graphing the results, as in <a href="dbplyr.html#fig-retained" class="quarto-xref">Figure&nbsp;<span>4.1</span></a>, demonstrates how the curve flattens and eventually goes to zero, as even the longest-serving legislators eventually retire or die.</p>
 <div class="cell">
 <div class="cell-output-display">
 <div id="fig-retained" class="quarto-float quarto-figure quarto-figure-center anchored">
@@ -1140,7 +1146,7 @@ Window aliases
 <img src="ctes_comments_files/figure-html/fig-retained-1.png" class="img-fluid figure-img" width="672">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-retained-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;2.1: Retention from start of first term for US legislators
+Figure&nbsp;3.1: Retention from start of first term for US legislators
 </figcaption>
 </figure>
 </div>
@@ -1208,8 +1214,8 @@ Figure&nbsp;2.1: Retention from start of first term for US legislators
 </div>
 <p>Retention appears to be quite low, and from the graph we can see that it is jagged in the first few years. One reason for this is that a representative’s term lasts two years, and senators’ terms last six years, but the data set only contains records for the start of new terms; thus we are missing data for years in which a legislator was still in office but did not start a new term. Measuring retention each year is misleading in this case. One option is to measure retention only on a two- or six-year cycle, but there is also another strategy we can employ to fill in the “missing” data. I will cover this next before returning to the topic of forming cohort groups.</p>
 </section>
-<section id="adjusting-time-series-to-increase-retention-accuracy" class="level3" data-number="2.3.2">
-<h3 data-number="2.3.2" class="anchored" data-anchor-id="adjusting-time-series-to-increase-retention-accuracy"><span class="header-section-number">2.3.2</span> Adjusting Time Series to Increase Retention Accuracy</h3>
+<section id="adjusting-time-series-to-increase-retention-accuracy" class="level3" data-number="3.3.2">
+<h3 data-number="3.3.2" class="anchored" data-anchor-id="adjusting-time-series-to-increase-retention-accuracy"><span class="header-section-number">3.3.2</span> Adjusting Time Series to Increase Retention Accuracy</h3>
 <p>We discussed techniques for cleaning “missing” data in Chapter 2, and we will turn to those techniques in this section in order to arrive at a smoother and more truthful retention curve for the legislators. When working with time series data, such as in cohort analysis, it’s important to consider not only the data that is present but also whether that data accurately reflects the presence or absence of entities at each time period. This is particularly a problem in contexts in which an event captured in the data leads to the entity persisting for some period of time that is not captured in the data. For example, a customer buying a software subscription is represented in the data at the time of the transaction, but that customer is entitled to use the software for months or years and is not necessarily represented in the data over that span. To correct for this, we need a way to derive the span of time in which the entity is still present, either with an explicit end date or with knowledge of the length of the subscription or term. Then we can say that the entity was present at any date in between those start and end dates.</p>
 <p>In the legislators data set, we have a record for a term’s start date, but we are missing the notion that this “entitles” a legislator to serve for two or six years, depending on the chamber. To correct for this and smooth out the curve, we need to fill in the “missing” values for the years that legislators are still in office between new terms. Since this data set includes a <code>term_end</code> value for each term, I’ll show how to create a more accurate cohort retention analysis by filling in dates between the start and end values. Then I’ll show how you can impute end dates when the data set does not include an end date.</p>
 <p>Calculating retention using a start and end date defined in the data is the most accurate approach. For the following examples, we will consider legislators retained in a particular year if they were still in office as of the last day of the year, December 31. Prior to the Twentieth Amendment to the US Constitution, terms began on March 4, but afterward the start date moved to January 3, or to a subsequent weekday if the third falls on a weekend. Legislators can be sworn in on other days of the year due to special off-cycle elections or appointments to fill vacant seats. As a result, term_start dates cluster in January but are spread across the year. While we could pick another day, December 31 is a strategy for normalizing around these varying start dates.</p>
@@ -1492,7 +1498,7 @@ Tip
 <span id="cb12-32"><a href="#cb12-32" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> cohort_stats</span>
 <span id="cb12-33"><a href="#cb12-33" aria-hidden="true" tabindex="-1"></a><span class="kw">ORDER</span> <span class="kw">BY</span> <span class="dv">1</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>The results, graphed in <a href="dbplyr.html#fig-pct-retained" class="quarto-xref">Figure&nbsp;<span>3.2</span></a>, are now much more accurate. Almost all legislators are still in office in year 1, and the first big drop-off occurs in year 2, when some representatives will fail to be reelected.</p>
+<p>The results, graphed in <a href="dbplyr.html#fig-pct-retained" class="quarto-xref">Figure&nbsp;<span>4.2</span></a>, are now much more accurate. Almost all legislators are still in office in year 1, and the first big drop-off occurs in year 2, when some representatives will fail to be reelected.</p>
 <div class="cell">
 <div class="cell-output-display">
 <div id="fig-pct-retained" class="quarto-float quarto-figure quarto-figure-center anchored">
@@ -1501,7 +1507,7 @@ Tip
 <img src="ctes_comments_files/figure-html/fig-pct-retained-1.png" class="img-fluid figure-img" width="672">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-pct-retained-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;2.2: Legislator retention after adjusting for actual years in office
+Figure&nbsp;3.2: Legislator retention after adjusting for actual years in office
 </figcaption>
 </figure>
 </div>
@@ -1697,8 +1703,8 @@ Figure&nbsp;2.2: Legislator retention after adjusting for actual years in office
 <p>Any time we make adjustments to fill in missing data, we need to be careful about the assumptions we make. In subscription- or term-based contexts, explicit start and end dates tend to be most accurate. Either of the two other methods shown—adding a fixed interval or setting the end date relative to the next start date—can be used when no end date is present and we have a reasonable expectation that most customers or users will stay for the duration assumed.</p>
 <p>Now that we’ve seen how to calculate a basic retention curve and correct for missing dates, we can start adding in cohort groups. Comparing retention between different groups is one of the main reasons to do cohort analysis. Next, I’ll discuss forming groups from the time series itself, and after that, I’ll discuss forming cohort groups from data in other tables.</p>
 </section>
-<section id="cohorts-derived-from-the-time-series-itself" class="level3" data-number="2.3.3">
-<h3 data-number="2.3.3" class="anchored" data-anchor-id="cohorts-derived-from-the-time-series-itself"><span class="header-section-number">2.3.3</span> Cohorts Derived from the Time Series Itself</h3>
+<section id="cohorts-derived-from-the-time-series-itself" class="level3" data-number="3.3.3">
+<h3 data-number="3.3.3" class="anchored" data-anchor-id="cohorts-derived-from-the-time-series-itself"><span class="header-section-number">3.3.3</span> Cohorts Derived from the Time Series Itself</h3>
 <p>Now that we have SQL code to calculate retention, we can start to split the entities into cohorts. In this section, I will show how to derive cohort groupings from the time series itself. First I’ll discuss time-based cohorts based on the first date, and I’ll explain how to make cohorts based on other attributes from the time series.</p>
 <p>The most common way to create the cohorts is based on the first or minimum date or time that the entity appears in the time series. This means that only one table is necessary for the cohort retention analysis: the time series itself. Cohorting by the first appearance or action is interesting because often groups that start at different times behave differently. For consumer services, early adopters are often more enthusiastic and retain differently than later adopters, whereas in SaaS software, later adopters may retain better because the product is more mature. Time-based cohorts can be grouped by any time granularity that is meaningful to the organization, though weekly, monthly, or yearly cohorts are common. If you’re not sure what grouping to use, try running the cohort analysis with different groupings, without making the cohort sizes too small, to see where meaningful patterns emerge. Fortunately, once you know how to construct the cohorts and retention analysis, substituting different time granularities is straightforward.</p>
 <p>The first example will use yearly cohorts, and then I will demonstrate swapping in centuries. The key question we will consider is whether the era in which a legislator first took office has any correlation with their retention. Political trends and the public mood do change over time, but by how much?</p>
@@ -1843,72 +1849,72 @@ Figure&nbsp;2.2: Legislator retention after adjusting for actual years in office
 <tr class="odd">
 <td style="text-align: right;">1789</td>
 <td style="text-align: right;">0</td>
+<td style="text-align: right;">40</td>
 <td style="text-align: right;">89</td>
-<td style="text-align: right;">89</td>
-<td style="text-align: right;">1.0000000</td>
+<td style="text-align: right;">2.225</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">1789</td>
 <td style="text-align: right;">1</td>
+<td style="text-align: right;">40</td>
 <td style="text-align: right;">89</td>
-<td style="text-align: right;">89</td>
-<td style="text-align: right;">1.0000000</td>
+<td style="text-align: right;">2.225</td>
 </tr>
 <tr class="odd">
 <td style="text-align: right;">1789</td>
 <td style="text-align: right;">2</td>
-<td style="text-align: right;">89</td>
+<td style="text-align: right;">40</td>
 <td style="text-align: right;">57</td>
-<td style="text-align: right;">0.6404494</td>
+<td style="text-align: right;">1.425</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">1789</td>
 <td style="text-align: right;">3</td>
-<td style="text-align: right;">89</td>
+<td style="text-align: right;">40</td>
 <td style="text-align: right;">56</td>
-<td style="text-align: right;">0.6292135</td>
+<td style="text-align: right;">1.400</td>
 </tr>
 <tr class="odd">
 <td style="text-align: right;">1789</td>
 <td style="text-align: right;">4</td>
-<td style="text-align: right;">89</td>
+<td style="text-align: right;">40</td>
 <td style="text-align: right;">42</td>
-<td style="text-align: right;">0.4719101</td>
+<td style="text-align: right;">1.050</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">1789</td>
 <td style="text-align: right;">5</td>
-<td style="text-align: right;">89</td>
 <td style="text-align: right;">40</td>
-<td style="text-align: right;">0.4494382</td>
+<td style="text-align: right;">40</td>
+<td style="text-align: right;">1.000</td>
 </tr>
 <tr class="odd">
 <td style="text-align: right;">1789</td>
 <td style="text-align: right;">6</td>
-<td style="text-align: right;">89</td>
+<td style="text-align: right;">40</td>
 <td style="text-align: right;">31</td>
-<td style="text-align: right;">0.3483146</td>
+<td style="text-align: right;">0.775</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">1789</td>
 <td style="text-align: right;">7</td>
-<td style="text-align: right;">89</td>
+<td style="text-align: right;">40</td>
 <td style="text-align: right;">32</td>
-<td style="text-align: right;">0.3595506</td>
+<td style="text-align: right;">0.800</td>
 </tr>
 <tr class="odd">
 <td style="text-align: right;">1789</td>
 <td style="text-align: right;">8</td>
-<td style="text-align: right;">89</td>
+<td style="text-align: right;">40</td>
 <td style="text-align: right;">20</td>
-<td style="text-align: right;">0.2247191</td>
+<td style="text-align: right;">0.500</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">1789</td>
 <td style="text-align: right;">9</td>
-<td style="text-align: right;">89</td>
+<td style="text-align: right;">40</td>
 <td style="text-align: right;">19</td>
-<td style="text-align: right;">0.2134831</td>
+<td style="text-align: right;">0.475</td>
 </tr>
 </tbody>
 </table>
@@ -2001,7 +2007,7 @@ Centuries
 <span id="cb19-29"><a href="#cb19-29" aria-hidden="true" tabindex="-1"></a>WINDOW w <span class="kw">AS</span> (<span class="kw">PARTITION</span> <span class="kw">BY</span> <span class="dv">1</span> <span class="kw">ORDER</span> <span class="kw">BY</span> <span class="dv">2</span>)</span>
 <span id="cb19-30"><a href="#cb19-30" aria-hidden="true" tabindex="-1"></a><span class="kw">ORDER</span> <span class="kw">BY</span> <span class="dv">1</span>, <span class="dv">2</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>The results are graphed in <a href="dbplyr.html#fig-cen-pct-retained" class="quarto-xref">Figure&nbsp;<span>3.3</span></a>. Retention in the early years has been higher for those first elected in the 20th or 21st century. The 21st century is still under way, and thus many of those legislators have not had the opportunity to stay in office for five or more years, though they are still included in the denominator. We might want to consider removing the 21st century from the analysis, but I’ve left it here to demonstrate how the retention curve drops artificially due to this circumstance.</p>
+<p>The results are graphed in <a href="dbplyr.html#fig-cen-pct-retained" class="quarto-xref">Figure&nbsp;<span>4.3</span></a>. Retention in the early years has been higher for those first elected in the 20th or 21st century. The 21st century is still under way, and thus many of those legislators have not had the opportunity to stay in office for five or more years, though they are still included in the denominator. We might want to consider removing the 21st century from the analysis, but I’ve left it here to demonstrate how the retention curve drops artificially due to this circumstance.</p>
 <div class="cell">
 <div class="cell-output-display">
 <div id="fig-cen-pct-retained" class="quarto-float quarto-figure quarto-figure-center anchored">
@@ -2010,7 +2016,7 @@ Centuries
 <img src="ctes_comments_files/figure-html/fig-cen-pct-retained-1.png" class="img-fluid figure-img" width="672">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-cen-pct-retained-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;2.3: Legislator retention by century in which first term began
+Figure&nbsp;3.3: Legislator retention by century in which first term began
 </figcaption>
 </figure>
 </div>
@@ -2049,54 +2055,54 @@ Warning
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: left;">S000946</td>
-<td style="text-align: left;">1931-12-07</td>
-<td style="text-align: left;">PA</td>
+<td style="text-align: left;">A000001</td>
+<td style="text-align: left;">1951-01-03</td>
+<td style="text-align: left;">ND</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">T000014</td>
-<td style="text-align: left;">1915-12-06</td>
-<td style="text-align: left;">MA</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">T000296</td>
-<td style="text-align: left;">1837-09-04</td>
-<td style="text-align: left;">PA</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">T000418</td>
-<td style="text-align: left;">1827-12-03</td>
+<td style="text-align: left;">A000094</td>
+<td style="text-align: left;">1953-01-03</td>
 <td style="text-align: left;">NC</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">T000424</td>
-<td style="text-align: left;">1997-01-07</td>
-<td style="text-align: left;">TX</td>
+<td style="text-align: left;">B000016</td>
+<td style="text-align: left;">1885-12-07</td>
+<td style="text-align: left;">NY</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">T000466</td>
-<td style="text-align: left;">2009-01-06</td>
-<td style="text-align: left;">NM</td>
+<td style="text-align: left;">B000368</td>
+<td style="text-align: left;">1815-12-04</td>
+<td style="text-align: left;">NJ</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">T000467</td>
-<td style="text-align: left;">2009-01-06</td>
-<td style="text-align: left;">PA</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">W000171</td>
-<td style="text-align: left;">1905-12-04</td>
-<td style="text-align: left;">MA</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">W000209</td>
-<td style="text-align: left;">1875-12-06</td>
+<td style="text-align: left;">B000433</td>
+<td style="text-align: left;">1811-11-04</td>
 <td style="text-align: left;">KY</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">W000410</td>
-<td style="text-align: left;">1957-01-03</td>
+<td style="text-align: left;">B000438</td>
+<td style="text-align: left;">1877-10-15</td>
+<td style="text-align: left;">IN</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">B000898</td>
+<td style="text-align: left;">1887-12-05</td>
 <td style="text-align: left;">NC</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">B000954</td>
+<td style="text-align: left;">1923-12-03</td>
+<td style="text-align: left;">NJ</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">B001119</td>
+<td style="text-align: left;">1887-12-05</td>
+<td style="text-align: left;">MA</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">B001149</td>
+<td style="text-align: left;">1983-01-03</td>
+<td style="text-align: left;">IN</td>
 </tr>
 </tbody>
 </table>
@@ -2159,8 +2165,8 @@ Replacing windows
 
     <script>
 
-      function styleCell_ifp8gh8jp64j92a1p6q0(i, j, css_id) {
-          var table = document.getElementById("tinytable_ifp8gh8jp64j92a1p6q0");
+      function styleCell_il5vq0law9h2pqnte3b3(i, j, css_id) {
+          var table = document.getElementById("tinytable_il5vq0law9h2pqnte3b3");
           var cell = table.rows[i]?.cells[j];  // Safe navigation to avoid errors
           if (cell) {
               console.log(`Styling cell at (${i}, ${j}) with class ${css_id}`);
@@ -2170,7 +2176,7 @@ Replacing windows
           }
       }
       function insertSpanRow(i, colspan, content) {
-        var table = document.getElementById('tinytable_ifp8gh8jp64j92a1p6q0');
+        var table = document.getElementById('tinytable_il5vq0law9h2pqnte3b3');
         var newRow = table.insertRow(i);
         var newCell = newRow.insertCell(0);
         newCell.setAttribute("colspan", colspan);
@@ -2178,8 +2184,8 @@ Replacing windows
         // this may be unsafe, but innerText does not interpret <br>
         newCell.innerHTML = content;
       }
-      function spanCell_ifp8gh8jp64j92a1p6q0(i, j, rowspan, colspan) {
-        var table = document.getElementById("tinytable_ifp8gh8jp64j92a1p6q0");
+      function spanCell_il5vq0law9h2pqnte3b3(i, j, rowspan, colspan) {
+        var table = document.getElementById("tinytable_il5vq0law9h2pqnte3b3");
         const targetRow = table.rows[i];
         const targetCell = targetRow.cells[j];
         for (let r = 0; r < rowspan; r++) {
@@ -2209,14 +2215,14 @@ Replacing windows
       window.addEventListener('load', function () {
           var cellsToStyle = [
             // tinytable style arrays after
-          { positions: [ { i: 0, j: 0 }, { i: 0, j: 1 }, { i: 0, j: 2 }, { i: 0, j: 3 }, { i: 0, j: 4 },  ], css_id: 'tinytable_css_z5tgfoyyudx2nn701504',}, 
-          { positions: [ { i: 6, j: 0 }, { i: 6, j: 1 }, { i: 6, j: 2 }, { i: 6, j: 3 }, { i: 6, j: 4 },  ], css_id: 'tinytable_css_oilzzbzff5ek5lw3hgno',}, 
+          { positions: [ { i: 0, j: 0 }, { i: 0, j: 1 }, { i: 0, j: 2 }, { i: 0, j: 3 }, { i: 0, j: 4 },  ], css_id: 'tinytable_css_vu90nem0k1o3xenbsr5y',}, 
+          { positions: [ { i: 6, j: 0 }, { i: 6, j: 1 }, { i: 6, j: 2 }, { i: 6, j: 3 }, { i: 6, j: 4 },  ], css_id: 'tinytable_css_1oh0xfa0ge07tmvg8y0o',}, 
           ];
 
           // Loop over the arrays to style the cells
           cellsToStyle.forEach(function (group) {
               group.positions.forEach(function (cell) {
-                  styleCell_ifp8gh8jp64j92a1p6q0(cell.i, cell.j, group.css_id);
+                  styleCell_il5vq0law9h2pqnte3b3(cell.i, cell.j, group.css_id);
               });
           });
       });
@@ -2224,11 +2230,11 @@ Replacing windows
 
     <style>
       /* tinytable css entries after */
-      .table td.tinytable_css_z5tgfoyyudx2nn701504, .table th.tinytable_css_z5tgfoyyudx2nn701504 { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
-      .table td.tinytable_css_oilzzbzff5ek5lw3hgno, .table th.tinytable_css_oilzzbzff5ek5lw3hgno { border-bottom: solid #d3d8dc 0.1em; }
+      .table td.tinytable_css_vu90nem0k1o3xenbsr5y, .table th.tinytable_css_vu90nem0k1o3xenbsr5y { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
+      .table td.tinytable_css_1oh0xfa0ge07tmvg8y0o, .table th.tinytable_css_1oh0xfa0ge07tmvg8y0o { border-bottom: solid #d3d8dc 0.1em; }
     </style>
     <div class="container">
-      <table class="table table-borderless" id="tinytable_ifp8gh8jp64j92a1p6q0" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
+      <table class="table table-borderless" id="tinytable_il5vq0law9h2pqnte3b3" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
         <thead>
         
               <tr>
@@ -2289,7 +2295,7 @@ Replacing windows
 <!-- hack to avoid NA insertion in last line -->
 </div>
 </div>
-<p>The retention curves for the five states with the highest total number of legislators are graphed in <a href="dbplyr.html#fig-state-pct-retaineds" class="quarto-xref">Figure&nbsp;<span>3.4</span></a>. Those elected in Illinois and Massachusetts have the highest retention, while New Yorkers have the lowest retention. Determining the reasons why would be an interesting offshoot of this analysis.</p>
+<p>The retention curves for the five states with the highest total number of legislators are graphed in <a href="dbplyr.html#fig-state-pct-retaineds" class="quarto-xref">Figure&nbsp;<span>4.4</span></a>. Those elected in Illinois and Massachusetts have the highest retention, while New Yorkers have the lowest retention. Determining the reasons why would be an interesting offshoot of this analysis.</p>
 <div class="cell">
 <div class="cell-output-display">
 <div id="fig-state-pct-retaineds" class="quarto-float quarto-figure quarto-figure-center anchored">
@@ -2298,7 +2304,7 @@ Replacing windows
 <img src="ctes_comments_files/figure-html/fig-state-pct-retaineds-1.png" class="img-fluid figure-img" width="672">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-state-pct-retaineds-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;2.4: Legislator retention by first state: top five states by total legislators
+Figure&nbsp;3.4: Legislator retention by first state: top five states by total legislators
 </figcaption>
 </figure>
 </div>
@@ -2306,8 +2312,8 @@ Figure&nbsp;2.4: Legislator retention by first state: top five states by total l
 </div>
 <p>Defining cohorts from the time series is relatively straightforward using a <code>min</code> date for each entity and then converting that date into a month, year, or century as appropriate for the analysis. Switching between month and year or other levels of granularity also is straightforward, allowing for multiple options to be tested in order to find a grouping that is meaningful for the organization. Other attributes can be used for cohorting with the <code>first_value</code> window function. Next, we’ll turn to cases in which the cohorting attribute comes from a table other than that of the time series.</p>
 </section>
-<section id="defining-the-cohort-from-a-separate-table" class="level3" data-number="2.3.4">
-<h3 data-number="2.3.4" class="anchored" data-anchor-id="defining-the-cohort-from-a-separate-table"><span class="header-section-number">2.3.4</span> Defining the Cohort from a Separate Table</h3>
+<section id="defining-the-cohort-from-a-separate-table" class="level3" data-number="3.3.4">
+<h3 data-number="3.3.4" class="anchored" data-anchor-id="defining-the-cohort-from-a-separate-table"><span class="header-section-number">3.3.4</span> Defining the Cohort from a Separate Table</h3>
 <p>Often the characteristics that define a cohort exist in a table separate from the one that contains the time series. For example, a database might have a customer table with information such as acquisition source or registration date by which customers can be cohorted. Adding in attributes from other tables, or even subqueries, is relatively straightforward and can be done in retention analysis and related analyses discussed later in the chapter.</p>
 <p>For this example, we’ll consider whether the gender of the legislator has any impact on their retention. The <code>legislators</code> table has a gender field, where F means female and M means male, that we can use to cohort the legislators. To do this, we’ll <code>JOIN</code> the <code>legislators</code> table in as alias to add gender to <code>cohorts</code>, in place of year or century:</p>
 <div class="cell">
@@ -2473,7 +2479,7 @@ Figure&nbsp;2.4: Legislator retention by first state: top five states by total l
 <span id="cb23-35"><a href="#cb23-35" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> cohort_sizes</span>
 <span id="cb23-36"><a href="#cb23-36" aria-hidden="true" tabindex="-1"></a><span class="kw">ORDER</span> <span class="kw">BY</span> <span class="dv">2</span>, <span class="dv">1</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>We can see from the results graphed in <a href="dbplyr.html#fig-gender-retained" class="quarto-xref">Figure&nbsp;<span>3.5</span></a> that retention is higher for female legislators than for their male counterparts for periods 2 through 29. The first female legislator did not take office until 1917, when Jeannette Rankin joined the House as a Republican representative from Montana. As we saw earlier, retention has increased in more recent centuries.</p>
+<p>We can see from the results graphed in <a href="dbplyr.html#fig-gender-retained" class="quarto-xref">Figure&nbsp;<span>4.5</span></a> that retention is higher for female legislators than for their male counterparts for periods 2 through 29. The first female legislator did not take office until 1917, when Jeannette Rankin joined the House as a Republican representative from Montana. As we saw earlier, retention has increased in more recent centuries.</p>
 <div class="cell">
 <div class="cell-output-display">
 <div id="fig-gender-retained" class="quarto-float quarto-figure quarto-figure-center anchored">
@@ -2482,7 +2488,7 @@ Figure&nbsp;2.4: Legislator retention by first state: top five states by total l
 <img src="ctes_comments_files/figure-html/fig-gender-retained-1.png" class="img-fluid figure-img" width="672">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-gender-retained-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;2.5: Legislator retention by gender
+Figure&nbsp;3.5: Legislator retention by gender
 </figcaption>
 </figure>
 </div>
@@ -2527,7 +2533,7 @@ Figure&nbsp;2.5: Legislator retention by gender
 <span id="cb24-35"><a href="#cb24-35" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> cohort_sizes</span>
 <span id="cb24-36"><a href="#cb24-36" aria-hidden="true" tabindex="-1"></a><span class="kw">ORDER</span> <span class="kw">BY</span> <span class="dv">2</span>, <span class="dv">1</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>Male legislators still outnumber female legislators, but by a smaller margin. The retention for the cohorts is graphed in <a href="dbplyr.html#fig-gender-retained-fairer" class="quarto-xref">Figure&nbsp;<span>3.6</span></a>. With the revised cohorts, male legislators have higher retention through year 7, but starting in year 12, female legislators have higher retention. The difference between the two gender-based cohort analyses underscores the importance of setting up appropriate cohorts and ensuring that they have comparable amounts of time to be present or complete other actions of interest. To further improve this analysis, we could cohort by both starting year or decade and gender, in order to control for additional changes in retention through the 20th century and into the 21st century.</p>
+<p>Male legislators still outnumber female legislators, but by a smaller margin. The retention for the cohorts is graphed in <a href="dbplyr.html#fig-gender-retained-fairer" class="quarto-xref">Figure&nbsp;<span>4.6</span></a>. With the revised cohorts, male legislators have higher retention through year 7, but starting in year 12, female legislators have higher retention. The difference between the two gender-based cohort analyses underscores the importance of setting up appropriate cohorts and ensuring that they have comparable amounts of time to be present or complete other actions of interest. To further improve this analysis, we could cohort by both starting year or decade and gender, in order to control for additional changes in retention through the 20th century and into the 21st century.</p>
 <div class="cell">
 <div class="cell-output-display">
 <div id="fig-gender-retained-fairer" class="quarto-float quarto-figure quarto-figure-center anchored">
@@ -2536,7 +2542,7 @@ Figure&nbsp;2.5: Legislator retention by gender
 <img src="ctes_comments_files/figure-html/fig-gender-retained-fairer-1.png" class="img-fluid figure-img" width="672">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-gender-retained-fairer-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;2.6: Legislator retention by gender: cohorts from 1917 to 1999
+Figure&nbsp;3.6: Legislator retention by gender: cohorts from 1917 to 1999
 </figcaption>
 </figure>
 </div>
@@ -2544,8 +2550,8 @@ Figure&nbsp;2.6: Legislator retention by gender: cohorts from 1917 to 1999
 </div>
 <p>Cohorts can be defined in multiple ways, from the time series and from other tables. With the framework we’ve developed, subqueries, views, or other derived tables can be swapped in, opening up a whole range of calculations to be the basis of a cohort. Multiple criteria, such as starting year and gender, can be used. One caution when dividing populations into cohorts based on multiple criteria is that this can lead to sparse cohorts, where some of the defined groups are too small and are not represented in the data set for all time periods. The next section will discuss methods for overcoming this challenge.</p>
 </section>
-<section id="dealing-with-sparse-cohorts" class="level3" data-number="2.3.5">
-<h3 data-number="2.3.5" class="anchored" data-anchor-id="dealing-with-sparse-cohorts"><span class="header-section-number">2.3.5</span> Dealing with Sparse Cohorts</h3>
+<section id="dealing-with-sparse-cohorts" class="level3" data-number="3.3.5">
+<h3 data-number="3.3.5" class="anchored" data-anchor-id="dealing-with-sparse-cohorts"><span class="header-section-number">3.3.5</span> Dealing with Sparse Cohorts</h3>
 <p>In the ideal data set, every cohort has some action or record in the time series for every period of interest. We’ve already seen how “missing” dates can occur due to subscriptions or terms lasting over multiple periods, and we looked at how to correct for them using a date dimension to infer intermediate dates. Another issue can arise when, due to grouping criteria, the cohort becomes too small and as a result is represented only sporadically in the data. A cohort may disappear from the result set, when we would prefer it to appear with a zero retention value. This problem is called sparse cohorts, and it can be worked around with the careful use of <code>LEFT JOIN</code>s.</p>
 <p>To demonstrate this, let’s attempt to cohort female legislators by the first state they represented to see if there are any differences in retention. We’ve already seen that there have been relatively few female legislators. Cohorting them further by state is highly likely to create some sparse cohorts in which there are very few members. Before making code adjustments, let’s add <code>first_state</code> (calculated in the section on deriving cohorts from the time series) into our previous gender example and look at the results:</p>
 <div class="cell" data-output.var="gender_retained_sparse">
@@ -2588,7 +2594,7 @@ Figure&nbsp;2.6: Legislator retention by gender: cohorts from 1917 to 1999
 <span id="cb25-37"><a href="#cb25-37" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> cohort_sizes</span>
 <span id="cb25-38"><a href="#cb25-38" aria-hidden="true" tabindex="-1"></a><span class="kw">ORDER</span> <span class="kw">BY</span> <span class="dv">1</span>, <span class="dv">3</span>, <span class="dv">2</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>Graphing the results for the first 20 periods, as in <a href="dbplyr.html#fig-gender-retained-sparse" class="quarto-xref">Figure&nbsp;<span>3.7</span></a>, reveals the sparse cohorts. Alaska did not have any female legislators, while Arizona’s female retention curve disappears after year 3. Only California, a large state with many legislators, has complete retention curves for both genders. This pattern repeats for other small and large states.</p>
+<p>Graphing the results for the first 20 periods, as in <a href="dbplyr.html#fig-gender-retained-sparse" class="quarto-xref">Figure&nbsp;<span>4.7</span></a>, reveals the sparse cohorts. Alaska did not have any female legislators, while Arizona’s female retention curve disappears after year 3. Only California, a large state with many legislators, has complete retention curves for both genders. This pattern repeats for other small and large states.</p>
 <div class="cell">
 <div class="cell-output-display">
 <div id="fig-gender-retained-sparse" class="quarto-float quarto-figure quarto-figure-center anchored">
@@ -2597,7 +2603,7 @@ Figure&nbsp;2.6: Legislator retention by gender: cohorts from 1917 to 1999
 <img src="ctes_comments_files/figure-html/fig-gender-retained-sparse-1.png" class="img-fluid figure-img" width="672">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-gender-retained-sparse-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;2.7: Legislator retention by gender and first state
+Figure&nbsp;3.7: Legislator retention by gender and first state
 </figcaption>
 </figure>
 </div>
@@ -2869,8 +2875,8 @@ Long queries and CTEs
 </div>
 <p>Cohorts can be defined in many ways. So far, we’ve normalized all our cohorts to the first date they appear in the time series data. This isn’t the only option, however, and interesting analysis can be done starting in the middle of an entity’s life span. Before concluding our work on retention analysis, let’s take a look at this additional way to define cohorts.</p>
 </section>
-<section id="defining-cohorts-from-dates-other-than-the-first-date" class="level3" data-number="2.3.6">
-<h3 data-number="2.3.6" class="anchored" data-anchor-id="defining-cohorts-from-dates-other-than-the-first-date"><span class="header-section-number">2.3.6</span> Defining Cohorts from Dates Other Than the First Date</h3>
+<section id="defining-cohorts-from-dates-other-than-the-first-date" class="level3" data-number="3.3.6">
+<h3 data-number="3.3.6" class="anchored" data-anchor-id="defining-cohorts-from-dates-other-than-the-first-date"><span class="header-section-number">3.3.6</span> Defining Cohorts from Dates Other Than the First Date</h3>
 <p>Usually time-based cohorts are defined from the entity’s first appearance in the time series or from some other earliest date, such as a registration date. However, cohorting on a different date can be useful and insightful. For example, we might want to look at retention across all customers using a service as of a particular date. This type of analysis can be used to understand whether product or marketing changes have had a long-term impact on existing customers.</p>
 <p>When using a date other than the first date, we need to take care to precisely define the criteria for inclusion in each cohort. One option is to pick entities present on a particular calendar date. This is relatively straightforward to put into SQL code, but it can be problematic if a large share of the regular user population doesn’t show up every day, causing retention to vary depending on the exact day chosen. One option to correct for this is to calculate retention for several starting dates and then average the results.</p>
 <p>Another option is to use a window of time such as a week or month. Any entity that appears in the data set during that window is included in the cohort. While this approach is often more representative of the business or process, the trade-off is that the SQL code will become more complex, and the query time may be slower due to more intense database calculations. Finding the right balance between query performance and accuracy of results is something of an art.</p>
@@ -2895,61 +2901,61 @@ Long queries and CTEs
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: left;">F000441</td>
+<td style="text-align: left;">S001145</td>
 <td style="text-align: left;">rep</td>
 <td style="text-align: left;">2000-01-01</td>
 <td style="text-align: left;">1999-01-06</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">M000355</td>
+<td style="text-align: left;">I000055</td>
+<td style="text-align: left;">rep</td>
+<td style="text-align: left;">2000-01-01</td>
+<td style="text-align: left;">1999-01-06</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">J000283</td>
+<td style="text-align: left;">rep</td>
+<td style="text-align: left;">2000-01-01</td>
+<td style="text-align: left;">1999-01-06</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">J000255</td>
+<td style="text-align: left;">rep</td>
+<td style="text-align: left;">2000-01-01</td>
+<td style="text-align: left;">1999-01-06</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">W000154</td>
 <td style="text-align: left;">sen</td>
 <td style="text-align: left;">2000-01-01</td>
 <td style="text-align: left;">1997-01-07</td>
 </tr>
-<tr class="odd">
-<td style="text-align: left;">B000287</td>
-<td style="text-align: left;">rep</td>
-<td style="text-align: left;">2000-01-01</td>
-<td style="text-align: left;">1999-01-06</td>
-</tr>
 <tr class="even">
-<td style="text-align: left;">I000024</td>
-<td style="text-align: left;">sen</td>
-<td style="text-align: left;">2000-01-01</td>
-<td style="text-align: left;">1997-01-07</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">H000725</td>
-<td style="text-align: left;">sen</td>
-<td style="text-align: left;">2000-01-01</td>
-<td style="text-align: left;">1999-01-06</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">C000846</td>
+<td style="text-align: left;">M000350</td>
 <td style="text-align: left;">rep</td>
 <td style="text-align: left;">2000-01-01</td>
 <td style="text-align: left;">1999-01-06</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">B000518</td>
+<td style="text-align: left;">H000981</td>
 <td style="text-align: left;">rep</td>
 <td style="text-align: left;">2000-01-01</td>
 <td style="text-align: left;">1999-01-06</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">C000735</td>
+<td style="text-align: left;">B000619</td>
 <td style="text-align: left;">rep</td>
 <td style="text-align: left;">2000-01-01</td>
 <td style="text-align: left;">1999-01-06</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">T000424</td>
+<td style="text-align: left;">C001036</td>
 <td style="text-align: left;">rep</td>
 <td style="text-align: left;">2000-01-01</td>
 <td style="text-align: left;">1999-01-06</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">R000486</td>
+<td style="text-align: left;">B000996</td>
 <td style="text-align: left;">rep</td>
 <td style="text-align: left;">2000-01-01</td>
 <td style="text-align: left;">1999-01-06</td>
@@ -2994,7 +3000,7 @@ Long queries and CTEs
 <span id="cb29-32"><a href="#cb29-32" aria-hidden="true" tabindex="-1"></a>WINDOW w <span class="kw">AS</span> (<span class="kw">PARTITION</span> <span class="kw">BY</span> term_type <span class="kw">ORDER</span> <span class="kw">BY</span> period) </span>
 <span id="cb29-33"><a href="#cb29-33" aria-hidden="true" tabindex="-1"></a><span class="kw">ORDER</span> <span class="kw">BY</span> <span class="dv">2</span>, <span class="dv">1</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p><a href="dbplyr.html#fig-pct-retained-2000" class="quarto-xref">Figure&nbsp;<span>3.8</span></a> shows that despite longer terms for senators, retention among the two cohorts was similar, and was actually worse for senators after 10 years. A further analysis comparing the different years they were first elected, or other cohort attributes, might yield some interesting insights.</p>
+<p><a href="dbplyr.html#fig-pct-retained-2000" class="quarto-xref">Figure&nbsp;<span>4.8</span></a> shows that despite longer terms for senators, retention among the two cohorts was similar, and was actually worse for senators after 10 years. A further analysis comparing the different years they were first elected, or other cohort attributes, might yield some interesting insights.</p>
 <div class="cell">
 <div class="cell-output-display">
 <div id="fig-pct-retained-2000" class="quarto-float quarto-figure quarto-figure-center anchored">
@@ -3003,7 +3009,7 @@ Long queries and CTEs
 <img src="ctes_comments_files/figure-html/fig-pct-retained-2000-1.png" class="img-fluid figure-img" width="672">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-pct-retained-2000-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;2.8: Retention by term type for legislators in office during the year 2000
+Figure&nbsp;3.8: Retention by term type for legislators in office during the year 2000
 </figcaption>
 </figure>
 </div>
@@ -3013,11 +3019,11 @@ Figure&nbsp;2.8: Retention by term type for legislators in office during the yea
 <p>Cohort retention is a powerful way to understand the behavior of entities in a time series data set. We’ve seen how to calculate retention with SQL and how to cohort based on the time series itself or on other tables, and from points in the middle of entity life span. We also looked at how to use functions and <code>JOIN</code>s to adjust dates within time series and compensate for sparse cohorts. There are several types of analyses that are related to cohort retention: analysis, survivorship, returnship, and cumulative calculations, all of which build off of the SQL code that we’ve developed for retention. Let’s turn to them next.</p>
 </section>
 </section>
-<section id="related-cohort-analyses" class="level2" data-number="2.4">
-<h2 data-number="2.4" class="anchored" data-anchor-id="related-cohort-analyses"><span class="header-section-number">2.4</span> Related Cohort Analyses</h2>
+<section id="related-cohort-analyses" class="level2" data-number="3.4">
+<h2 data-number="3.4" class="anchored" data-anchor-id="related-cohort-analyses"><span class="header-section-number">3.4</span> Related Cohort Analyses</h2>
 <p>In the last section, we learned how to write SQL for cohort retention analysis. Retention captures whether an entity was in a time series data set on a specific date or window of time. In addition to presence on a specific date, analysis is often interested in questions of how long an entity lasted, whether an entity did multiple actions, and how many of those actions occurred. These can all be answered with code that is similar to retention and is well suited to just about any cohorting criteria you like. Let’s take a look at the first of these, survivorship.</p>
-<section id="survivorship" class="level3" data-number="2.4.1">
-<h3 data-number="2.4.1" class="anchored" data-anchor-id="survivorship"><span class="header-section-number">2.4.1</span> Survivorship</h3>
+<section id="survivorship" class="level3" data-number="3.4.1">
+<h3 data-number="3.4.1" class="anchored" data-anchor-id="survivorship"><span class="header-section-number">3.4.1</span> Survivorship</h3>
 <p>Survivorship, also called survival analysis, is concerned with questions about how long something lasts, or the duration of time until a particular event such as churn or death. Survivorship analysis can answer questions about the share of the population that is likely to remain past a certain amount of time. Cohorts can help identify or at least provide hypotheses about which characteristics or circumstances increase or decrease the survival likelihood.</p>
 <p>This is similar to a retention analysis, but instead of calculating whether an entity was present in a certain period, we calculate whether the entity is present in that period or later in the time series. Then the share of the total cohort is calculated. Typically one or more periods are chosen depending on the nature of the data set analyzed. For example, if we want to know the share of game players who survive for a week or longer, we can check for actions that occur after a week from starting and consider those players still surviving. On the other hand, if we are concerned about the number of students who are still in school after a certain number of years, we could look for the absence of a graduation event in a data set. The number of periods can be <code>SELECT</code>ed either by calculating an average or typical life span or by choosing time periods that are meaningful to the organization or process analyzed, such as a month, year, or longer time period.</p>
 <p>In this example, we’ll look at the share of legislators who survived in office for a decade or more after their first term started. Since we don’t need to know the specific dates of each term, we can start by calculating the first and last <code>term_start</code> dates, using <code>min</code> and <code>max</code> aggregations:</p>
@@ -3039,53 +3045,53 @@ Figure&nbsp;2.8: Retention by term type for legislators in office during the yea
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: left;">A000360</td>
-<td style="text-align: left;">2003-01-07</td>
-<td style="text-align: left;">2015-01-06</td>
+<td style="text-align: left;">B000944</td>
+<td style="text-align: left;">1993-01-05</td>
+<td style="text-align: left;">2019-01-03</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">C001035</td>
+<td style="text-align: left;">C000127</td>
+<td style="text-align: left;">1993-01-05</td>
+<td style="text-align: left;">2019-01-03</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">C001070</td>
+<td style="text-align: left;">2007-01-04</td>
+<td style="text-align: left;">2019-01-03</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">F000469</td>
+<td style="text-align: left;">2019-01-03</td>
+<td style="text-align: left;">2019-01-03</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">S000770</td>
 <td style="text-align: left;">1997-01-07</td>
-<td style="text-align: left;">2015-01-06</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">D000563</td>
-<td style="text-align: left;">1983-01-03</td>
-<td style="text-align: left;">2015-01-06</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">S001194</td>
-<td style="text-align: left;">2012-12-27</td>
-<td style="text-align: left;">2017-01-03</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">M001176</td>
-<td style="text-align: left;">2009-01-06</td>
-<td style="text-align: left;">2015-01-06</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">R000122</td>
-<td style="text-align: left;">1991-01-03</td>
-<td style="text-align: left;">2015-01-06</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">B001257</td>
-<td style="text-align: left;">2007-01-04</td>
 <td style="text-align: left;">2019-01-03</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">C001075</td>
-<td style="text-align: left;">2009-01-06</td>
-<td style="text-align: left;">2015-01-06</td>
+<td style="text-align: left;">B001261</td>
+<td style="text-align: left;">2007-06-25</td>
+<td style="text-align: left;">2019-01-03</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">C001067</td>
-<td style="text-align: left;">2007-01-04</td>
+<td style="text-align: left;">M001183</td>
+<td style="text-align: left;">2010-11-15</td>
 <td style="text-align: left;">2019-01-03</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">D000598</td>
-<td style="text-align: left;">2001-01-03</td>
+<td style="text-align: left;">B001230</td>
+<td style="text-align: left;">1999-01-06</td>
+<td style="text-align: left;">2019-01-03</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">B001270</td>
+<td style="text-align: left;">2011-01-05</td>
+<td style="text-align: left;">2019-01-03</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">B001251</td>
+<td style="text-align: left;">2004-07-21</td>
 <td style="text-align: left;">2019-01-03</td>
 </tr>
 </tbody>
@@ -3328,7 +3334,7 @@ Figure&nbsp;2.8: Retention by term type for legislators in office during the yea
 <span id="cb34-20"><a href="#cb34-20" aria-hidden="true" tabindex="-1"></a><span class="kw">GROUP</span> <span class="kw">BY</span> <span class="dv">1</span>, <span class="dv">2</span></span>
 <span id="cb34-21"><a href="#cb34-21" aria-hidden="true" tabindex="-1"></a><span class="kw">ORDER</span> <span class="kw">BY</span> <span class="dv">1</span>, <span class="dv">2</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>The results are graphed in <a href="dbplyr.html#fig-surv-century" class="quarto-xref">Figure&nbsp;<span>3.9</span></a>. Survivorship was highest in the 20th century, a result that agrees with results we saw previously in which retention was also highest in the 20th century.</p>
+<p>The results are graphed in <a href="dbplyr.html#fig-surv-century" class="quarto-xref">Figure&nbsp;<span>4.9</span></a>. Survivorship was highest in the 20th century, a result that agrees with results we saw previously in which retention was also highest in the 20th century.</p>
 <div class="cell">
 <div class="cell-output-display">
 <div id="fig-surv-century" class="quarto-float quarto-figure quarto-figure-center anchored">
@@ -3337,7 +3343,7 @@ Figure&nbsp;2.8: Retention by term type for legislators in office during the yea
 <img src="ctes_comments_files/figure-html/fig-surv-century-1.png" class="img-fluid figure-img" width="672">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-surv-century-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;2.9: Retention by term type for legislators in office during the year 2000
+Figure&nbsp;3.9: Retention by term type for legislators in office during the year 2000
 </figcaption>
 </figure>
 </div>
@@ -3346,8 +3352,8 @@ Figure&nbsp;2.9: Retention by term type for legislators in office during the yea
 <p>Survivorship is closely related to retention. While retention counts entities present in a specific number of periods from the start, survivorship considers only whether an entity was present as of a specific period or later. As a result, the code is simpler since it needs only the first and last dates in the time series, or a count of dates. Cohorting is done similar to cohorting for retention, and cohort definitions can come from within the time series or be derived from another table or subquery.</p>
 <p>Next we’ll consider another type of analysis that is in some ways the inverse of survivorship. Rather than calculating whether an entity is present in the data set at a certain time or later, we will calculate whether an entity returns or repeats an action at a certain period or earlier. This is called returnship or repeat purchase behavior.</p>
 </section>
-<section id="returnship-or-repeat-purchase-behavior" class="level3" data-number="2.4.2">
-<h3 data-number="2.4.2" class="anchored" data-anchor-id="returnship-or-repeat-purchase-behavior"><span class="header-section-number">2.4.2</span> Returnship, or Repeat Purchase Behavior</h3>
+<section id="returnship-or-repeat-purchase-behavior" class="level3" data-number="3.4.2">
+<h3 data-number="3.4.2" class="anchored" data-anchor-id="returnship-or-repeat-purchase-behavior"><span class="header-section-number">3.4.2</span> Returnship, or Repeat Purchase Behavior</h3>
 <p>Survivorship is useful for understanding how long a cohort is likely to stick around. Another useful type of cohort analysis seeks to understand whether a cohort member can be expected to return within a given window of time and the intensity of activity during that window. This is called <em>returnship</em> or <em>repeat purchase behavior</em>.</p>
 <p>For example, an ecommerce site might want to know not only how many new buyers were acquired via a marketing campaign but also whether those buyers have become repeat buyers. One way to figure this out is to simply calculate total purchases per customer. However, comparing customers acquired two years ago with those acquired a month ago isn’t fair, since the former have had a much longer time in which to return. The older cohort would almost certainly appear more valuable than the newer one. Although this is true in a sense, it gives an incomplete picture of how the cohorts are likely to behave across their entire life span.</p>
 <p>To make fair comparisons between cohorts with different starting dates, we need to create an analysis based on a <em>time box</em>, or a fixed window of time from the first date, and consider whether cohort members returned within that window. This way, every cohort has an equal amount of time under consideration, so long as we include only those cohorts for which the full window has elapsed. Returnship analysis is common for retail organizations, but it can also be applied in other domains. For example, a university might want to see how many students enrolled in a second course, or a hospital might be interested in how many patients need follow-up medical treatments after an initial incident.</p>
@@ -3646,7 +3652,7 @@ Figure&nbsp;2.9: Retention by term type for legislators in office during the yea
 </table>
 </div>
 </div>
-<p>With this output, we can see how the share of representatives who became senators evolved over time, both within each cohort and across cohorts. In addition to the table format, graphing the output often reveals interesting trends. In <a href="dbplyr.html#fig-decades" class="quarto-xref">Figure&nbsp;<span>3.10</span></a>, the cohorts based on century are replaced with cohorts based on the first decade, and the trends over 10 and 20 years are shown. Conversion of representatives to senators during the first few decades of the new US legislature was clearly different from patterns in the years since.</p>
+<p>With this output, we can see how the share of representatives who became senators evolved over time, both within each cohort and across cohorts. In addition to the table format, graphing the output often reveals interesting trends. In <a href="dbplyr.html#fig-decades" class="quarto-xref">Figure&nbsp;<span>4.10</span></a>, the cohorts based on century are replaced with cohorts based on the first decade, and the trends over 10 and 20 years are shown. Conversion of representatives to senators during the first few decades of the new US legislature was clearly different from patterns in the years since.</p>
 <div class="cell">
 <div class="cell-output-display">
 <div id="fig-decades" class="quarto-float quarto-figure quarto-figure-center anchored">
@@ -3655,7 +3661,7 @@ Figure&nbsp;2.9: Retention by term type for legislators in office during the yea
 <img src="ctes_comments_files/figure-html/fig-decades-1.png" class="img-fluid figure-img" width="672">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-decades-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;2.10: Trend of the share of representatives for each cohort, defined by starting decade, who later became senators
+Figure&nbsp;3.10: Trend of the share of representatives for each cohort, defined by starting decade, who later became senators
 </figcaption>
 </figure>
 </div>
@@ -3663,8 +3669,8 @@ Figure&nbsp;2.10: Trend of the share of representatives for each cohort, defined
 </div>
 <p>Finding the repeat behavior within a fixed time box is a useful tool for comparing cohorts. This is particularly true when the behaviors are intermittent in nature, such as purchase behavior or content or service consumption. In the next section, we’ll look at how to calculate not only whether an entity had a subsequent action but also how many subsequent actions they had, and we’ll aggregate them with cumulative calculations.</p>
 </section>
-<section id="cumulative-calculations" class="level3" data-number="2.4.3">
-<h3 data-number="2.4.3" class="anchored" data-anchor-id="cumulative-calculations"><span class="header-section-number">2.4.3</span> Cumulative Calculations</h3>
+<section id="cumulative-calculations" class="level3" data-number="3.4.3">
+<h3 data-number="3.4.3" class="anchored" data-anchor-id="cumulative-calculations"><span class="header-section-number">3.4.3</span> Cumulative Calculations</h3>
 <p>Cumulative cohort analysis can be used to establish cumulative lifetime value, also called customer lifetime value (the acronyms CLTV and LTV are used interchangeably), and to monitor newer cohorts in order to be able to predict what their full LTV will be. This is possible because early behavior is often highly correlated with long-term behavior. Users of a service who return frequently in their first days or weeks of using it tend to be the most likely to stay around over the long term. Customers who buy a second or third time early on are likely to continue purchasing over a longer time period. Subscribers who renew after the first month or year are often likely to stick around over many subsequent months or years.</p>
 <p>In this section, I’ll mainly talk about the revenue-generating activities of customers, but this analysis can also be applied to situations in which customers or entities incur costs, such as through product returns, support interactions, or use of health-care services.</p>
 <p>With cumulative calculations, we’re less concerned about whether an entity did an action on a particular date and more about the total as of a particular date. The cumulative calculations used in this type of analysis are most often <code>count</code>s or <code>sum</code>s. We will again use the time box concept to ensure apples-to-apples comparisons between cohorts. Let’s look at the number of terms started within 10 years of the first <code>term_start</code>, cohorting the legislators by century and type of first term:</p>
@@ -3930,8 +3936,8 @@ Inequalities and <code>LEFT JOIN</code>s
 <p>Cohort analysis includes a set of techniques that can be used to answer questions related to behavior over time and how various attributes may contribute to differences between groups. Survivorship, returnship, and cumulative calculations all shed light on these questions. With a good understanding of how cohorts behave, we often have to turn our attention back to the composition or mix of cohorts over time, understanding how that can impact total retention, survivorship, returnship, or cumulative values such that these measures differ surprisingly from the individual cohorts.</p>
 </section>
 </section>
-<section id="cross-section-analysis-through-a-cohort-lens" class="level2" data-number="2.5">
-<h2 data-number="2.5" class="anchored" data-anchor-id="cross-section-analysis-through-a-cohort-lens"><span class="header-section-number">2.5</span> Cross-Section Analysis, through a Cohort Lens</h2>
+<section id="cross-section-analysis-through-a-cohort-lens" class="level2" data-number="3.5">
+<h2 data-number="3.5" class="anchored" data-anchor-id="cross-section-analysis-through-a-cohort-lens"><span class="header-section-number">3.5</span> Cross-Section Analysis, through a Cohort Lens</h2>
 <p>So far in this chapter, we’ve been looking at cohort analysis. We’ve followed the behavior of cohorts across time with retention, survivorship, returnship, and cumulative behavior analyses. One of the challenges with these analyses, however, is that even as they make changes within cohorts easy to spot, it can be difficult to spot changes in the overall composition of a customer or user base.</p>
 <p>Mix shifts, which are changes in the composition of the customer or user base over time, can also occur, making later cohorts different from earlier ones. Mix shifts may be due to international expansion, shifting between organic and paid acquisition strategies, or moving from a niche enthusiast audience to a broader mass market one. Creating additional cohorts, or segments, along any of these suspected lines can help diagnose whether a mix shift is happening.</p>
 <p>Cohort analysis can be contrasted with cross-sectional analysis, which compares individuals or groups at a single point in time. Cross-sectional studies can correlate years of education with current income, for example. On the positive side, collecting data sets for cross-sectional analysis is often easier since no time series is necessary. Cross-sectional analysis can be insightful, generating hypotheses for further investigation. On the negative side, a form of selection bias called survivorship bias usually exists, which can lead to false conclusions.</p>
@@ -4172,73 +4178,73 @@ Survivorship bias
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">2019-12-31</td>
-<td style="text-align: right;">21</td>
-<td style="text-align: right;">440</td>
-<td style="text-align: right;">537</td>
-<td style="text-align: right;">0.8193669</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">2019-12-31</td>
 <td style="text-align: right;">20</td>
 <td style="text-align: right;">97</td>
 <td style="text-align: right;">537</td>
 <td style="text-align: right;">0.1806331</td>
 </tr>
-<tr class="odd">
-<td style="text-align: left;">2018-12-31</td>
-<td style="text-align: right;">21</td>
-<td style="text-align: right;">417</td>
-<td style="text-align: right;">539</td>
-<td style="text-align: right;">0.7736549</td>
-</tr>
 <tr class="even">
+<td style="text-align: left;">2019-12-31</td>
+<td style="text-align: right;">21</td>
+<td style="text-align: right;">440</td>
+<td style="text-align: right;">537</td>
+<td style="text-align: right;">0.8193669</td>
+</tr>
+<tr class="odd">
 <td style="text-align: left;">2018-12-31</td>
 <td style="text-align: right;">20</td>
 <td style="text-align: right;">122</td>
 <td style="text-align: right;">539</td>
 <td style="text-align: right;">0.2263451</td>
 </tr>
-<tr class="odd">
-<td style="text-align: left;">2017-12-31</td>
-<td style="text-align: right;">21</td>
-<td style="text-align: right;">414</td>
-<td style="text-align: right;">538</td>
-<td style="text-align: right;">0.7695167</td>
-</tr>
 <tr class="even">
+<td style="text-align: left;">2018-12-31</td>
+<td style="text-align: right;">21</td>
+<td style="text-align: right;">417</td>
+<td style="text-align: right;">539</td>
+<td style="text-align: right;">0.7736549</td>
+</tr>
+<tr class="odd">
 <td style="text-align: left;">2017-12-31</td>
 <td style="text-align: right;">20</td>
 <td style="text-align: right;">124</td>
 <td style="text-align: right;">538</td>
 <td style="text-align: right;">0.2304833</td>
 </tr>
-<tr class="odd">
-<td style="text-align: left;">2016-12-31</td>
-<td style="text-align: right;">20</td>
-<td style="text-align: right;">142</td>
-<td style="text-align: right;">540</td>
-<td style="text-align: right;">0.2629630</td>
-</tr>
 <tr class="even">
+<td style="text-align: left;">2017-12-31</td>
+<td style="text-align: right;">21</td>
+<td style="text-align: right;">414</td>
+<td style="text-align: right;">538</td>
+<td style="text-align: right;">0.7695167</td>
+</tr>
+<tr class="odd">
 <td style="text-align: left;">2016-12-31</td>
 <td style="text-align: right;">21</td>
 <td style="text-align: right;">398</td>
 <td style="text-align: right;">540</td>
 <td style="text-align: right;">0.7370370</td>
 </tr>
-<tr class="odd">
-<td style="text-align: left;">2015-12-31</td>
-<td style="text-align: right;">21</td>
-<td style="text-align: right;">396</td>
-<td style="text-align: right;">540</td>
-<td style="text-align: right;">0.7333333</td>
-</tr>
 <tr class="even">
+<td style="text-align: left;">2016-12-31</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">142</td>
+<td style="text-align: right;">540</td>
+<td style="text-align: right;">0.2629630</td>
+</tr>
+<tr class="odd">
 <td style="text-align: left;">2015-12-31</td>
 <td style="text-align: right;">20</td>
 <td style="text-align: right;">144</td>
 <td style="text-align: right;">540</td>
 <td style="text-align: right;">0.2666667</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2015-12-31</td>
+<td style="text-align: right;">21</td>
+<td style="text-align: right;">396</td>
+<td style="text-align: right;">540</td>
+<td style="text-align: right;">0.7333333</td>
 </tr>
 </tbody>
 </table>
@@ -4289,13 +4295,13 @@ Survivorship bias
 <img src="ctes_comments_files/figure-html/fig-4-13-1.png" class="img-fluid figure-img" width="672">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-4-13-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;2.11: Percent of legislators each year, by century first elected
+Figure&nbsp;3.11: Percent of legislators each year, by century first elected
 </figcaption>
 </figure>
 </div>
 </div>
 </div>
-<p>We can graph the output, as in <a href="dbplyr.html#fig-4-13" class="quarto-xref">Figure&nbsp;<span>3.11</span></a>, to see how newer cohorts of legislators gradually overtake older cohorts, until they themselves are replaced by new cohorts.</p>
+<p>We can graph the output, as in <a href="dbplyr.html#fig-4-13" class="quarto-xref">Figure&nbsp;<span>4.11</span></a>, to see how newer cohorts of legislators gradually overtake older cohorts, until they themselves are replaced by new cohorts.</p>
 <p>Rather than cohorting on <code>first_term</code>, we can cohort on tenure instead. Finding the share of customers who are relatively new, are of medium tenure, or are long-term customers at various points in time can be insightful. Let’s take a look at how the tenure of legislators in Congress has changed over time.</p>
 <p>The first step is to calculate, for each year, the cumulative number of years in office for each legislator. Since there can be gaps between terms when legislators are voted out or leave office for other reasons, we’ll first find each year in which the legislator was in office at the end of the year in <code>cohort_data</code>. Then we’ll use a <code>count</code> window function, with the window covering the rows unbounded preceding, or all prior rows for that legislator, and <code>CURRENT ROW</code>:</p>
 <div class="cell">
@@ -4431,23 +4437,23 @@ Figure&nbsp;2.11: Percent of legislators each year, by century first elected
 </tr>
 <tr class="even">
 <td style="text-align: left;">1790-12-31</td>
-<td style="text-align: right;">1</td>
-<td style="text-align: right;">6</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">1790-12-31</td>
 <td style="text-align: right;">2</td>
 <td style="text-align: right;">89</td>
 </tr>
-<tr class="even">
-<td style="text-align: left;">1791-12-31</td>
-<td style="text-align: right;">1</td>
-<td style="text-align: right;">37</td>
-</tr>
 <tr class="odd">
+<td style="text-align: left;">1790-12-31</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">6</td>
+</tr>
+<tr class="even">
 <td style="text-align: left;">1791-12-31</td>
 <td style="text-align: right;">3</td>
 <td style="text-align: right;">57</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">1791-12-31</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">37</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">1791-12-31</td>
@@ -4456,13 +4462,13 @@ Figure&nbsp;2.11: Percent of legislators each year, by century first elected
 </tr>
 <tr class="odd">
 <td style="text-align: left;">1792-12-31</td>
-<td style="text-align: right;">1</td>
-<td style="text-align: right;">3</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">37</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">1792-12-31</td>
-<td style="text-align: right;">2</td>
-<td style="text-align: right;">37</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">3</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">1792-12-31</td>
@@ -4610,7 +4616,7 @@ Figure&nbsp;2.11: Percent of legislators each year, by century first elected
 <img src="ctes_comments_files/figure-html/fig-4-14-1.png" class="img-fluid figure-img" width="672">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-4-14-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;2.12: Percent of legislators by number of years in office
+Figure&nbsp;3.12: Percent of legislators by number of years in office
 </figcaption>
 </figure>
 </div>
@@ -4618,8 +4624,8 @@ Figure&nbsp;2.12: Percent of legislators by number of years in office
 </div>
 <p>A cross section of a population at any point in time is made up of members from multiple cohorts. Creating a time series of these cross sections is another interesting way of analyzing trends. Combining this with insights from retention can provide a more robust picture of trends in any organization.</p>
 </section>
-<section id="conclusion" class="level2" data-number="2.6">
-<h2 data-number="2.6" class="anchored" data-anchor-id="conclusion"><span class="header-section-number">2.6</span> Conclusion</h2>
+<section id="conclusion" class="level2" data-number="3.6">
+<h2 data-number="3.6" class="anchored" data-anchor-id="conclusion"><span class="header-section-number">3.6</span> Conclusion</h2>
 <p>Cohort analysis is a useful way to investigate how groups change over time, whether it be from the perspective of retention, repeat behavior, or cumulative actions. Cohort analysis is retrospective, looking back at populations using intrinsic attributes or attributes derived from behavior. Interesting and hopefully useful correlations can be found through this type of analysis. However, as the saying goes, correlation does not imply causation. To determine actual causality, randomized experiments are the gold standard. Chapter 7 will go into depth on experiment analysis.</p>
 <p>Before we turn to experimentation, however, we have a few other types of analysis to cover. Next we’ll cover text analysis: components of text analysis often show up in other analyses, and it’s an interesting facet of analysis in itself.</p>
 
@@ -5051,13 +5057,13 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="./original_sql.html" class="pagination-link" aria-label="Cohort Analysis -- Original">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Cohort Analysis – Original</span></span>
+      <a href="./original_sql.html" class="pagination-link" aria-label="Cohorts - the original chapter">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Cohorts - the original chapter</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./dbplyr.html" class="pagination-link" aria-label="Cohort Analysis -- `dbplyr` version">
-        <span class="nav-page-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Cohort Analysis – <code>dbplyr</code> version</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./dbplyr.html" class="pagination-link" aria-label="Cohort using `dbplyr`">
+        <span class="nav-page-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Cohort using <code>dbplyr</code></span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

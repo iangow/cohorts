@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Ian Gow">
-<meta name="dcterms.date" content="2024-12-03">
+<meta name="dcterms.date" content="2024-12-13">
 
 <title>Cohort analysis</title>
 <style>
@@ -102,7 +102,7 @@ div.csl-indent {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./index.html">Preface</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./index.html"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -130,25 +130,31 @@ div.csl-indent {
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./index.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text">Preface</span></a>
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./original_sql.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Cohort Analysis – Original</span></span></a>
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Cohorts - the original chapter</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./ctes_comments.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Cohort Analysis – CTE Version</span></span></a>
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Cohorts using CTEs</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./dbplyr.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Cohort Analysis – <code>dbplyr</code> version</span></span></a>
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Cohort using <code>dbplyr</code></span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./intermezzo.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Un intermezzo</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -167,7 +173,12 @@ div.csl-indent {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#preface" id="toc-preface" class="nav-link active" data-scroll-target="#preface">Preface</a></li>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction"><span class="header-section-number">1</span> Introduction</a>
+  <ul class="collapse">
+  <li><a href="#why-dbplyr" id="toc-why-dbplyr" class="nav-link" data-scroll-target="#why-dbplyr"><span class="header-section-number">1.1</span> Why <code>dbplyr</code>?</a></li>
+  <li><a href="#thoughts-on-chapter-4-of-tanimura2021sql" id="toc-thoughts-on-chapter-4-of-tanimura2021sql" class="nav-link" data-scroll-target="#thoughts-on-chapter-4-of-tanimura2021sql"><span class="header-section-number">1.2</span> Thoughts on Chapter 4 of <span class="citation" data-cites="tanimura2021sql">Tanimura (2021)</span></a></li>
+  <li><a href="#duckdb-and-learning-sql" id="toc-duckdb-and-learning-sql" class="nav-link" data-scroll-target="#duckdb-and-learning-sql"><span class="header-section-number">1.3</span> DuckDB and learning SQL</a></li>
+  </ul></li>
   </ul>
 </nav>
     </div>
@@ -193,7 +204,7 @@ div.csl-indent {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">3 December 2024</p>
+      <p class="date">13 December 2024</p>
     </div>
   </div>
   
@@ -205,16 +216,69 @@ div.csl-indent {
 </header>
 
 
-<section id="preface" class="level1 unnumbered">
-<h1 class="unnumbered">Preface</h1>
-<p>This “book” is an iterative reworking of Chapter 4 of <span class="citation" data-cites="tanimura2021sql">Tanimura (<a href="references.html#ref-tanimura2021sql" role="doc-biblioref">2021</a>)</span>.</p>
+<section id="introduction" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> Introduction</h1>
+<p>This “book” is an iterative reworking of Chapter 4 of <span class="citation" data-cites="tanimura2021sql">Tanimura (<a href="references.html#ref-tanimura2021sql" role="doc-biblioref">2021</a>)</span>. I start with <a href="original_sql.html" class="quarto-xref"><span>Chapter 2</span></a>, which is a rendition of the original Chapter 4 using <a href="https://quarto.org">Quarto</a>. From a conversation with the author, my understanding is that <span class="citation" data-cites="tanimura2021sql">Tanimura (<a href="references.html#ref-tanimura2021sql" role="doc-biblioref">2021</a>)</span> was written as a Google Docs document with copied-and-pasted output from SQL (for tabular output) and Tableau or Python (for plots). In contrast I am able to reproduce Chapter 4 without leaving the confines of RStudio … and with <em>no</em> copying-and-pasting.</p>
+<p>I then move on to <a href="ctes_comments.html" class="quarto-xref"><span>Chapter 3</span></a>, which is a reworking of <a href="original_sql.html" class="quarto-xref"><span>Chapter 2</span></a> using <a href="https://www.postgresql.org/docs/current/queries-with.html">common table expressions</a> (CTEs) in place of subqueries. I have argued <a href="https://github.com/iangow/notes/blob/main/ctes.pdf">elsewhere</a> that CTEs make for simpler and more <a href="https://www.google.com/books/edition/SQL_and_Relational_Theory/BCjkCgAAQBAJ?hl=en">accurate SQL</a> than subqueries.<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> I also think that CTEs improve the chapter from a pedagogical perspective, as the queries, and their constituents, are much clearer.</p>
+<p><a href="dbplyr.html" class="quarto-xref"><span>Chapter 4</span></a> builds on <a href="ctes_comments.html" class="quarto-xref"><span>Chapter 3</span></a> by translating the CTE-based queries into equivalent <code>dbplyr</code> code. The <code>dbplyr</code> package is a largely behind-the-scenes R package that is invoked by <code>dplyr</code> code when the data source is a <strong>remote data frame</strong>. The <code>dplyr</code> package is arguably the foundation for the <a href="https://www.tidyverse.org">Tidyverse</a>, an “an opinionated collection of R packages designed for data science … [that] share an underlying design philosophy, grammar, and data structures.”<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a> As I wrote <a href="https://iangow.github.io/far_book/sql-primer.html">here</a>, <code>dplyr</code> has deep connections with SQL and <code>dbplyr</code> brings these connections to life by literally translating code written using <code>dplyr</code> functions into SQL.</p>
+<section id="why-dbplyr" class="level2" data-number="1.1">
+<h2 data-number="1.1" class="anchored" data-anchor-id="why-dbplyr"><span class="header-section-number">1.1</span> Why <code>dbplyr</code>?</h2>
+<p>But <code>dbplyr</code> is more than just a way for users of <code>dplyr</code> to access SQL data sources without having to learn a new language. First, even if one is working with local data sources, <code>dbplyr</code> allows one to replace the in-memory “back-end” of R with much more performant back-ends, such as that provided by DuckDB. I have found cases where performance increases a thousand-fold by pushing the data from local data frames using <code>dplyr</code> to DuckDB with no more than a couple of lines of code.<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a></p>
+<p>Second, <code>dbplyr</code> allows one to do things that cannot be done easily with <code>dplyr</code>. For example, using <code>dbplyr</code>-specific functions such as <code>window_frame()</code> and <code>window_order()</code> opens up the rich world of window functions in a way that is not possible using <code>dplyr</code> alone. An illustration of this is provided in our <a href="https://iangow.github.io/far_book/ffjr.html">book chapter on the seminal “FFJR” paper</a> where <code>window_frame()</code> makes it easy to compute total dividends for the 12 months before and then the 12 months after a stock split.<a href="#fn4" class="footnote-ref" id="fnref4" role="doc-noteref"><sup>4</sup></a></p>
+<p>My view is that <code>dbplyr</code> is the “killer app” of the Tidyverse. Combining the power of SQL (and more) with the ability to make documents using Quarto and plots using <code>ggplot2</code> and all the statistical power of R means one rarely has to leave the confines of RStudio (or whatever interface you choose) to get all sorts of things done.</p>
+<p>I also think that writing SQL queries using <code>dbplyr</code> is easier than writing SQL directly. And there are few limitations to <code>dbplyr</code> relative to SQL. An illustration of this can be seen <a href="https://iangow.github.io/sql_book/">here</a>, where I translate essentially all of the SQL queries <span class="citation" data-cites="tanimura2021sql">Tanimura (<a href="references.html#ref-tanimura2021sql" role="doc-biblioref">2021</a>)</span> into equivalent <code>dplyr</code>/<code>dbplyr</code> queries.<a href="#fn5" class="footnote-ref" id="fnref5" role="doc-noteref"><sup>5</sup></a></p>
+<p>While Python is the preferred data science platform of many users, I think <code>dplyr</code> is one reason to learn a little R. There is no exact equivalent of <code>dplyr</code>/<code>dbplyr</code> in Python. While a user of <code>dplyr</code> could generally use <a href="https://wesmckinney.com/book/">pandas</a> to achieve many of the same tasks, one cannot point pandas to an SQL data source and almost seamlessly move to a database back-end. While libraries like Ibis have recently emerged to allow users to interact with a variety of database backends in a consistent way that feels a lot like using <code>dplyr</code>, a user of pandas would need to learn new approaches.<a href="#fn6" class="footnote-ref" id="fnref6" role="doc-noteref"><sup>6</sup></a></p>
+</section>
+<section id="thoughts-on-chapter-4-of-tanimura2021sql" class="level2" data-number="1.2">
+<h2 data-number="1.2" class="anchored" data-anchor-id="thoughts-on-chapter-4-of-tanimura2021sql"><span class="header-section-number">1.2</span> Thoughts on Chapter 4 of <span class="citation" data-cites="tanimura2021sql">Tanimura (<a href="references.html#ref-tanimura2021sql" role="doc-biblioref">2021</a>)</span></h2>
+<p>I am a big fan of <span class="citation" data-cites="tanimura2021sql">Tanimura (<a href="references.html#ref-tanimura2021sql" role="doc-biblioref">2021</a>)</span>. Too many books on SQL are written as though the readers will become database administrators. As such they tend to start with <code>CREATE TABLE</code> statements and discussions of designing databases. While I think such an approach covers materials that data analysts might ultimately benefit from knowing, it’s the wrong place to start for someone who wants to learn how to analyse data. In this regard, <span class="citation" data-cites="tanimura2021sql">Tanimura (<a href="references.html#ref-tanimura2021sql" role="doc-biblioref">2021</a>)</span> is excellent, as its aimed squarely at data analysts, not database administrators.</p>
+<p>Another feature of <span class="citation" data-cites="tanimura2021sql">Tanimura (<a href="references.html#ref-tanimura2021sql" role="doc-biblioref">2021</a>)</span> that I like is that it is very hands-on, with data and code being made availale to allow readers to run all queries shown in the book. Furthermore, the queries generally use real data, including data on US legislators (explored here), UFO sightings, and earthquakes. While the setting might sound exotic, <span class="citation" data-cites="tanimura2021sql">Tanimura (<a href="references.html#ref-tanimura2021sql" role="doc-biblioref">2021</a>)</span> does an excellent job of motivating the business contexts in which the analyses examined would be relevant. For example, retention analysis might be used to study factors that affect whether customers renew subscriptions.</p>
+<p>However, there are weaknesses. The first weakness is that not all readers will see the parallels between analysing data on the tenures of legislators and business contexts such as customer retention as easily as the author, Cathy Tanimura, evidently does.<a href="#fn7" class="footnote-ref" id="fnref7" role="doc-noteref"><sup>7</sup></a></p>
+<p>Second, speaking specifically to Chapter 4 of <span class="citation" data-cites="tanimura2021sql">Tanimura (<a href="references.html#ref-tanimura2021sql" role="doc-biblioref">2021</a>)</span>, at 54 pages, the chapter is very long. I suspect that even very dedicated readers would take a long time to work through that chapter and that many readers would struggle to recall the early parts of the chapter by the time they got to the end.</p>
+<p>Third, the ideas covered in Chapter 4 are difficult and at times the presentation seems difficult to follow. For example, the chapter starts out with an incorrect query before showing how to do things correctly, then working through several permutations before returning to discussion of incorrect approaches (i.e., cross-sectional analyses that introduce possible survivorship biases). I feel that the complexity is increased by the use of subqueries, which makes the parallels between the various analyses less clear.</p>
+<p>So one aim of this “book” is to develop an alternative approach to the analysis that is clearer for readers.</p>
+</section>
+<section id="duckdb-and-learning-sql" class="level2" data-number="1.3">
+<h2 data-number="1.3" class="anchored" data-anchor-id="duckdb-and-learning-sql"><span class="header-section-number">1.3</span> DuckDB and learning SQL</h2>
+<p>Apart from an orientation to database administrators, another weakness of books on SQL is that inevitably need to deal with at least one implmentation of SQL if readers are to have the opportunity to run SQL code themselves. PostgreSQL, SQL Server, MySQL, and SQLite are popular choices.</p>
+<p><span class="citation" data-cites="tanimura2021sql">Tanimura (<a href="references.html#ref-tanimura2021sql" role="doc-biblioref">2021</a>)</span> uses PostgreSQL, a solid choice given its rich type system, modern SQL dialect and price (it’s free). Nonetheless, a reader of <span class="citation" data-cites="tanimura2021sql">Tanimura (<a href="references.html#ref-tanimura2021sql" role="doc-biblioref">2021</a>)</span> needs to install PostgreSQL, set up a server, download data, then edit and run SQL scripts to stand up a database. This is a barrier to entry, particularly for a data analyst who is looking to learn SQL to do analysis.</p>
+<p><span class="citation" data-cites="debarros2022practical">DeBarros (<a href="references.html#ref-debarros2022practical" role="doc-biblioref">2022</a>)</span> also uses PostgreSQL. He starts with a couple of chapters on setting up PostgreSQL and the usual <code>CREATE TABLE</code> fare.</p>
+<p><span class="citation" data-cites="beaulieu2020learning">Beaulieu (<a href="references.html#ref-beaulieu2020learning" role="doc-biblioref">2020</a>)</span> uses MySQL and Chapter 2 of that book is the usual “creating and populating a datadase” with discussion of data types and <code>CREATE TABLE</code> queries.</p>
+<p>Another option would be SQL Server, a Microsoft product. A student of SQL might encounter SQL Server because many teaching SQL would come from a corporate IT background, where Microsoft has cornered the market by catering to the interests of IT departments rather than the needs of end-users. But this is a non-starter if you’re using MacOS or Linux.<a href="#fn8" class="footnote-ref" id="fnref8" role="doc-noteref"><sup>8</sup></a></p>
+<p>PostgreSQL, SQL Server, and MySQL all require a user to set up an database server to use them. <span class="citation" data-cites="nield2016getting">Nield (<a href="references.html#ref-nield2016getting" role="doc-biblioref">2016</a>)</span> calls these <strong>centralized databases</strong>. In contrast, SQLite can be run inside another process, such as withing Python or R. While this obviously lowers the set-up costs, my casual search for SQL learning materials suggest that SQLite is not an especially popular system for authors of such materials.</p>
+<p><span class="citation" data-cites="nield2016getting">Nield (<a href="references.html#ref-nield2016getting" role="doc-biblioref">2016</a>)</span> is one resource that uses SQLite, which he calls a <strong>lightweight database</strong>. While Chapter 3 of <span class="citation" data-cites="nield2016getting">Nield (<a href="references.html#ref-nield2016getting" role="doc-biblioref">2016</a>)</span> looks a lot like similarly situated chapters in other books, though the simplicity that SQLite brings is evident from the absence of <code>CREATE TABLE</code> discussion in that chapter.</p>
+<p>Of course, SQLite has some weaknesses. Its type system is relatively weak, especially relative to PostgreSQL, which supports a rich set of types for date-times, geometry, JSON, XML, as well as arrays and functions related to these. While the SQL offered by SQLite used to lack features of PostgreSQL, such as <a href="https://www.sqlite.org/windowfunctions.html">window functions</a>, recent versions of SQLite appear to have closed the gap significantly. Still gaps remain, such as the lack of support for regular expression functions.</p>
+<p>DuckDB is another lightweight database. Probably not as lightweight as SQLite. But rich SQL a lot like PostgreSQL. Also a lot of features</p>
 
 
 <div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list" style="display: none">
+<div id="ref-beaulieu2020learning" class="csl-entry" role="listitem">
+Beaulieu, A. 2020. <em>Learning SQL: Generate, Manipulate, and Retrieve Data</em>. O’Reilly Media. <a href="https://books.google.com/books?id=Nl3UDwAAQBAJ">https://books.google.com/books?id=Nl3UDwAAQBAJ</a>.
+</div>
+<div id="ref-debarros2022practical" class="csl-entry" role="listitem">
+DeBarros, Anthony. 2022. <em>Practical SQL: A Beginner’s Guide to Storytelling with Data</em>. 2nd ed. No Starch Press. <a href="https://books.google.com/books?id=4xVOEAAAQBAJ">https://books.google.com/books?id=4xVOEAAAQBAJ</a>.
+</div>
+<div id="ref-nield2016getting" class="csl-entry" role="listitem">
+Nield, Thomas. 2016. <em>Getting Started with SQL</em>. O’Reilly Media. <a href="https://books.google.com/books?id=RHOOCwAAQBAJ">https://books.google.com/books?id=RHOOCwAAQBAJ</a>.
+</div>
 <div id="ref-tanimura2021sql" class="csl-entry" role="listitem">
 Tanimura, C. 2021. <em>SQL for Data Analysis</em>. O’Reilly Media. <a href="https://books.google.com.au/books?id=ojhCEAAAQBAJ">https://books.google.com.au/books?id=ojhCEAAAQBAJ</a>.
 </div>
 </div>
+</section>
+</section>
+<section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes">
+<hr>
+<ol>
+<li id="fn1"><p>In fact, the example I use to illustrate this point comes from Chapter 4 of <span class="citation" data-cites="tanimura2021sql">Tanimura (<a href="references.html#ref-tanimura2021sql" role="doc-biblioref">2021</a>)</span>.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>The Tidyverse was earlier known as the <a href="https://rstudio-pubs-static.s3.amazonaws.com/164023_6c3a7560d1c84ed1a4ba30ad4b6d0097.html#/">Hadleyverse</a> after its principal architect, <a href="https://enz.wikipedia.org/wiki/Hadley_Wickham">Hadley Wickham</a>.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn3"><p>For example, the query producing <code>risk_asymmetry</code> <a href="https://iangow.github.io/far_book/rdd.html#bloomfield2021va">here</a> took 15 minutes before I moved the query inside the database—either PostgreSQL or DuckDB—where it took about one second.<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn4"><p>While there are packages that allow such rolling averages, these are outside the Tidyverse itself and likely do not offer the same performance in many cases.<a href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn5"><p>I say <em>essentially</em> all because it seems I did not translate all the queries from Chapter 4 of <span class="citation" data-cites="tanimura2021sql">Tanimura (<a href="references.html#ref-tanimura2021sql" role="doc-biblioref">2021</a>)</span>; but I do those translations here.<a href="#fnref5" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn6"><p>In some ways, pandas is supplies functionality that comes with base R, so comparing it with <code>dplyr</code> is not entirely appropriate. But I think the comparison is valid is that many data analysts using Python in 2024 would use pandas in the same way that many data analysts using R would use <code>dplyr</code>.<a href="#fnref6" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn7"><p>There’s a certain genius behind the data sets that Tanimura selects for each chapter.<a href="#fnref7" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn8"><p>Even installing an ODBC driver for SQL Server requires compiling code on MacOS because Microsoft doesn’t deign to provide a packaged driver itself.<a href="#fnref8" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
 </section>
 
 </main> <!-- /main -->
@@ -639,8 +703,8 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   <div class="nav-page nav-page-previous">
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./original_sql.html" class="pagination-link" aria-label="Cohort Analysis -- Original">
-        <span class="nav-page-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Cohort Analysis – Original</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./original_sql.html" class="pagination-link" aria-label="Cohorts - the original chapter">
+        <span class="nav-page-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Cohorts - the original chapter</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

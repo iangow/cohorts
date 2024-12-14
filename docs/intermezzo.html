@@ -1,0 +1,3120 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.6.39">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>5&nbsp; Un intermezzo – Cohort analysis</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./references.html" rel="next">
+<link href="./dbplyr.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-e26003cea8cd680ca0c55a263523d882.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-626149efe8f5d16e1d391ba177679bf0.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-sidebar floating">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./intermezzo.html"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Un intermezzo</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Cohort analysis</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./original_sql.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Cohorts - the original chapter</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ctes_comments.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Cohorts using CTEs</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./dbplyr.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Cohort using <code>dbplyr</code></span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./intermezzo.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Un intermezzo</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">References</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#survival-data-the-basic-building-block" id="toc-survival-data-the-basic-building-block" class="nav-link active" data-scroll-target="#survival-data-the-basic-building-block"><span class="header-section-number">5.1</span> Survival data: The basic building block</a>
+  <ul class="collapse">
+  <li><a href="#survival-once-only-events" id="toc-survival-once-only-events" class="nav-link" data-scroll-target="#survival-once-only-events"><span class="header-section-number">5.1.1</span> Survival: Once-only events</a></li>
+  <li><a href="#survival-censoring" id="toc-survival-censoring" class="nav-link" data-scroll-target="#survival-censoring"><span class="header-section-number">5.1.2</span> Survival: Censoring</a></li>
+  <li><a href="#sec-census-date" id="toc-sec-census-date" class="nav-link" data-scroll-target="#sec-census-date"><span class="header-section-number">5.1.3</span> Events that can happen more than once: The census-date approach</a></li>
+  <li><a href="#sec-stints" id="toc-sec-stints" class="nav-link" data-scroll-target="#sec-stints"><span class="header-section-number">5.1.4</span> Events that can happen more than once: Stints</a></li>
+  </ul></li>
+  <li><a href="#adding-cohorts-the-canonical-form" id="toc-adding-cohorts-the-canonical-form" class="nav-link" data-scroll-target="#adding-cohorts-the-canonical-form"><span class="header-section-number">5.2</span> Adding cohorts: The canonical form</a>
+  <ul class="collapse">
+  <li><a href="#cohorts-considered-in-tanimura2021sql" id="toc-cohorts-considered-in-tanimura2021sql" class="nav-link" data-scroll-target="#cohorts-considered-in-tanimura2021sql"><span class="header-section-number">5.2.1</span> Cohorts considered in <span class="citation" data-cites="tanimura2021sql">Tanimura (2021)</span></a></li>
+  <li><a href="#census-dates" id="toc-census-dates" class="nav-link" data-scroll-target="#census-dates"><span class="header-section-number">5.2.2</span> Census dates</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Un intermezzo</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>I take a brief pause in this chapter to organize some bigger-picture thoughts about Chapter 4 of <span class="citation" data-cites="tanimura2021sql">Tanimura (<a href="references.html#ref-tanimura2021sql" role="doc-biblioref">2021</a>)</span>.</p>
+<p>My first thought is that the distinctions between each pair of the four types of cohort analysis identified by <span class="citation" data-cites="tanimura2021sql">Tanimura (<a href="references.html#ref-tanimura2021sql" role="doc-biblioref">2021, 124</a>)</span> are not equally sharp or stark. One distinction between retention and survivorship appears to turn on whether the activity engaged involves “repeated actions” or not. While this distinction certainly matters from a data analysis perspective, it’s not clear that it’s central to the analysis and my inclination is to view survivorship as the more fundamental idea underlying both.</p>
+<p>A more important distinction between retention and survivorship analysis in the taxonomy of Chapter 4 of <span class="citation" data-cites="tanimura2021sql">Tanimura (<a href="references.html#ref-tanimura2021sql" role="doc-biblioref">2021</a>)</span> relates to whether a cohort member can exit the data and return at a later date. <span class="citation" data-cites="tanimura2021sql">Tanimura (<a href="references.html#ref-tanimura2021sql" role="doc-biblioref">2021, 124</a>)</span> suggests that retention analysis is “concerned with whether the cohort member has a record in the time series on a particular date, expressed as a number of periods from the starting date.” This description allows for an individual to be in the sample at time <span class="math inline">\(0\)</span> and time <span class="math inline">\(2\)</span> even if not in the sample at time <span class="math inline">\(1\)</span>. Elsewhere <span class="citation" data-cites="tanimura2021sql">Tanimura (<a href="references.html#ref-tanimura2021sql" role="doc-biblioref">2021, 127</a>)</span> suggests that often “a cohort can lose but cannot gain new members once it is formed.” I argue that the distinction between analyses where exit can happen only once from those where re-entry is possible is a more fundamental distinction and I discuss it in more detail below.</p>
+<p>Returnship, the third type of cohort analysis identified by <span class="citation" data-cites="tanimura2021sql">Tanimura (<a href="references.html#ref-tanimura2021sql" role="doc-biblioref">2021</a>)</span>, seems to be one of repeated actions occurring “more than some minimum threshold of times”, thus putting it close to retention.</p>
+<p>Finally, cumulative analyses “are concerned with the total number of times or amounts measured at one or more fixed time windows”. In a sense, returnship seems to involve counting over windows, while cumulative analysis likely requires summing of some measure. Given that a count is simply a sum of ones that indicate an action, this suggests that returnship is often perhaps a species of cumulative analysis.</p>
+<p><strong>Rewrite this paragraph once structure is understood.</strong> <span class="citation" data-cites="tanimura2021sql">Tanimura (<a href="references.html#ref-tanimura2021sql" role="doc-biblioref">2021</a>)</span> seems to concur regarding the existence of fundamental links between the four types of analysis, but elects to treat retention as the basic building block. While there is merit to this view, my inclination is to consider survivorship as the elemental analysis and to build up from there. My hunch is that a lot of the work in Chapter 4 of <span class="citation" data-cites="tanimura2021sql">Tanimura (<a href="references.html#ref-tanimura2021sql" role="doc-biblioref">2021</a>)</span> can be better understood if one begins each analysis with a step that organizes survivorship data into a canonical structure.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(DBI)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dbplyr)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(farr)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(jsonlite)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>db <span class="ot">&lt;-</span> <span class="fu">dbConnect</span>(duckdb<span class="sc">::</span><span class="fu">duckdb</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>legislators_terms <span class="ot">&lt;-</span> <span class="fu">load_parquet</span>(db, <span class="st">"legislators_terms"</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>legislators <span class="ot">&lt;-</span> <span class="fu">load_parquet</span>(db, <span class="st">"legislators"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>In addition to the two tables above, in this chapter I will use an additional data frame with data on congressional terms.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>congress_terms <span class="ot">&lt;-</span> <span class="fu">load_parquet</span>(db, <span class="st">"congress_terms"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="survival-data-the-basic-building-block" class="level2" data-number="5.1">
+<h2 data-number="5.1" class="anchored" data-anchor-id="survival-data-the-basic-building-block"><span class="header-section-number">5.1</span> Survival data: The basic building block</h2>
+<p><span class="citation" data-cites="singer2003longitudinal">Singer and Willett (<a href="references.html#ref-singer2003longitudinal" role="doc-biblioref">2003, 306</a>)</span> suggest that “researchers use <strong>survival analysis</strong> in a variety of contexts that share a common characterisit: interest centers on describing <em>whether events occur</em> or <em>when events occur</em>.”</p>
+<section id="survival-once-only-events" class="level3" data-number="5.1.1">
+<h3 data-number="5.1.1" class="anchored" data-anchor-id="survival-once-only-events"><span class="header-section-number">5.1.1</span> Survival: Once-only events</h3>
+<p>Often analytical simplicity is obtained by defining the event in such a way that it can happen at most once. <span class="citation" data-cites="singer2003longitudinal">Singer and Willett (<a href="references.html#ref-singer2003longitudinal" role="doc-biblioref">2003</a>)</span> provide examples such as time to relapse among recently treated alcoholic and age at first suicide ideation. While one could track alcoholics over an extended period that allows them the opportunity to relapse, re-enter treatment, and then perhaps relapse again, by defining relapse as the first such event after treatment, it can occur at most once. In other settings, events occur at most once for each individual (e.g., death for most individual humans).</p>
+<p>I suggest that the canonical form of data for survival analysis is a table with the following columns:</p>
+<ul>
+<li>Identifier: One more columns that identify the individuals in the sample. In the legislator data, this would be <code>id_bioguide</code>.</li>
+<li>Entry date: The relevant start date for the individual</li>
+<li>Event date: The date, if any, on which the relevant event occurs for the individual.</li>
+</ul>
+<p>Most queries involving cohorts in <a href="original_sql.html" class="quarto-xref"><span>Chapter 2</span></a> do not use a survivorship approach.<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> The queries using a survivorship approach are given in <a href="original_sql.html#sec-survivorship" class="quarto-xref"><span>Section 2.4.1</span></a>.</p>
+<p>Interestingly, <span class="citation" data-cites="tanimura2021sql">Tanimura (<a href="references.html#ref-tanimura2021sql" role="doc-biblioref">2021, 124</a>)</span> suggests that what distinguishes survivorship analysis is that “instead of calculating whether an entity was present in a certain period [as in retention analyis], we calculate whether the entity is present in that period or later in the time series.” With <em>senso strictu</em> survivorship analysis where the “event” is death, the event only occurs once. So if an individual is alive both before and after a given date, then that individual must be alive on that date and there is no distinction between an entity being present in a certain period and that entity being present in that period or later in the time series. Similar logic applies to other once-only events such as first relapse or first ideation of suicide: if the event had not occurred by a date later than <span class="math inline">\(t\)</span>, then it has not occurred by <span class="math inline">\(t\)</span>. As such the primary distinction I make here is the not the same distinction as that made in <span class="citation" data-cites="tanimura2021sql">Tanimura (<a href="references.html#ref-tanimura2021sql" role="doc-biblioref">2021</a>)</span>.</p>
+<p>Before moving on to discuss the census-date approach, I spend some time considering the approaches used in <a href="original_sql.html#sec-survivorship" class="quarto-xref"><span>Section 2.4.1</span></a>. The first query <span class="citation" data-cites="tanimura2021sql">(<a href="references.html#ref-tanimura2021sql" role="doc-biblioref">Tanimura 2021, 154–55</a>)</span> effectively organizes the data into the canonical form for survival data with <code>first_century</code> as the cohort, except that the exit date is measured as <code>term_start</code> for each legislator’s last term.<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a> In effect, any gaps in a legislator’s term are filled in in the sense that any legislator with a term covering any period after five years would be deemed to have “survived” for five years.</p>
+<p>What is not clear from <span class="citation" data-cites="tanimura2021sql">Tanimura (<a href="references.html#ref-tanimura2021sql" role="doc-biblioref">2021</a>)</span> is why one would prefer “survivorship” analysis (with filling-in) over “retention” analysis, as there is no real context given for the queries. One example that is given does not help much: “if we are concerned about the number of students who are still in school after a certain number of years, we could look for the absence of a graduation event in a data set” <span class="citation" data-cites="tanimura2021sql">(<a href="references.html#ref-tanimura2021sql" role="doc-biblioref">Tanimura 2021, 154</a>)</span>. But suppose our cohort comprises students who begin high school, where high school is understood as covering grades 9 through 12. It would not seem correct to treat a student who completed grades 9 and 10, then dropped out for a year before returning to complete the eleventh grade and then dropping out again as having “survived” four years of high school.</p>
+<p>In contrast, there are clear analytical benefits to focuses on once-only events. Apart from simplifying data collation, a focus on once-only events allows an analyst to deploy the extensive analytical machinery available for survival analysis. For example, <span class="citation" data-cites="singer2003longitudinal">Singer and Willett (<a href="references.html#ref-singer2003longitudinal" role="doc-biblioref">2003</a>)</span> “focuses exclusively on the most common and fundamental problem: the analysis of single spells [i.e., once-only events]” [p.&nbsp;311]. <span class="citation" data-cites="singer2003longitudinal">Singer and Willett (<a href="references.html#ref-singer2003longitudinal" role="doc-biblioref">2003</a>)</span> provides tools for discrete-time and continuous-time analyses, including the Cox regression model and extensions to that model. While such models are beyond the scope of this book, they can be implemented once an analyst has organized the data into the canonical form for survival data. My focus here is on organizing data for analysis.</p>
+</section>
+<section id="survival-censoring" class="level3" data-number="5.1.2">
+<h3 data-number="5.1.2" class="anchored" data-anchor-id="survival-censoring"><span class="header-section-number">5.1.2</span> Survival: Censoring</h3>
+<p>Note that we will often not observe event dates for many observations due to <strong>censoring</strong>. While events may be inevitable for any given individual (the proverbial death and taxes), such events need not occur during the period covered by the sample under study. This fact may not always be obvious from the data set in question.</p>
+<p>To illustrate this point, I consider the legislators data . It is important to recognize that the data in <code>legislators</code> and <code>legislators_terms</code> were obtained at some unspecified date in the past.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>max_term_start <span class="ot">&lt;-</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  legislators_terms <span class="sc">|&gt;</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="fu">max</span>(term_start, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pull</span>()</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>max_term_start</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "2020-05-19"</code></pre>
+</div>
+</div>
+<p>As we can see there are no terms in the data <em>starting</em> after the November 2020 election, suggesting that the data were extracted before terms related to that election started. Looking at the <code>term_end</code> dates, we see that no member of the House of Representatives (<code>term_type == "rep"</code>) has a term ending after 3 January 2021.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>legislators_terms <span class="sc">|&gt;</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(term_end <span class="sc">&gt;=</span> max_term_start) <span class="sc">|&gt;</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(term_type, term_end) <span class="sc">|&gt;</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(term_type, term_end)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<!-- preamble start -->
+
+    <script>
+
+      function styleCell_fciqw7ni629ypjz7rwoj(i, j, css_id) {
+          var table = document.getElementById("tinytable_fciqw7ni629ypjz7rwoj");
+          var cell = table.rows[i]?.cells[j];  // Safe navigation to avoid errors
+          if (cell) {
+              console.log(`Styling cell at (${i}, ${j}) with class ${css_id}`);
+              cell.classList.add(css_id);
+          } else {
+              console.warn(`Cell at (${i}, ${j}) not found.`);
+          }
+      }
+      function insertSpanRow(i, colspan, content) {
+        var table = document.getElementById('tinytable_fciqw7ni629ypjz7rwoj');
+        var newRow = table.insertRow(i);
+        var newCell = newRow.insertCell(0);
+        newCell.setAttribute("colspan", colspan);
+        // newCell.innerText = content;
+        // this may be unsafe, but innerText does not interpret <br>
+        newCell.innerHTML = content;
+      }
+      function spanCell_fciqw7ni629ypjz7rwoj(i, j, rowspan, colspan) {
+        var table = document.getElementById("tinytable_fciqw7ni629ypjz7rwoj");
+        const targetRow = table.rows[i];
+        const targetCell = targetRow.cells[j];
+        for (let r = 0; r < rowspan; r++) {
+          // Only start deleting cells to the right for the first row (r == 0)
+          if (r === 0) {
+            // Delete cells to the right of the target cell in the first row
+            for (let c = colspan - 1; c > 0; c--) {
+              if (table.rows[i + r].cells[j + c]) {
+                table.rows[i + r].deleteCell(j + c);
+              }
+            }
+          }
+          // For rows below the first, delete starting from the target column
+          if (r > 0) {
+            for (let c = colspan - 1; c >= 0; c--) {
+              if (table.rows[i + r] && table.rows[i + r].cells[j]) {
+                table.rows[i + r].deleteCell(j);
+              }
+            }
+          }
+        }
+        // Set rowspan and colspan of the target cell
+        targetCell.rowSpan = rowspan;
+        targetCell.colSpan = colspan;
+      }
+      // tinytable span after
+      window.addEventListener('load', function () {
+          var cellsToStyle = [
+            // tinytable style arrays after
+          { positions: [ { i: 0, j: 2 },  ], css_id: 'tinytable_css_gyk6sc2hdczq58uavgw0',}, 
+          { positions: [ { i: 6, j: 0 }, { i: 6, j: 1 },  ], css_id: 'tinytable_css_annlis78p27434k9hcj1',}, 
+          { positions: [ { i: 0, j: 0 }, { i: 0, j: 1 },  ], css_id: 'tinytable_css_9x6800ixumowrjgjvrgn',}, 
+          { positions: [ { i: 1, j: 0 }, { i: 2, j: 0 }, { i: 4, j: 0 }, { i: 5, j: 0 }, { i: 3, j: 1 }, { i: 3, j: 0 }, { i: 1, j: 1 }, { i: 2, j: 1 }, { i: 4, j: 1 }, { i: 5, j: 1 },  ], css_id: 'tinytable_css_9ezqshww9cvxzvdwifb7',}, 
+          { positions: [ { i: 6, j: 2 },  ], css_id: 'tinytable_css_6x2ae1zs3jl8nri10b2b',}, 
+          { positions: [ { i: 1, j: 2 }, { i: 2, j: 2 }, { i: 3, j: 2 }, { i: 4, j: 2 }, { i: 5, j: 2 },  ], css_id: 'tinytable_css_2536v0xns534fmr2bxp6',}, 
+          ];
+
+          // Loop over the arrays to style the cells
+          cellsToStyle.forEach(function (group) {
+              group.positions.forEach(function (cell) {
+                  styleCell_fciqw7ni629ypjz7rwoj(cell.i, cell.j, group.css_id);
+              });
+          });
+      });
+    </script>
+
+    <style>
+      /* tinytable css entries after */
+      .table td.tinytable_css_gyk6sc2hdczq58uavgw0, .table th.tinytable_css_gyk6sc2hdczq58uavgw0 { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; border-bottom: solid #d3d8dc 0.1em; padding-bottom: 0em; }
+      .table td.tinytable_css_annlis78p27434k9hcj1, .table th.tinytable_css_annlis78p27434k9hcj1 { border-bottom: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.1em; padding-right: 0.1em; }
+      .table td.tinytable_css_9x6800ixumowrjgjvrgn, .table th.tinytable_css_9x6800ixumowrjgjvrgn { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; border-bottom: solid #d3d8dc 0.1em; padding-right: 0.1em; padding-bottom: 0em; }
+      .table td.tinytable_css_9ezqshww9cvxzvdwifb7, .table th.tinytable_css_9ezqshww9cvxzvdwifb7 { padding-right: 0.1em; padding-bottom: 0em; }
+      .table td.tinytable_css_6x2ae1zs3jl8nri10b2b, .table th.tinytable_css_6x2ae1zs3jl8nri10b2b { border-bottom: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.1em; }
+      .table td.tinytable_css_2536v0xns534fmr2bxp6, .table th.tinytable_css_2536v0xns534fmr2bxp6 { padding-bottom: 0em; }
+    </style>
+    <div class="container">
+      <table class="table table-borderless" id="tinytable_fciqw7ni629ypjz7rwoj" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
+        <thead>
+        
+              <tr>
+                <th scope="col">term_type</th>
+                <th scope="col">term_end</th>
+                <th scope="col">n</th>
+              </tr>
+        </thead>
+        
+        <tbody>
+                <tr>
+                  <td>rep</td>
+                  <td>2020-05-22</td>
+                  <td>  1</td>
+                </tr>
+                <tr>
+                  <td>rep</td>
+                  <td>2021-01-03</td>
+                  <td>437</td>
+                </tr>
+                <tr>
+                  <td>sen</td>
+                  <td>2020-11-03</td>
+                  <td>  1</td>
+                </tr>
+                <tr>
+                  <td>sen</td>
+                  <td>2021-01-03</td>
+                  <td> 34</td>
+                </tr>
+                <tr>
+                  <td>sen</td>
+                  <td>2023-01-03</td>
+                  <td> 32</td>
+                </tr>
+                <tr>
+                  <td>sen</td>
+                  <td>2025-01-03</td>
+                  <td> 33</td>
+                </tr>
+        </tbody>
+      </table>
+    </div>
+<!-- hack to avoid NA insertion in last line -->
+</div>
+</div>
+<p>As we are in “the future” with regard to whenever the legislators data were extracted, we can gain some insight into when the data were collected by looking at the data we can get today from the GitHub repository from which the data were obtained. The data on legislators’ terms are divided into two JSON files—one for current legislators and one for past legislators. Using JSON wrangling of the kind I have <a href="https://github.com/iangow/notes/blob/main/sec_submissions.pdf">written about in the past</a>, <code>get_terms()</code> processes either of these two files and returns a data frame.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>get_terms <span class="ot">&lt;-</span> <span class="cf">function</span>(file) {</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  url <span class="ot">&lt;-</span> <span class="fu">str_c</span>(<span class="st">"https://theunitedstates.io/congress-legislators/"</span>, file)</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tibble</span>(<span class="at">json =</span> <span class="fu">list</span>(<span class="fu">read_json</span>(url))) <span class="sc">|&gt;</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">unnest_longer</span>(json) <span class="sc">|&gt;</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">unnest_wider</span>(json) <span class="sc">|&gt;</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">select</span>(id, terms) <span class="sc">|&gt;</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">unnest_wider</span>(id) <span class="sc">|&gt;</span> </span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">select</span>(bioguide, terms) <span class="sc">|&gt;</span></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">unnest_longer</span>(terms) <span class="sc">|&gt;</span></span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">unnest_wider</span>(terms) <span class="sc">|&gt;</span></span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">select</span>(bioguide, type, start, end, state, district, party, url,  class) <span class="sc">|&gt;</span></span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">rename_with</span>(\(x) <span class="fu">str_c</span>(<span class="st">"term_"</span>, x), <span class="fu">c</span>(type, start, end)) <span class="sc">|&gt;</span></span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>    <span class="fu">rename</span>(<span class="at">id_bioguide =</span> bioguide)</span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>I apply <code>get_terms()</code> twice to get the data and combine them and push them to the DuckDB database instance containing the older data sets we have.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>updated_terms <span class="ot">&lt;-</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">get_terms</span>(<span class="st">"legislators-current.json"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bind_rows</span>(<span class="fu">get_terms</span>(<span class="st">"legislators-historical.json"</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">copy_to</span>(db, <span class="at">df =</span> _, <span class="at">name =</span> <span class="st">"updated_terms"</span>, <span class="at">overwrite =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Finally, I join the old and new data and look for case where the updated <code>term_end</code> differs from that in the older data set. Such cases are shown in <a href="#tbl-changed-term-ends" class="quarto-xref">Table&nbsp;<span>5.1</span></a>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>legislators <span class="sc">|&gt;</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(id_bioguide, full_name) <span class="sc">|&gt;</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">inner_join</span>(updated_terms, <span class="at">by =</span> <span class="st">"id_bioguide"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">inner_join</span>(legislators_terms,</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>             <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"id_bioguide"</span>, <span class="st">"term_start"</span>),</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>             <span class="at">suffix =</span> <span class="fu">c</span>(<span class="st">"_updated"</span>, <span class="st">""</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(term_end <span class="sc">!=</span> term_end_updated) <span class="sc">|&gt;</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(full_name, term_type, term_start, term_end,</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>         term_end_updated) <span class="sc">|&gt;</span></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(term_end_updated) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="tbl-changed-term-ends" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-changed-term-ends-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;5.1: Legislators with changed <code>term_end</code> values in updated data
+</figcaption>
+<div aria-describedby="tbl-changed-term-ends-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<!-- preamble start -->
+
+    <script>
+
+      function styleCell_z7sdmliv0yxfpe1usq8m(i, j, css_id) {
+          var table = document.getElementById("tinytable_z7sdmliv0yxfpe1usq8m");
+          var cell = table.rows[i]?.cells[j];  // Safe navigation to avoid errors
+          if (cell) {
+              console.log(`Styling cell at (${i}, ${j}) with class ${css_id}`);
+              cell.classList.add(css_id);
+          } else {
+              console.warn(`Cell at (${i}, ${j}) not found.`);
+          }
+      }
+      function insertSpanRow(i, colspan, content) {
+        var table = document.getElementById('tinytable_z7sdmliv0yxfpe1usq8m');
+        var newRow = table.insertRow(i);
+        var newCell = newRow.insertCell(0);
+        newCell.setAttribute("colspan", colspan);
+        // newCell.innerText = content;
+        // this may be unsafe, but innerText does not interpret <br>
+        newCell.innerHTML = content;
+      }
+      function spanCell_z7sdmliv0yxfpe1usq8m(i, j, rowspan, colspan) {
+        var table = document.getElementById("tinytable_z7sdmliv0yxfpe1usq8m");
+        const targetRow = table.rows[i];
+        const targetCell = targetRow.cells[j];
+        for (let r = 0; r < rowspan; r++) {
+          // Only start deleting cells to the right for the first row (r == 0)
+          if (r === 0) {
+            // Delete cells to the right of the target cell in the first row
+            for (let c = colspan - 1; c > 0; c--) {
+              if (table.rows[i + r].cells[j + c]) {
+                table.rows[i + r].deleteCell(j + c);
+              }
+            }
+          }
+          // For rows below the first, delete starting from the target column
+          if (r > 0) {
+            for (let c = colspan - 1; c >= 0; c--) {
+              if (table.rows[i + r] && table.rows[i + r].cells[j]) {
+                table.rows[i + r].deleteCell(j);
+              }
+            }
+          }
+        }
+        // Set rowspan and colspan of the target cell
+        targetCell.rowSpan = rowspan;
+        targetCell.colSpan = colspan;
+      }
+      // tinytable span after
+      window.addEventListener('load', function () {
+          var cellsToStyle = [
+            // tinytable style arrays after
+          { positions: [ { i: 0, j: 4 },  ], css_id: 'tinytable_css_yk8ejvvbdxagd15r0mpi',}, 
+          { positions: [ { i: 2, j: 0 }, { i: 3, j: 0 }, { i: 4, j: 0 }, { i: 6, j: 0 }, { i: 7, j: 0 }, { i: 3, j: 2 }, { i: 1, j: 1 }, { i: 2, j: 1 }, { i: 3, j: 1 }, { i: 4, j: 1 }, { i: 1, j: 0 }, { i: 6, j: 1 }, { i: 7, j: 1 }, { i: 3, j: 3 }, { i: 5, j: 0 }, { i: 1, j: 2 }, { i: 2, j: 2 }, { i: 7, j: 3 }, { i: 4, j: 2 }, { i: 5, j: 2 }, { i: 6, j: 2 }, { i: 7, j: 2 }, { i: 5, j: 1 }, { i: 1, j: 3 }, { i: 2, j: 3 }, { i: 4, j: 3 }, { i: 5, j: 3 }, { i: 6, j: 3 },  ], css_id: 'tinytable_css_wupb4r0wjhh621dlhh1q',}, 
+          { positions: [ { i: 1, j: 4 }, { i: 2, j: 4 }, { i: 3, j: 4 }, { i: 4, j: 4 }, { i: 5, j: 4 }, { i: 6, j: 4 }, { i: 7, j: 4 },  ], css_id: 'tinytable_css_ocdfzxnr9hnctrp9bsid',}, 
+          { positions: [ { i: 0, j: 0 }, { i: 0, j: 3 }, { i: 0, j: 2 }, { i: 0, j: 1 },  ], css_id: 'tinytable_css_ntsr63ab4jjd8ffe2gva',}, 
+          { positions: [ { i: 8, j: 4 },  ], css_id: 'tinytable_css_kvuaa1bxad3ju5kaxkq0',}, 
+          { positions: [ { i: 8, j: 2 }, { i: 8, j: 1 }, { i: 8, j: 0 }, { i: 8, j: 3 },  ], css_id: 'tinytable_css_dx7t1eexzvwsn5c99rr1',}, 
+          ];
+
+          // Loop over the arrays to style the cells
+          cellsToStyle.forEach(function (group) {
+              group.positions.forEach(function (cell) {
+                  styleCell_z7sdmliv0yxfpe1usq8m(cell.i, cell.j, group.css_id);
+              });
+          });
+      });
+    </script>
+
+    <style>
+      /* tinytable css entries after */
+      .table td.tinytable_css_yk8ejvvbdxagd15r0mpi, .table th.tinytable_css_yk8ejvvbdxagd15r0mpi { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; border-bottom: solid #d3d8dc 0.1em; padding-bottom: 0em; }
+      .table td.tinytable_css_wupb4r0wjhh621dlhh1q, .table th.tinytable_css_wupb4r0wjhh621dlhh1q { padding-right: 0.1em; padding-bottom: 0em; }
+      .table td.tinytable_css_ocdfzxnr9hnctrp9bsid, .table th.tinytable_css_ocdfzxnr9hnctrp9bsid { padding-bottom: 0em; }
+      .table td.tinytable_css_ntsr63ab4jjd8ffe2gva, .table th.tinytable_css_ntsr63ab4jjd8ffe2gva { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; border-bottom: solid #d3d8dc 0.1em; padding-right: 0.1em; padding-bottom: 0em; }
+      .table td.tinytable_css_kvuaa1bxad3ju5kaxkq0, .table th.tinytable_css_kvuaa1bxad3ju5kaxkq0 { border-bottom: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.1em; }
+      .table td.tinytable_css_dx7t1eexzvwsn5c99rr1, .table th.tinytable_css_dx7t1eexzvwsn5c99rr1 { border-bottom: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.1em; padding-right: 0.1em; }
+    </style>
+    <div class="container">
+      <table class="table table-borderless" id="tinytable_z7sdmliv0yxfpe1usq8m" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
+        <thead>
+        
+              <tr>
+                <th scope="col">full_name</th>
+                <th scope="col">term_type</th>
+                <th scope="col">term_start</th>
+                <th scope="col">term_end</th>
+                <th scope="col">term_end_updated</th>
+              </tr>
+        </thead>
+        
+        <tbody>
+                <tr>
+                  <td>John Lewis      </td>
+                  <td>rep</td>
+                  <td>2019-01-03</td>
+                  <td>2021-01-03</td>
+                  <td>2020-07-17</td>
+                </tr>
+                <tr>
+                  <td>Tom Graves      </td>
+                  <td>rep</td>
+                  <td>2019-01-03</td>
+                  <td>2021-01-03</td>
+                  <td>2020-10-04</td>
+                </tr>
+                <tr>
+                  <td>Martha McSally  </td>
+                  <td>sen</td>
+                  <td>2019-01-03</td>
+                  <td>2021-01-03</td>
+                  <td>2020-12-02</td>
+                </tr>
+                <tr>
+                  <td>Paul Cook       </td>
+                  <td>rep</td>
+                  <td>2019-01-03</td>
+                  <td>2021-01-03</td>
+                  <td>2020-12-07</td>
+                </tr>
+                <tr>
+                  <td>Kamala D. Harris</td>
+                  <td>sen</td>
+                  <td>2017-01-03</td>
+                  <td>2023-01-03</td>
+                  <td>2021-01-18</td>
+                </tr>
+                <tr>
+                  <td>Kelly Loeffler  </td>
+                  <td>sen</td>
+                  <td>2020-01-06</td>
+                  <td>2020-11-03</td>
+                  <td>2021-01-20</td>
+                </tr>
+                <tr>
+                  <td>Dianne Feinstein</td>
+                  <td>sen</td>
+                  <td>2019-01-03</td>
+                  <td>2025-01-03</td>
+                  <td>2023-09-28</td>
+                </tr>
+                <tr>
+                  <td>Robert Menendez </td>
+                  <td>sen</td>
+                  <td>2019-01-03</td>
+                  <td>2025-01-03</td>
+                  <td>2024-08-20</td>
+                </tr>
+        </tbody>
+      </table>
+    </div>
+<!-- hack to avoid NA insertion in last line -->
+</div>
+</div>
+</figure>
+</div>
+</div>
+<p>Looking at the table, we see that the earliest updated <code>term_end</code> relates to John Lewis, a civil rights icon and long-time legislator who passed away on 17 July 2020. It seems reasonable to assume that the data were collated prior to that date and, lacking more precise information, I assume that the extraction date was 30 June 2020.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>extract_date <span class="ot">&lt;-</span> <span class="fu">as.Date</span>(<span class="st">"2020-06-30"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Once we fix <code>extract_date</code>, we should consider all <code>term_end</code> dates after that date as merely <em>expected</em> <code>term_end</code> dates, as subsequent events might have led to some members of Congress to finish their terms early. For this reason, it might seem appropriate to code such <code>term_end</code> values as “don’t know” or <code>NA</code> (<code>NULL</code> in SQL). This is especially so when we view <code>last_term</code> as representing the end of a legislator’ career, as we simply don’t know when a legislator’s career will end. But coding the data in this way would lead to a loss of the information impounded in the fact that a legislator’s term has extended at least as far as 30 June 2020. For this reason, the standard approach is to code <code>term_end</code> as the last observed date and create an indicator variable that informs users of the data that the data have been censored for this observation. The following code creates <code>survival_data</code>, a data frame containing legislator data in canonical survival form. A sample of these data is provided in <a href="#tbl-survival-canonical" class="quarto-xref">Table&nbsp;<span>5.2</span></a>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>survival_data <span class="ot">&lt;-</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  legislators_terms <span class="sc">|&gt;</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(id_bioguide) <span class="sc">|&gt;</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">entry_date =</span> <span class="fu">min</span>(term_start, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>            <span class="at">exit_date =</span> <span class="fu">max</span>(term_end, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>            <span class="at">.groups =</span> <span class="st">"drop"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">censored =</span> exit_date <span class="sc">&gt;</span> extract_date,</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>         <span class="at">exit_date =</span> <span class="fu">if_else</span>(censored, extract_date, exit_date))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>survival_data</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="tbl-survival-canonical" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-survival-canonical-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;5.2: Legislator data in canonical survival form
+</figcaption>
+<div aria-describedby="tbl-survival-canonical-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<!-- preamble start -->
+
+    <script>
+
+      function styleCell_aozphgvuqnet919z17e9(i, j, css_id) {
+          var table = document.getElementById("tinytable_aozphgvuqnet919z17e9");
+          var cell = table.rows[i]?.cells[j];  // Safe navigation to avoid errors
+          if (cell) {
+              console.log(`Styling cell at (${i}, ${j}) with class ${css_id}`);
+              cell.classList.add(css_id);
+          } else {
+              console.warn(`Cell at (${i}, ${j}) not found.`);
+          }
+      }
+      function insertSpanRow(i, colspan, content) {
+        var table = document.getElementById('tinytable_aozphgvuqnet919z17e9');
+        var newRow = table.insertRow(i);
+        var newCell = newRow.insertCell(0);
+        newCell.setAttribute("colspan", colspan);
+        // newCell.innerText = content;
+        // this may be unsafe, but innerText does not interpret <br>
+        newCell.innerHTML = content;
+      }
+      function spanCell_aozphgvuqnet919z17e9(i, j, rowspan, colspan) {
+        var table = document.getElementById("tinytable_aozphgvuqnet919z17e9");
+        const targetRow = table.rows[i];
+        const targetCell = targetRow.cells[j];
+        for (let r = 0; r < rowspan; r++) {
+          // Only start deleting cells to the right for the first row (r == 0)
+          if (r === 0) {
+            // Delete cells to the right of the target cell in the first row
+            for (let c = colspan - 1; c > 0; c--) {
+              if (table.rows[i + r].cells[j + c]) {
+                table.rows[i + r].deleteCell(j + c);
+              }
+            }
+          }
+          // For rows below the first, delete starting from the target column
+          if (r > 0) {
+            for (let c = colspan - 1; c >= 0; c--) {
+              if (table.rows[i + r] && table.rows[i + r].cells[j]) {
+                table.rows[i + r].deleteCell(j);
+              }
+            }
+          }
+        }
+        // Set rowspan and colspan of the target cell
+        targetCell.rowSpan = rowspan;
+        targetCell.colSpan = colspan;
+      }
+      // tinytable span after
+      window.addEventListener('load', function () {
+          var cellsToStyle = [
+            // tinytable style arrays after
+          { positions: [ { i: 2, j: 0 }, { i: 4, j: 0 }, { i: 1, j: 0 }, { i: 6, j: 0 }, { i: 3, j: 0 }, { i: 8, j: 0 }, { i: 5, j: 0 }, { i: 1, j: 2 }, { i: 7, j: 0 }, { i: 1, j: 1 }, { i: 2, j: 1 }, { i: 3, j: 1 }, { i: 4, j: 1 }, { i: 5, j: 1 }, { i: 6, j: 1 }, { i: 7, j: 1 }, { i: 8, j: 1 }, { i: 9, j: 1 }, { i: 3, j: 2 }, { i: 9, j: 0 }, { i: 5, j: 2 }, { i: 2, j: 2 }, { i: 7, j: 2 }, { i: 4, j: 2 }, { i: 9, j: 2 }, { i: 6, j: 2 }, { i: 8, j: 2 },  ], css_id: 'tinytable_css_zggbqdwx2w1bnzulvulq',}, 
+          { positions: [ { i: 0, j: 3 },  ], css_id: 'tinytable_css_w1ljovx4kddv4fu4rjz9',}, 
+          { positions: [ { i: 1, j: 3 }, { i: 2, j: 3 }, { i: 3, j: 3 }, { i: 4, j: 3 }, { i: 5, j: 3 }, { i: 6, j: 3 }, { i: 7, j: 3 }, { i: 8, j: 3 }, { i: 9, j: 3 },  ], css_id: 'tinytable_css_hei3buu6qg081xdur8ok',}, 
+          { positions: [ { i: 0, j: 0 }, { i: 0, j: 2 }, { i: 0, j: 1 },  ], css_id: 'tinytable_css_5qy3o2efj0bpcovxjwgq',}, 
+          { positions: [ { i: 10, j: 1 }, { i: 10, j: 0 }, { i: 10, j: 2 },  ], css_id: 'tinytable_css_1uhevz35h0hy5noziq2g',}, 
+          { positions: [ { i: 10, j: 3 },  ], css_id: 'tinytable_css_1i1x7mjryyeiyfezuswt',}, 
+          ];
+
+          // Loop over the arrays to style the cells
+          cellsToStyle.forEach(function (group) {
+              group.positions.forEach(function (cell) {
+                  styleCell_aozphgvuqnet919z17e9(cell.i, cell.j, group.css_id);
+              });
+          });
+      });
+    </script>
+
+    <style>
+      /* tinytable css entries after */
+      .table td.tinytable_css_zggbqdwx2w1bnzulvulq, .table th.tinytable_css_zggbqdwx2w1bnzulvulq { padding-right: 0.1em; padding-bottom: 0em; }
+      .table td.tinytable_css_w1ljovx4kddv4fu4rjz9, .table th.tinytable_css_w1ljovx4kddv4fu4rjz9 { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; border-bottom: solid #d3d8dc 0.1em; padding-bottom: 0em; }
+      .table td.tinytable_css_hei3buu6qg081xdur8ok, .table th.tinytable_css_hei3buu6qg081xdur8ok { padding-bottom: 0em; }
+      .table td.tinytable_css_5qy3o2efj0bpcovxjwgq, .table th.tinytable_css_5qy3o2efj0bpcovxjwgq { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; border-bottom: solid #d3d8dc 0.1em; padding-right: 0.1em; padding-bottom: 0em; }
+      .table td.tinytable_css_1uhevz35h0hy5noziq2g, .table th.tinytable_css_1uhevz35h0hy5noziq2g { border-bottom: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.1em; padding-right: 0.1em; }
+      .table td.tinytable_css_1i1x7mjryyeiyfezuswt, .table th.tinytable_css_1i1x7mjryyeiyfezuswt { border-bottom: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.1em; }
+    </style>
+    <div class="container">
+      <table class="table table-borderless" id="tinytable_aozphgvuqnet919z17e9" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
+        <thead>
+        
+              <tr>
+                <th scope="col">id_bioguide</th>
+                <th scope="col">entry_date</th>
+                <th scope="col">exit_date</th>
+                <th scope="col">censored</th>
+              </tr>
+        </thead>
+        
+        <tbody>
+                <tr>
+                  <td>T000464</td>
+                  <td>2007-01-04</td>
+                  <td>2020-06-30</td>
+                  <td>TRUE</td>
+                </tr>
+                <tr>
+                  <td>W000802</td>
+                  <td>2007-01-04</td>
+                  <td>2020-06-30</td>
+                  <td>TRUE</td>
+                </tr>
+                <tr>
+                  <td>M001176</td>
+                  <td>2009-01-06</td>
+                  <td>2020-06-30</td>
+                  <td>TRUE</td>
+                </tr>
+                <tr>
+                  <td>R000584</td>
+                  <td>2009-01-06</td>
+                  <td>2020-06-30</td>
+                  <td>TRUE</td>
+                </tr>
+                <tr>
+                  <td>C001110</td>
+                  <td>2017-01-03</td>
+                  <td>2020-06-30</td>
+                  <td>TRUE</td>
+                </tr>
+                <tr>
+                  <td>B001267</td>
+                  <td>2009-01-22</td>
+                  <td>2020-06-30</td>
+                  <td>TRUE</td>
+                </tr>
+                <tr>
+                  <td>C001094</td>
+                  <td>2013-01-03</td>
+                  <td>2020-06-30</td>
+                  <td>TRUE</td>
+                </tr>
+                <tr>
+                  <td>B001250</td>
+                  <td>2003-01-07</td>
+                  <td>2020-06-30</td>
+                  <td>TRUE</td>
+                </tr>
+                <tr>
+                  <td>S001193</td>
+                  <td>2013-01-03</td>
+                  <td>2020-06-30</td>
+                  <td>TRUE</td>
+                </tr>
+                <tr>
+                  <td>B000574</td>
+                  <td>1996-05-21</td>
+                  <td>2020-06-30</td>
+                  <td>TRUE</td>
+                </tr>
+        </tbody>
+      </table>
+    </div>
+<!-- hack to avoid NA insertion in last line -->
+</div>
+</div>
+</figure>
+</div>
+</div>
+<p><span class="citation" data-cites="tanimura2021sql">Tanimura (<a href="references.html#ref-tanimura2021sql" role="doc-biblioref">2021</a>)</span> does not address the issue of censoring. This likely reflects the emphasis of that book on preparing data for descriptive analysis in business contexts rather than on more sophisticated statistical analysis, such as that appearing in scientific journals. However, it is important to account for censoring for many practical business questions. For instance, Chapter 7 of <span class="citation" data-cites="tanimura2021sql">Tanimura (<a href="references.html#ref-tanimura2021sql" role="doc-biblioref">2021</a>)</span> discusses experimental analysis and one could imagine looking at the effects on customer retention of some marketing initiative using A/B testing of the kind studied there. In this sitation, it will be common for the retention periods for some customers to be censored.</p>
+<p>It is worth noting that what I am calling a canonical form for survival data differs from what <span class="citation" data-cites="singer2003longitudinal">Singer and Willett (<a href="references.html#ref-singer2003longitudinal" role="doc-biblioref">2003</a>)</span> call the <strong>person-level</strong> form of data. The main difference in the person-level form seen in Figure 10.4 of <span class="citation" data-cites="singer2003longitudinal">Singer and Willett (<a href="references.html#ref-singer2003longitudinal" role="doc-biblioref">2003, 353</a>)</span> is that (using variable names from our current context) <code>entry_date</code> and <code>exit_date</code> have been converted into a “time to event” form reflecting the number of units of time between <code>entry_date</code> and <code>exit_date</code>. One corollary of this aspect of the person-level form is, as pointed out by <span class="citation" data-cites="singer2003longitudinal">Singer and Willett (<a href="references.html#ref-singer2003longitudinal" role="doc-biblioref">2003, 310</a>)</span>, a need to specify a “metric for clocking time” (e.g., days or years). With the canonical data form I present here, I effectively <em>defer</em> the need to choose the metric; as will be seen one cannot <em>avoid</em> this choice.</p>
+</section>
+<section id="sec-census-date" class="level3" data-number="5.1.3">
+<h3 data-number="5.1.3" class="anchored" data-anchor-id="sec-census-date"><span class="header-section-number">5.1.3</span> Events that can happen more than once: The census-date approach</h3>
+<p>In many contexts, the event of interest will be a once-only event. In some cases, the one-off nature of the event will be a function of the underlying realities (e.g., <em>senso strictu</em> survivorship analysis in which individuals only die once). In other cases, the one-off nature of the event will derive from the definition employed by the researcher (e.g., first relapse in the study of alcoholism above). The latter set might be driven by what is of greatest interest to researchers, or the definition may lead to simplifications with analytical benefits.</p>
+<p>However in many cases it will be important to recognize that events can occur for an individual more than once. A subscription streaming service such as Netflix or Max will have customers who sign up for a monthly subscription, drop off some months later, then rejoin at a later date. Ignoring this behaviour in analysis would be problematic if it is common enough to represent a significant portion of a service’s business.</p>
+<p>There are two approaches to addressing these situations. One approach is to focus analysis on “whether the cohort member has a record in the time series on a particular date, expressed as a number of periods from the starting date” <span class="citation" data-cites="tanimura2021sql">(<a href="references.html#ref-tanimura2021sql" role="doc-biblioref">Tanimura 2021, 124</a>)</span>. There is a little ambiguity embedded in this sentence regarding how the term “period” is defined. One definition turns on dates specific to an individual, such as age, which is typically reckoned as the number of birthdays an individual has experienced.<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a> Another definition, which I call the <strong>census-date approach</strong>, reckons periods using a common date across individuals or cohorts.</p>
+<p>Each census-date analysis in <a href="original_sql.html" class="quarto-xref"><span>Chapter 2</span></a> uses 31 December of each year as the census date. For reasons we will learn about in <a href="#sec-stints" class="quarto-xref"><span>Section 5.1.4</span></a>, the choice of 31 December is appropriate because the <em>apparent</em> gaps that appear in the tenures of legislators in certain parts of the year do not affect 31 December.</p>
+</section>
+<section id="sec-stints" class="level3" data-number="5.1.4">
+<h3 data-number="5.1.4" class="anchored" data-anchor-id="sec-stints"><span class="header-section-number">5.1.4</span> Events that can happen more than once: Stints</h3>
+<p>The Oxford English Dictionary defines a <strong>stint</strong> as “a person’s fixed or allotted period of work.” In the current context, I define a stint as a continuous period in office either as a representive or as a senator including periods that comprise multiple terms. The critical thing for current purposes is that one can have more than one stint as a legislator. One could have one stint as representative, followed by a stint as senator, followed by a second stint as representative. An alternative term a stint might be a <strong>spell</strong>, as used by <span class="citation" data-cites="singer2003longitudinal">Singer and Willett (<a href="references.html#ref-singer2003longitudinal" role="doc-biblioref">2003, 311</a>)</span> in a quote above.</p>
+<p>As always, to better understand the issues one faces in practice, it is helpful to look at real data. I start with data in <code>legislators_terms</code> related to Nancy Pelosi, a long-serving representative from California.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>pelosi_terms <span class="ot">&lt;-</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  legislators_terms <span class="sc">|&gt;</span> </span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(id_bioguide <span class="sc">==</span> <span class="st">"P000197"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(id_bioguide, term_type, term_start, term_end, state, district)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div id="tbl-pelosi-terms" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-pelosi-terms-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;5.3: Congression terms of Nancy Pelosi
+</figcaption>
+<div aria-describedby="tbl-pelosi-terms-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<!-- preamble start -->
+
+    <script>
+
+      function styleCell_2nufqkw3xcm9xs7edz6p(i, j, css_id) {
+          var table = document.getElementById("tinytable_2nufqkw3xcm9xs7edz6p");
+          var cell = table.rows[i]?.cells[j];  // Safe navigation to avoid errors
+          if (cell) {
+              console.log(`Styling cell at (${i}, ${j}) with class ${css_id}`);
+              cell.classList.add(css_id);
+          } else {
+              console.warn(`Cell at (${i}, ${j}) not found.`);
+          }
+      }
+      function insertSpanRow(i, colspan, content) {
+        var table = document.getElementById('tinytable_2nufqkw3xcm9xs7edz6p');
+        var newRow = table.insertRow(i);
+        var newCell = newRow.insertCell(0);
+        newCell.setAttribute("colspan", colspan);
+        // newCell.innerText = content;
+        // this may be unsafe, but innerText does not interpret <br>
+        newCell.innerHTML = content;
+      }
+      function spanCell_2nufqkw3xcm9xs7edz6p(i, j, rowspan, colspan) {
+        var table = document.getElementById("tinytable_2nufqkw3xcm9xs7edz6p");
+        const targetRow = table.rows[i];
+        const targetCell = targetRow.cells[j];
+        for (let r = 0; r < rowspan; r++) {
+          // Only start deleting cells to the right for the first row (r == 0)
+          if (r === 0) {
+            // Delete cells to the right of the target cell in the first row
+            for (let c = colspan - 1; c > 0; c--) {
+              if (table.rows[i + r].cells[j + c]) {
+                table.rows[i + r].deleteCell(j + c);
+              }
+            }
+          }
+          // For rows below the first, delete starting from the target column
+          if (r > 0) {
+            for (let c = colspan - 1; c >= 0; c--) {
+              if (table.rows[i + r] && table.rows[i + r].cells[j]) {
+                table.rows[i + r].deleteCell(j);
+              }
+            }
+          }
+        }
+        // Set rowspan and colspan of the target cell
+        targetCell.rowSpan = rowspan;
+        targetCell.colSpan = colspan;
+      }
+      // tinytable span after
+      window.addEventListener('load', function () {
+          var cellsToStyle = [
+            // tinytable style arrays after
+          { positions: [ { i: 1, j: 5 }, { i: 2, j: 5 }, { i: 3, j: 5 }, { i: 4, j: 5 }, { i: 5, j: 5 }, { i: 6, j: 5 }, { i: 7, j: 5 }, { i: 8, j: 5 }, { i: 9, j: 5 }, { i: 10, j: 5 }, { i: 11, j: 5 }, { i: 12, j: 5 }, { i: 13, j: 5 }, { i: 14, j: 5 }, { i: 15, j: 5 }, { i: 16, j: 5 },  ], css_id: 'tinytable_css_wuon025ofw5b6kf78mvs',}, 
+          { positions: [ { i: 4, j: 0 }, { i: 1, j: 0 }, { i: 3, j: 0 }, { i: 8, j: 0 }, { i: 9, j: 0 }, { i: 6, j: 0 }, { i: 11, j: 0 }, { i: 12, j: 0 }, { i: 13, j: 0 }, { i: 14, j: 0 }, { i: 2, j: 0 }, { i: 16, j: 0 }, { i: 12, j: 1 }, { i: 5, j: 0 }, { i: 1, j: 1 }, { i: 7, j: 0 }, { i: 3, j: 1 }, { i: 4, j: 1 }, { i: 10, j: 0 }, { i: 6, j: 1 }, { i: 7, j: 1 }, { i: 8, j: 1 }, { i: 9, j: 1 }, { i: 15, j: 0 }, { i: 11, j: 1 }, { i: 7, j: 2 }, { i: 13, j: 1 }, { i: 14, j: 1 }, { i: 2, j: 1 }, { i: 16, j: 1 }, { i: 12, j: 2 }, { i: 5, j: 1 }, { i: 1, j: 2 }, { i: 2, j: 2 }, { i: 3, j: 2 }, { i: 4, j: 2 }, { i: 10, j: 1 }, { i: 6, j: 2 }, { i: 2, j: 3 }, { i: 8, j: 2 }, { i: 9, j: 2 }, { i: 15, j: 1 }, { i: 11, j: 2 }, { i: 7, j: 3 }, { i: 13, j: 2 }, { i: 14, j: 2 }, { i: 15, j: 2 }, { i: 16, j: 2 }, { i: 12, j: 3 }, { i: 5, j: 2 }, { i: 1, j: 3 }, { i: 15, j: 3 }, { i: 3, j: 3 }, { i: 4, j: 3 }, { i: 10, j: 2 }, { i: 6, j: 3 }, { i: 2, j: 4 }, { i: 8, j: 3 }, { i: 9, j: 3 }, { i: 10, j: 3 }, { i: 11, j: 3 }, { i: 7, j: 4 }, { i: 13, j: 3 }, { i: 14, j: 3 }, { i: 10, j: 4 }, { i: 16, j: 3 }, { i: 12, j: 4 }, { i: 5, j: 3 }, { i: 1, j: 4 }, { i: 15, j: 4 }, { i: 3, j: 4 }, { i: 4, j: 4 }, { i: 5, j: 4 }, { i: 6, j: 4 }, { i: 11, j: 4 }, { i: 8, j: 4 }, { i: 9, j: 4 }, { i: 14, j: 4 }, { i: 16, j: 4 }, { i: 13, j: 4 },  ], css_id: 'tinytable_css_p1xe6so6s0i8fortpnu1',}, 
+          { positions: [ { i: 0, j: 5 },  ], css_id: 'tinytable_css_o5l2271xxgrsf0c4jw0c',}, 
+          { positions: [ { i: 17, j: 2 }, { i: 17, j: 0 }, { i: 17, j: 1 }, { i: 17, j: 3 }, { i: 17, j: 4 },  ], css_id: 'tinytable_css_bvh1icm697eybm3u1l7x',}, 
+          { positions: [ { i: 0, j: 0 }, { i: 0, j: 1 }, { i: 0, j: 3 }, { i: 0, j: 4 }, { i: 0, j: 2 },  ], css_id: 'tinytable_css_a3ch39rorquxw37rvmub',}, 
+          { positions: [ { i: 17, j: 5 },  ], css_id: 'tinytable_css_3r1kexs1tb5v3i3jprib',}, 
+          ];
+
+          // Loop over the arrays to style the cells
+          cellsToStyle.forEach(function (group) {
+              group.positions.forEach(function (cell) {
+                  styleCell_2nufqkw3xcm9xs7edz6p(cell.i, cell.j, group.css_id);
+              });
+          });
+      });
+    </script>
+
+    <style>
+      /* tinytable css entries after */
+      .table td.tinytable_css_wuon025ofw5b6kf78mvs, .table th.tinytable_css_wuon025ofw5b6kf78mvs { font-size: 0.8em; padding-bottom: 0em; }
+      .table td.tinytable_css_p1xe6so6s0i8fortpnu1, .table th.tinytable_css_p1xe6so6s0i8fortpnu1 { font-size: 0.8em; padding-right: 0.1em; padding-bottom: 0em; }
+      .table td.tinytable_css_o5l2271xxgrsf0c4jw0c, .table th.tinytable_css_o5l2271xxgrsf0c4jw0c { font-size: 0.8em; border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; border-bottom: solid #d3d8dc 0.1em; padding-bottom: 0em; }
+      .table td.tinytable_css_bvh1icm697eybm3u1l7x, .table th.tinytable_css_bvh1icm697eybm3u1l7x { font-size: 0.8em; border-bottom: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.1em; padding-right: 0.1em; }
+      .table td.tinytable_css_a3ch39rorquxw37rvmub, .table th.tinytable_css_a3ch39rorquxw37rvmub { font-size: 0.8em; border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; border-bottom: solid #d3d8dc 0.1em; padding-right: 0.1em; padding-bottom: 0em; }
+      .table td.tinytable_css_3r1kexs1tb5v3i3jprib, .table th.tinytable_css_3r1kexs1tb5v3i3jprib { font-size: 0.8em; border-bottom: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.1em; }
+    </style>
+    <div class="container">
+      <table class="table table-borderless" id="tinytable_2nufqkw3xcm9xs7edz6p" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
+        <thead>
+        
+              <tr>
+                <th scope="col">id_bioguide</th>
+                <th scope="col">term_type</th>
+                <th scope="col">term_start</th>
+                <th scope="col">term_end</th>
+                <th scope="col">state</th>
+                <th scope="col">district</th>
+              </tr>
+        </thead>
+        
+        <tbody>
+                <tr>
+                  <td>P000197</td>
+                  <td>rep</td>
+                  <td>1987-01-06</td>
+                  <td>1989-01-03</td>
+                  <td>CA</td>
+                  <td> 5</td>
+                </tr>
+                <tr>
+                  <td>P000197</td>
+                  <td>rep</td>
+                  <td>1989-01-03</td>
+                  <td>1991-01-03</td>
+                  <td>CA</td>
+                  <td> 5</td>
+                </tr>
+                <tr>
+                  <td>P000197</td>
+                  <td>rep</td>
+                  <td>1991-01-03</td>
+                  <td>1993-01-03</td>
+                  <td>CA</td>
+                  <td> 5</td>
+                </tr>
+                <tr>
+                  <td>P000197</td>
+                  <td>rep</td>
+                  <td>1993-01-05</td>
+                  <td>1995-01-03</td>
+                  <td>CA</td>
+                  <td> 8</td>
+                </tr>
+                <tr>
+                  <td>P000197</td>
+                  <td>rep</td>
+                  <td>1995-01-04</td>
+                  <td>1997-01-03</td>
+                  <td>CA</td>
+                  <td> 8</td>
+                </tr>
+                <tr>
+                  <td>P000197</td>
+                  <td>rep</td>
+                  <td>1997-01-07</td>
+                  <td>1999-01-03</td>
+                  <td>CA</td>
+                  <td> 8</td>
+                </tr>
+                <tr>
+                  <td>P000197</td>
+                  <td>rep</td>
+                  <td>1999-01-06</td>
+                  <td>2001-01-03</td>
+                  <td>CA</td>
+                  <td> 8</td>
+                </tr>
+                <tr>
+                  <td>P000197</td>
+                  <td>rep</td>
+                  <td>2001-01-03</td>
+                  <td>2003-01-03</td>
+                  <td>CA</td>
+                  <td> 8</td>
+                </tr>
+                <tr>
+                  <td>P000197</td>
+                  <td>rep</td>
+                  <td>2003-01-07</td>
+                  <td>2005-01-03</td>
+                  <td>CA</td>
+                  <td> 8</td>
+                </tr>
+                <tr>
+                  <td>P000197</td>
+                  <td>rep</td>
+                  <td>2005-01-04</td>
+                  <td>2007-01-03</td>
+                  <td>CA</td>
+                  <td> 8</td>
+                </tr>
+                <tr>
+                  <td>P000197</td>
+                  <td>rep</td>
+                  <td>2007-01-04</td>
+                  <td>2009-01-03</td>
+                  <td>CA</td>
+                  <td> 8</td>
+                </tr>
+                <tr>
+                  <td>P000197</td>
+                  <td>rep</td>
+                  <td>2009-01-06</td>
+                  <td>2011-01-03</td>
+                  <td>CA</td>
+                  <td> 8</td>
+                </tr>
+                <tr>
+                  <td>P000197</td>
+                  <td>rep</td>
+                  <td>2011-01-05</td>
+                  <td>2013-01-03</td>
+                  <td>CA</td>
+                  <td> 8</td>
+                </tr>
+                <tr>
+                  <td>P000197</td>
+                  <td>rep</td>
+                  <td>2013-01-03</td>
+                  <td>2015-01-03</td>
+                  <td>CA</td>
+                  <td>12</td>
+                </tr>
+                <tr>
+                  <td>P000197</td>
+                  <td>rep</td>
+                  <td>2015-01-06</td>
+                  <td>2017-01-03</td>
+                  <td>CA</td>
+                  <td>12</td>
+                </tr>
+                <tr>
+                  <td>P000197</td>
+                  <td>rep</td>
+                  <td>2017-01-03</td>
+                  <td>2019-01-03</td>
+                  <td>CA</td>
+                  <td>12</td>
+                </tr>
+                <tr>
+                  <td>P000197</td>
+                  <td>rep</td>
+                  <td>2019-01-03</td>
+                  <td>2021-01-03</td>
+                  <td>CA</td>
+                  <td>12</td>
+                </tr>
+        </tbody>
+      </table>
+    </div>
+<!-- hack to avoid NA insertion in last line -->
+</div>
+</div>
+</figure>
+</div>
+</div>
+<p>As can be seen in <a href="#tbl-pelosi-terms" class="quarto-xref">Table&nbsp;<span>5.3</span></a>, Nancy Pelosi had served continuously since 1987.<a href="#fn4" class="footnote-ref" id="fnref4" role="doc-noteref"><sup>4</sup></a> She started out as the repsentative for California’s 5th congressional district, then for its 8th, then for its 12th.<a href="#fn5" class="footnote-ref" id="fnref5" role="doc-noteref"><sup>5</sup></a> In other words, Pelosi has had a single stint as a legislator.</p>
+<p>It might seem from Nancy Pelosi’s later terms that we could identify continuing stints by comparing <code>term_start</code> with the preceding <code>term_end</code> value and coding two terms as part of the same stint if the dates are the same. This approach would work, for example, for the term starting <code>2019-01-03</code> and the preceding term ending the same day.</p>
+<p>However, if we calculate <code>gap</code>, the number of days between the end of the previous term and the start of the current one, we see that there is often a non-zero gap between terms as coded in the <code>legislators_terms</code> data set. This can be seen in <a href="#tbl-pelosi-term-gaps" class="quarto-xref">Table&nbsp;<span>5.4</span></a>, which presents data from <code>pelosi_term_gaps</code> calculated below.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>pelosi_term_gaps <span class="ot">&lt;-</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  pelosi_terms <span class="sc">|&gt;</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(id_bioguide) <span class="sc">|&gt;</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">window_order</span>(term_start) <span class="sc">|&gt;</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">gap =</span> term_start <span class="sc">-</span> <span class="fu">lag</span>(term_end)) <span class="sc">|&gt;</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">|&gt;</span></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(id_bioguide, term_type, term_start, term_end, gap)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div id="tbl-pelosi-term-gaps" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-pelosi-term-gaps-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;5.4: Congression terms of Nancy Pelosi with <code>gap</code>
+</figcaption>
+<div aria-describedby="tbl-pelosi-term-gaps-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<!-- preamble start -->
+
+    <script>
+
+      function styleCell_e37goeg98ko9f22miks7(i, j, css_id) {
+          var table = document.getElementById("tinytable_e37goeg98ko9f22miks7");
+          var cell = table.rows[i]?.cells[j];  // Safe navigation to avoid errors
+          if (cell) {
+              console.log(`Styling cell at (${i}, ${j}) with class ${css_id}`);
+              cell.classList.add(css_id);
+          } else {
+              console.warn(`Cell at (${i}, ${j}) not found.`);
+          }
+      }
+      function insertSpanRow(i, colspan, content) {
+        var table = document.getElementById('tinytable_e37goeg98ko9f22miks7');
+        var newRow = table.insertRow(i);
+        var newCell = newRow.insertCell(0);
+        newCell.setAttribute("colspan", colspan);
+        // newCell.innerText = content;
+        // this may be unsafe, but innerText does not interpret <br>
+        newCell.innerHTML = content;
+      }
+      function spanCell_e37goeg98ko9f22miks7(i, j, rowspan, colspan) {
+        var table = document.getElementById("tinytable_e37goeg98ko9f22miks7");
+        const targetRow = table.rows[i];
+        const targetCell = targetRow.cells[j];
+        for (let r = 0; r < rowspan; r++) {
+          // Only start deleting cells to the right for the first row (r == 0)
+          if (r === 0) {
+            // Delete cells to the right of the target cell in the first row
+            for (let c = colspan - 1; c > 0; c--) {
+              if (table.rows[i + r].cells[j + c]) {
+                table.rows[i + r].deleteCell(j + c);
+              }
+            }
+          }
+          // For rows below the first, delete starting from the target column
+          if (r > 0) {
+            for (let c = colspan - 1; c >= 0; c--) {
+              if (table.rows[i + r] && table.rows[i + r].cells[j]) {
+                table.rows[i + r].deleteCell(j);
+              }
+            }
+          }
+        }
+        // Set rowspan and colspan of the target cell
+        targetCell.rowSpan = rowspan;
+        targetCell.colSpan = colspan;
+      }
+      // tinytable span after
+      window.addEventListener('load', function () {
+          var cellsToStyle = [
+            // tinytable style arrays after
+          { positions: [ { i: 8, j: 4 },  ], css_id: 'tinytable_css_v7ryprflijvggucc165s',}, 
+          { positions: [ { i: 0, j: 0 }, { i: 0, j: 3 }, { i: 0, j: 2 }, { i: 0, j: 1 },  ], css_id: 'tinytable_css_pozwrcw59y5nz23ipfvl',}, 
+          { positions: [ { i: 0, j: 4 },  ], css_id: 'tinytable_css_o6p57o44adss97lsxtep',}, 
+          { positions: [ { i: 2, j: 0 }, { i: 3, j: 0 }, { i: 4, j: 0 }, { i: 6, j: 0 }, { i: 7, j: 0 }, { i: 3, j: 2 }, { i: 1, j: 1 }, { i: 2, j: 1 }, { i: 3, j: 1 }, { i: 4, j: 1 }, { i: 1, j: 0 }, { i: 6, j: 1 }, { i: 7, j: 1 }, { i: 3, j: 3 }, { i: 5, j: 0 }, { i: 1, j: 2 }, { i: 2, j: 2 }, { i: 7, j: 3 }, { i: 4, j: 2 }, { i: 5, j: 2 }, { i: 6, j: 2 }, { i: 7, j: 2 }, { i: 5, j: 1 }, { i: 1, j: 3 }, { i: 2, j: 3 }, { i: 4, j: 3 }, { i: 5, j: 3 }, { i: 6, j: 3 },  ], css_id: 'tinytable_css_cigxm84hx7egjx2kwar1',}, 
+          { positions: [ { i: 1, j: 4 }, { i: 2, j: 4 }, { i: 3, j: 4 }, { i: 4, j: 4 }, { i: 5, j: 4 }, { i: 6, j: 4 }, { i: 7, j: 4 },  ], css_id: 'tinytable_css_bh99sztcn78nqroh2hee',}, 
+          { positions: [ { i: 8, j: 2 }, { i: 8, j: 1 }, { i: 8, j: 0 }, { i: 8, j: 3 },  ], css_id: 'tinytable_css_7qhsvvx1z2bj0whg3tq0',}, 
+          ];
+
+          // Loop over the arrays to style the cells
+          cellsToStyle.forEach(function (group) {
+              group.positions.forEach(function (cell) {
+                  styleCell_e37goeg98ko9f22miks7(cell.i, cell.j, group.css_id);
+              });
+          });
+      });
+    </script>
+
+    <style>
+      /* tinytable css entries after */
+      .table td.tinytable_css_v7ryprflijvggucc165s, .table th.tinytable_css_v7ryprflijvggucc165s { border-bottom: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.1em; }
+      .table td.tinytable_css_pozwrcw59y5nz23ipfvl, .table th.tinytable_css_pozwrcw59y5nz23ipfvl { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; border-bottom: solid #d3d8dc 0.1em; padding-right: 0.1em; padding-bottom: 0em; }
+      .table td.tinytable_css_o6p57o44adss97lsxtep, .table th.tinytable_css_o6p57o44adss97lsxtep { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; border-bottom: solid #d3d8dc 0.1em; padding-bottom: 0em; }
+      .table td.tinytable_css_cigxm84hx7egjx2kwar1, .table th.tinytable_css_cigxm84hx7egjx2kwar1 { padding-right: 0.1em; padding-bottom: 0em; }
+      .table td.tinytable_css_bh99sztcn78nqroh2hee, .table th.tinytable_css_bh99sztcn78nqroh2hee { padding-bottom: 0em; }
+      .table td.tinytable_css_7qhsvvx1z2bj0whg3tq0, .table th.tinytable_css_7qhsvvx1z2bj0whg3tq0 { border-bottom: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.1em; padding-right: 0.1em; }
+    </style>
+    <div class="container">
+      <table class="table table-borderless" id="tinytable_e37goeg98ko9f22miks7" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
+        <thead>
+        
+              <tr>
+                <th scope="col">id_bioguide</th>
+                <th scope="col">term_type</th>
+                <th scope="col">term_start</th>
+                <th scope="col">term_end</th>
+                <th scope="col">gap</th>
+              </tr>
+        </thead>
+        
+        <tbody>
+                <tr>
+                  <td>P000197</td>
+                  <td>rep</td>
+                  <td>1987-01-06</td>
+                  <td>1989-01-03</td>
+                  <td>NA</td>
+                </tr>
+                <tr>
+                  <td>P000197</td>
+                  <td>rep</td>
+                  <td>1989-01-03</td>
+                  <td>1991-01-03</td>
+                  <td> 0</td>
+                </tr>
+                <tr>
+                  <td>P000197</td>
+                  <td>rep</td>
+                  <td>1991-01-03</td>
+                  <td>1993-01-03</td>
+                  <td> 0</td>
+                </tr>
+                <tr>
+                  <td>P000197</td>
+                  <td>rep</td>
+                  <td>1993-01-05</td>
+                  <td>1995-01-03</td>
+                  <td> 2</td>
+                </tr>
+                <tr>
+                  <td>P000197</td>
+                  <td>rep</td>
+                  <td>1995-01-04</td>
+                  <td>1997-01-03</td>
+                  <td> 1</td>
+                </tr>
+                <tr>
+                  <td>P000197</td>
+                  <td>rep</td>
+                  <td>1997-01-07</td>
+                  <td>1999-01-03</td>
+                  <td> 4</td>
+                </tr>
+                <tr>
+                  <td>P000197</td>
+                  <td>rep</td>
+                  <td>1999-01-06</td>
+                  <td>2001-01-03</td>
+                  <td> 3</td>
+                </tr>
+                <tr>
+                  <td>P000197</td>
+                  <td>rep</td>
+                  <td>2001-01-03</td>
+                  <td>2003-01-03</td>
+                  <td> 0</td>
+                </tr>
+        </tbody>
+      </table>
+    </div>
+<!-- hack to avoid NA insertion in last line -->
+</div>
+</div>
+</figure>
+</div>
+</div>
+<p>In <a href="#tbl-pelosi-term-gaps" class="quarto-xref">Table&nbsp;<span>5.4</span></a>, we can see that there are gaps of as much as 4 days between the end of one term and the start of the next. These gaps would be problematic for a census-date approach that used 4 January as the census date, as Nancy Pelosi would appear <em>not</em> to be a legislator on that date in 1993, 1997, or 1999. In contrast, the census-date approach using 31 December would not be affected by these gaps.</p>
+<p>The shortness of the gaps above raises the possibility that one approach would be to consider two terms to be part of the same stint if there is just a short gap between them. But what is a “short gap” for this purpose? Would four days suffice? Looking at the terms of James Abdnor (<code>id_bioguide == "A000009")</code>) in <a href="#tbl-bbdnor-term-gaps" class="quarto-xref">Table&nbsp;<span>5.5</span></a> suggests not.</p>
+<div class="cell">
+<div id="tbl-bbdnor-term-gaps" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-bbdnor-term-gaps-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;5.5: Congression terms of James Abdnor
+</figcaption>
+<div aria-describedby="tbl-bbdnor-term-gaps-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<!-- preamble start -->
+
+    <script>
+
+      function styleCell_uovq8jwv6at5fxa96yda(i, j, css_id) {
+          var table = document.getElementById("tinytable_uovq8jwv6at5fxa96yda");
+          var cell = table.rows[i]?.cells[j];  // Safe navigation to avoid errors
+          if (cell) {
+              console.log(`Styling cell at (${i}, ${j}) with class ${css_id}`);
+              cell.classList.add(css_id);
+          } else {
+              console.warn(`Cell at (${i}, ${j}) not found.`);
+          }
+      }
+      function insertSpanRow(i, colspan, content) {
+        var table = document.getElementById('tinytable_uovq8jwv6at5fxa96yda');
+        var newRow = table.insertRow(i);
+        var newCell = newRow.insertCell(0);
+        newCell.setAttribute("colspan", colspan);
+        // newCell.innerText = content;
+        // this may be unsafe, but innerText does not interpret <br>
+        newCell.innerHTML = content;
+      }
+      function spanCell_uovq8jwv6at5fxa96yda(i, j, rowspan, colspan) {
+        var table = document.getElementById("tinytable_uovq8jwv6at5fxa96yda");
+        const targetRow = table.rows[i];
+        const targetCell = targetRow.cells[j];
+        for (let r = 0; r < rowspan; r++) {
+          // Only start deleting cells to the right for the first row (r == 0)
+          if (r === 0) {
+            // Delete cells to the right of the target cell in the first row
+            for (let c = colspan - 1; c > 0; c--) {
+              if (table.rows[i + r].cells[j + c]) {
+                table.rows[i + r].deleteCell(j + c);
+              }
+            }
+          }
+          // For rows below the first, delete starting from the target column
+          if (r > 0) {
+            for (let c = colspan - 1; c >= 0; c--) {
+              if (table.rows[i + r] && table.rows[i + r].cells[j]) {
+                table.rows[i + r].deleteCell(j);
+              }
+            }
+          }
+        }
+        // Set rowspan and colspan of the target cell
+        targetCell.rowSpan = rowspan;
+        targetCell.colSpan = colspan;
+      }
+      // tinytable span after
+      window.addEventListener('load', function () {
+          var cellsToStyle = [
+            // tinytable style arrays after
+          { positions: [ { i: 5, j: 4 },  ], css_id: 'tinytable_css_rjlzm5e6w66p05ev12fh',}, 
+          { positions: [ { i: 0, j: 0 }, { i: 0, j: 1 }, { i: 0, j: 2 }, { i: 0, j: 3 },  ], css_id: 'tinytable_css_ra1xyozhnci2ioudhw2k',}, 
+          { positions: [ { i: 1, j: 0 }, { i: 3, j: 0 }, { i: 3, j: 1 }, { i: 1, j: 1 }, { i: 4, j: 0 }, { i: 1, j: 2 }, { i: 2, j: 0 }, { i: 3, j: 2 }, { i: 2, j: 1 }, { i: 3, j: 3 }, { i: 4, j: 1 }, { i: 1, j: 3 }, { i: 4, j: 2 }, { i: 2, j: 2 }, { i: 2, j: 3 }, { i: 4, j: 3 },  ], css_id: 'tinytable_css_i7dnwk45nihifgyjn3lc',}, 
+          { positions: [ { i: 5, j: 0 }, { i: 5, j: 1 }, { i: 5, j: 2 }, { i: 5, j: 3 },  ], css_id: 'tinytable_css_i5o9emhw1hqkq25ggghy',}, 
+          { positions: [ { i: 1, j: 4 }, { i: 2, j: 4 }, { i: 3, j: 4 }, { i: 4, j: 4 },  ], css_id: 'tinytable_css_3165afr0c86stmabze0q',}, 
+          { positions: [ { i: 0, j: 4 },  ], css_id: 'tinytable_css_18poj109pvt67kpu56q0',}, 
+          ];
+
+          // Loop over the arrays to style the cells
+          cellsToStyle.forEach(function (group) {
+              group.positions.forEach(function (cell) {
+                  styleCell_uovq8jwv6at5fxa96yda(cell.i, cell.j, group.css_id);
+              });
+          });
+      });
+    </script>
+
+    <style>
+      /* tinytable css entries after */
+      .table td.tinytable_css_rjlzm5e6w66p05ev12fh, .table th.tinytable_css_rjlzm5e6w66p05ev12fh { border-bottom: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.1em; }
+      .table td.tinytable_css_ra1xyozhnci2ioudhw2k, .table th.tinytable_css_ra1xyozhnci2ioudhw2k { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; border-bottom: solid #d3d8dc 0.1em; padding-right: 0.1em; padding-bottom: 0em; }
+      .table td.tinytable_css_i7dnwk45nihifgyjn3lc, .table th.tinytable_css_i7dnwk45nihifgyjn3lc { padding-right: 0.1em; padding-bottom: 0em; }
+      .table td.tinytable_css_i5o9emhw1hqkq25ggghy, .table th.tinytable_css_i5o9emhw1hqkq25ggghy { border-bottom: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.1em; padding-right: 0.1em; }
+      .table td.tinytable_css_3165afr0c86stmabze0q, .table th.tinytable_css_3165afr0c86stmabze0q { padding-bottom: 0em; }
+      .table td.tinytable_css_18poj109pvt67kpu56q0, .table th.tinytable_css_18poj109pvt67kpu56q0 { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; border-bottom: solid #d3d8dc 0.1em; padding-bottom: 0em; }
+    </style>
+    <div class="container">
+      <table class="table table-borderless" id="tinytable_uovq8jwv6at5fxa96yda" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
+        <thead>
+        
+              <tr>
+                <th scope="col">id_bioguide</th>
+                <th scope="col">term_type</th>
+                <th scope="col">term_start</th>
+                <th scope="col">term_end</th>
+                <th scope="col">gap</th>
+              </tr>
+        </thead>
+        
+        <tbody>
+                <tr>
+                  <td>A000009</td>
+                  <td>rep</td>
+                  <td>1973-01-03</td>
+                  <td>1975-01-03</td>
+                  <td>NA</td>
+                </tr>
+                <tr>
+                  <td>A000009</td>
+                  <td>rep</td>
+                  <td>1975-01-14</td>
+                  <td>1977-01-03</td>
+                  <td>11</td>
+                </tr>
+                <tr>
+                  <td>A000009</td>
+                  <td>rep</td>
+                  <td>1977-01-04</td>
+                  <td>1979-01-03</td>
+                  <td> 1</td>
+                </tr>
+                <tr>
+                  <td>A000009</td>
+                  <td>rep</td>
+                  <td>1979-01-15</td>
+                  <td>1981-01-03</td>
+                  <td>12</td>
+                </tr>
+                <tr>
+                  <td>A000009</td>
+                  <td>sen</td>
+                  <td>1981-01-05</td>
+                  <td>1987-01-03</td>
+                  <td> 2</td>
+                </tr>
+        </tbody>
+      </table>
+    </div>
+<!-- hack to avoid NA insertion in last line -->
+</div>
+</div>
+</figure>
+</div>
+</div>
+<p>So maybe a month (say 30 days)? Looking at the terms of John Quincy Adams (<code>id_bioguide == "A000041")</code>) in <a href="#tbl-bbdnor-term-gaps" class="quarto-xref">Table&nbsp;<span>5.5</span></a>, it seems this would not work.</p>
+<div class="cell">
+<div id="tbl-adams-term-gaps" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-adams-term-gaps-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;5.6: Congression terms of John Quincy Adams
+</figcaption>
+<div aria-describedby="tbl-adams-term-gaps-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<!-- preamble start -->
+
+    <script>
+
+      function styleCell_f95t4qkyq90zc5boe2jl(i, j, css_id) {
+          var table = document.getElementById("tinytable_f95t4qkyq90zc5boe2jl");
+          var cell = table.rows[i]?.cells[j];  // Safe navigation to avoid errors
+          if (cell) {
+              console.log(`Styling cell at (${i}, ${j}) with class ${css_id}`);
+              cell.classList.add(css_id);
+          } else {
+              console.warn(`Cell at (${i}, ${j}) not found.`);
+          }
+      }
+      function insertSpanRow(i, colspan, content) {
+        var table = document.getElementById('tinytable_f95t4qkyq90zc5boe2jl');
+        var newRow = table.insertRow(i);
+        var newCell = newRow.insertCell(0);
+        newCell.setAttribute("colspan", colspan);
+        // newCell.innerText = content;
+        // this may be unsafe, but innerText does not interpret <br>
+        newCell.innerHTML = content;
+      }
+      function spanCell_f95t4qkyq90zc5boe2jl(i, j, rowspan, colspan) {
+        var table = document.getElementById("tinytable_f95t4qkyq90zc5boe2jl");
+        const targetRow = table.rows[i];
+        const targetCell = targetRow.cells[j];
+        for (let r = 0; r < rowspan; r++) {
+          // Only start deleting cells to the right for the first row (r == 0)
+          if (r === 0) {
+            // Delete cells to the right of the target cell in the first row
+            for (let c = colspan - 1; c > 0; c--) {
+              if (table.rows[i + r].cells[j + c]) {
+                table.rows[i + r].deleteCell(j + c);
+              }
+            }
+          }
+          // For rows below the first, delete starting from the target column
+          if (r > 0) {
+            for (let c = colspan - 1; c >= 0; c--) {
+              if (table.rows[i + r] && table.rows[i + r].cells[j]) {
+                table.rows[i + r].deleteCell(j);
+              }
+            }
+          }
+        }
+        // Set rowspan and colspan of the target cell
+        targetCell.rowSpan = rowspan;
+        targetCell.colSpan = colspan;
+      }
+      // tinytable span after
+      window.addEventListener('load', function () {
+          var cellsToStyle = [
+            // tinytable style arrays after
+          { positions: [ { i: 0, j: 4 },  ], css_id: 'tinytable_css_n27brj9lwva8ptxrgt6y',}, 
+          { positions: [ { i: 0, j: 0 }, { i: 0, j: 2 }, { i: 0, j: 3 }, { i: 0, j: 1 },  ], css_id: 'tinytable_css_d1goeabunsv5pa6n196i',}, 
+          { positions: [ { i: 10, j: 2 }, { i: 10, j: 0 }, { i: 10, j: 1 }, { i: 10, j: 3 },  ], css_id: 'tinytable_css_7aqt7tmf3m5lemoyhp22',}, 
+          { positions: [ { i: 2, j: 0 }, { i: 4, j: 0 }, { i: 1, j: 0 }, { i: 6, j: 0 }, { i: 8, j: 0 }, { i: 5, j: 0 }, { i: 1, j: 2 }, { i: 3, j: 0 }, { i: 1, j: 1 }, { i: 2, j: 1 }, { i: 3, j: 1 }, { i: 4, j: 1 }, { i: 5, j: 1 }, { i: 6, j: 1 }, { i: 7, j: 1 }, { i: 8, j: 1 }, { i: 7, j: 0 }, { i: 1, j: 3 }, { i: 9, j: 0 }, { i: 3, j: 3 }, { i: 2, j: 2 }, { i: 3, j: 2 }, { i: 4, j: 2 }, { i: 5, j: 2 }, { i: 6, j: 2 }, { i: 7, j: 2 }, { i: 8, j: 2 }, { i: 9, j: 2 }, { i: 7, j: 3 }, { i: 9, j: 1 }, { i: 5, j: 3 }, { i: 2, j: 3 }, { i: 4, j: 3 }, { i: 9, j: 3 }, { i: 6, j: 3 }, { i: 8, j: 3 },  ], css_id: 'tinytable_css_6eq3hy5tfyy3k446sxzl',}, 
+          { positions: [ { i: 10, j: 4 },  ], css_id: 'tinytable_css_5i25olsqo4qae39u3n5r',}, 
+          { positions: [ { i: 1, j: 4 }, { i: 2, j: 4 }, { i: 3, j: 4 }, { i: 4, j: 4 }, { i: 5, j: 4 }, { i: 6, j: 4 }, { i: 7, j: 4 }, { i: 8, j: 4 }, { i: 9, j: 4 },  ], css_id: 'tinytable_css_1smmmo0g85vw74i43afq',}, 
+          ];
+
+          // Loop over the arrays to style the cells
+          cellsToStyle.forEach(function (group) {
+              group.positions.forEach(function (cell) {
+                  styleCell_f95t4qkyq90zc5boe2jl(cell.i, cell.j, group.css_id);
+              });
+          });
+      });
+    </script>
+
+    <style>
+      /* tinytable css entries after */
+      .table td.tinytable_css_n27brj9lwva8ptxrgt6y, .table th.tinytable_css_n27brj9lwva8ptxrgt6y { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; border-bottom: solid #d3d8dc 0.1em; padding-bottom: 0em; }
+      .table td.tinytable_css_d1goeabunsv5pa6n196i, .table th.tinytable_css_d1goeabunsv5pa6n196i { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; border-bottom: solid #d3d8dc 0.1em; padding-right: 0.1em; padding-bottom: 0em; }
+      .table td.tinytable_css_7aqt7tmf3m5lemoyhp22, .table th.tinytable_css_7aqt7tmf3m5lemoyhp22 { border-bottom: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.1em; padding-right: 0.1em; }
+      .table td.tinytable_css_6eq3hy5tfyy3k446sxzl, .table th.tinytable_css_6eq3hy5tfyy3k446sxzl { padding-right: 0.1em; padding-bottom: 0em; }
+      .table td.tinytable_css_5i25olsqo4qae39u3n5r, .table th.tinytable_css_5i25olsqo4qae39u3n5r { border-bottom: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.1em; }
+      .table td.tinytable_css_1smmmo0g85vw74i43afq, .table th.tinytable_css_1smmmo0g85vw74i43afq { padding-bottom: 0em; }
+    </style>
+    <div class="container">
+      <table class="table table-borderless" id="tinytable_f95t4qkyq90zc5boe2jl" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
+        <thead>
+        
+              <tr>
+                <th scope="col">id_bioguide</th>
+                <th scope="col">term_type</th>
+                <th scope="col">term_start</th>
+                <th scope="col">term_end</th>
+                <th scope="col">gap</th>
+              </tr>
+        </thead>
+        
+        <tbody>
+                <tr>
+                  <td>A000041</td>
+                  <td>sen</td>
+                  <td>1803-10-17</td>
+                  <td>1809-03-03</td>
+                  <td>  NA</td>
+                </tr>
+                <tr>
+                  <td>A000041</td>
+                  <td>rep</td>
+                  <td>1831-12-05</td>
+                  <td>1833-03-03</td>
+                  <td>8312</td>
+                </tr>
+                <tr>
+                  <td>A000041</td>
+                  <td>rep</td>
+                  <td>1833-12-02</td>
+                  <td>1835-03-03</td>
+                  <td> 274</td>
+                </tr>
+                <tr>
+                  <td>A000041</td>
+                  <td>rep</td>
+                  <td>1835-12-07</td>
+                  <td>1837-03-03</td>
+                  <td> 279</td>
+                </tr>
+                <tr>
+                  <td>A000041</td>
+                  <td>rep</td>
+                  <td>1837-09-04</td>
+                  <td>1839-03-03</td>
+                  <td> 185</td>
+                </tr>
+                <tr>
+                  <td>A000041</td>
+                  <td>rep</td>
+                  <td>1839-12-02</td>
+                  <td>1841-03-03</td>
+                  <td> 274</td>
+                </tr>
+                <tr>
+                  <td>A000041</td>
+                  <td>rep</td>
+                  <td>1841-05-31</td>
+                  <td>1843-03-03</td>
+                  <td>  89</td>
+                </tr>
+                <tr>
+                  <td>A000041</td>
+                  <td>rep</td>
+                  <td>1843-12-04</td>
+                  <td>1845-03-03</td>
+                  <td> 276</td>
+                </tr>
+                <tr>
+                  <td>A000041</td>
+                  <td>rep</td>
+                  <td>1845-12-01</td>
+                  <td>1847-03-03</td>
+                  <td> 273</td>
+                </tr>
+                <tr>
+                  <td>A000041</td>
+                  <td>rep</td>
+                  <td>1847-12-06</td>
+                  <td>1849-03-03</td>
+                  <td> 278</td>
+                </tr>
+        </tbody>
+      </table>
+    </div>
+<!-- hack to avoid NA insertion in last line -->
+</div>
+</div>
+</figure>
+</div>
+</div>
+<p>What’s going on here? If we go to the <a href="https://www.senate.gov/legislative/DatesofSessionsofCongress.htm">website of the United States Senate</a>, we can see that sessions of Congress often began later in the year in the 19th century. Furthermore, the <code>term_start</code> data in <code>legislators_terms</code> appear to be based on the dates on which legislative sessions started. Data on these dates—derived from the United States Senate website—are contained in <code>congress_terms</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>congress_terms</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<!-- preamble start -->
+
+    <script>
+
+      function styleCell_pgxbra3oqroz3ntsbkq6(i, j, css_id) {
+          var table = document.getElementById("tinytable_pgxbra3oqroz3ntsbkq6");
+          var cell = table.rows[i]?.cells[j];  // Safe navigation to avoid errors
+          if (cell) {
+              console.log(`Styling cell at (${i}, ${j}) with class ${css_id}`);
+              cell.classList.add(css_id);
+          } else {
+              console.warn(`Cell at (${i}, ${j}) not found.`);
+          }
+      }
+      function insertSpanRow(i, colspan, content) {
+        var table = document.getElementById('tinytable_pgxbra3oqroz3ntsbkq6');
+        var newRow = table.insertRow(i);
+        var newCell = newRow.insertCell(0);
+        newCell.setAttribute("colspan", colspan);
+        // newCell.innerText = content;
+        // this may be unsafe, but innerText does not interpret <br>
+        newCell.innerHTML = content;
+      }
+      function spanCell_pgxbra3oqroz3ntsbkq6(i, j, rowspan, colspan) {
+        var table = document.getElementById("tinytable_pgxbra3oqroz3ntsbkq6");
+        const targetRow = table.rows[i];
+        const targetCell = targetRow.cells[j];
+        for (let r = 0; r < rowspan; r++) {
+          // Only start deleting cells to the right for the first row (r == 0)
+          if (r === 0) {
+            // Delete cells to the right of the target cell in the first row
+            for (let c = colspan - 1; c > 0; c--) {
+              if (table.rows[i + r].cells[j + c]) {
+                table.rows[i + r].deleteCell(j + c);
+              }
+            }
+          }
+          // For rows below the first, delete starting from the target column
+          if (r > 0) {
+            for (let c = colspan - 1; c >= 0; c--) {
+              if (table.rows[i + r] && table.rows[i + r].cells[j]) {
+                table.rows[i + r].deleteCell(j);
+              }
+            }
+          }
+        }
+        // Set rowspan and colspan of the target cell
+        targetCell.rowSpan = rowspan;
+        targetCell.colSpan = colspan;
+      }
+      // tinytable span after
+      window.addEventListener('load', function () {
+          var cellsToStyle = [
+            // tinytable style arrays after
+          { positions: [ { i: 10, j: 2 },  ], css_id: 'tinytable_css_sij9q7qbfl8z55v80e76',}, 
+          { positions: [ { i: 10, j: 0 }, { i: 10, j: 1 },  ], css_id: 'tinytable_css_s2ge4a0qa1ero4o6ynu5',}, 
+          { positions: [ { i: 1, j: 0 }, { i: 2, j: 0 }, { i: 4, j: 0 }, { i: 5, j: 0 }, { i: 6, j: 0 }, { i: 3, j: 0 }, { i: 8, j: 0 }, { i: 9, j: 0 }, { i: 3, j: 1 }, { i: 7, j: 0 }, { i: 1, j: 1 }, { i: 2, j: 1 }, { i: 7, j: 1 }, { i: 4, j: 1 }, { i: 5, j: 1 }, { i: 6, j: 1 }, { i: 8, j: 1 }, { i: 9, j: 1 },  ], css_id: 'tinytable_css_nqv9rek2h4natjwa2e86',}, 
+          { positions: [ { i: 0, j: 2 },  ], css_id: 'tinytable_css_nfg77c8g999sgjb2xtkm',}, 
+          { positions: [ { i: 0, j: 0 }, { i: 0, j: 1 },  ], css_id: 'tinytable_css_6f37c84815d45idu5p96',}, 
+          { positions: [ { i: 1, j: 2 }, { i: 2, j: 2 }, { i: 3, j: 2 }, { i: 4, j: 2 }, { i: 5, j: 2 }, { i: 6, j: 2 }, { i: 7, j: 2 }, { i: 8, j: 2 }, { i: 9, j: 2 },  ], css_id: 'tinytable_css_5s8271s134cdgzvmvn4h',}, 
+          ];
+
+          // Loop over the arrays to style the cells
+          cellsToStyle.forEach(function (group) {
+              group.positions.forEach(function (cell) {
+                  styleCell_pgxbra3oqroz3ntsbkq6(cell.i, cell.j, group.css_id);
+              });
+          });
+      });
+    </script>
+
+    <style>
+      /* tinytable css entries after */
+      .table td.tinytable_css_sij9q7qbfl8z55v80e76, .table th.tinytable_css_sij9q7qbfl8z55v80e76 { border-bottom: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.1em; }
+      .table td.tinytable_css_s2ge4a0qa1ero4o6ynu5, .table th.tinytable_css_s2ge4a0qa1ero4o6ynu5 { border-bottom: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.1em; padding-right: 0.1em; }
+      .table td.tinytable_css_nqv9rek2h4natjwa2e86, .table th.tinytable_css_nqv9rek2h4natjwa2e86 { padding-right: 0.1em; padding-bottom: 0em; }
+      .table td.tinytable_css_nfg77c8g999sgjb2xtkm, .table th.tinytable_css_nfg77c8g999sgjb2xtkm { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; border-bottom: solid #d3d8dc 0.1em; padding-bottom: 0em; }
+      .table td.tinytable_css_6f37c84815d45idu5p96, .table th.tinytable_css_6f37c84815d45idu5p96 { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; border-bottom: solid #d3d8dc 0.1em; padding-right: 0.1em; padding-bottom: 0em; }
+      .table td.tinytable_css_5s8271s134cdgzvmvn4h, .table th.tinytable_css_5s8271s134cdgzvmvn4h { padding-bottom: 0em; }
+    </style>
+    <div class="container">
+      <table class="table table-borderless" id="tinytable_pgxbra3oqroz3ntsbkq6" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
+        <thead>
+        
+              <tr>
+                <th scope="col">congress</th>
+                <th scope="col">term_start</th>
+                <th scope="col">term_end</th>
+              </tr>
+        </thead>
+        
+        <tbody>
+                <tr>
+                  <td> 1</td>
+                  <td>1789-03-04</td>
+                  <td>1791-03-03</td>
+                </tr>
+                <tr>
+                  <td> 2</td>
+                  <td>1791-10-24</td>
+                  <td>1793-03-03</td>
+                </tr>
+                <tr>
+                  <td> 3</td>
+                  <td>1793-12-02</td>
+                  <td>1795-03-03</td>
+                </tr>
+                <tr>
+                  <td> 4</td>
+                  <td>1795-12-07</td>
+                  <td>1797-03-03</td>
+                </tr>
+                <tr>
+                  <td> 5</td>
+                  <td>1797-05-15</td>
+                  <td>1799-03-03</td>
+                </tr>
+                <tr>
+                  <td> 6</td>
+                  <td>1799-12-02</td>
+                  <td>1801-03-03</td>
+                </tr>
+                <tr>
+                  <td> 7</td>
+                  <td>1801-12-07</td>
+                  <td>1803-03-03</td>
+                </tr>
+                <tr>
+                  <td> 8</td>
+                  <td>1803-10-17</td>
+                  <td>1805-03-03</td>
+                </tr>
+                <tr>
+                  <td> 9</td>
+                  <td>1805-12-02</td>
+                  <td>1807-03-03</td>
+                </tr>
+                <tr>
+                  <td>10</td>
+                  <td>1807-10-26</td>
+                  <td>1809-03-03</td>
+                </tr>
+        </tbody>
+      </table>
+    </div>
+<!-- hack to avoid NA insertion in last line -->
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>congress_terms <span class="sc">|&gt;</span> </span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">window_order</span>(term_start) <span class="sc">|&gt;</span> </span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(<span class="at">same_year =</span> <span class="fu">year</span>(term_start) <span class="sc">!=</span> <span class="fu">year</span>(<span class="fu">lag</span>(term_end)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<!-- preamble start -->
+
+    <script>
+
+      function styleCell_92x3i114iuabra49vnre(i, j, css_id) {
+          var table = document.getElementById("tinytable_92x3i114iuabra49vnre");
+          var cell = table.rows[i]?.cells[j];  // Safe navigation to avoid errors
+          if (cell) {
+              console.log(`Styling cell at (${i}, ${j}) with class ${css_id}`);
+              cell.classList.add(css_id);
+          } else {
+              console.warn(`Cell at (${i}, ${j}) not found.`);
+          }
+      }
+      function insertSpanRow(i, colspan, content) {
+        var table = document.getElementById('tinytable_92x3i114iuabra49vnre');
+        var newRow = table.insertRow(i);
+        var newCell = newRow.insertCell(0);
+        newCell.setAttribute("colspan", colspan);
+        // newCell.innerText = content;
+        // this may be unsafe, but innerText does not interpret <br>
+        newCell.innerHTML = content;
+      }
+      function spanCell_92x3i114iuabra49vnre(i, j, rowspan, colspan) {
+        var table = document.getElementById("tinytable_92x3i114iuabra49vnre");
+        const targetRow = table.rows[i];
+        const targetCell = targetRow.cells[j];
+        for (let r = 0; r < rowspan; r++) {
+          // Only start deleting cells to the right for the first row (r == 0)
+          if (r === 0) {
+            // Delete cells to the right of the target cell in the first row
+            for (let c = colspan - 1; c > 0; c--) {
+              if (table.rows[i + r].cells[j + c]) {
+                table.rows[i + r].deleteCell(j + c);
+              }
+            }
+          }
+          // For rows below the first, delete starting from the target column
+          if (r > 0) {
+            for (let c = colspan - 1; c >= 0; c--) {
+              if (table.rows[i + r] && table.rows[i + r].cells[j]) {
+                table.rows[i + r].deleteCell(j);
+              }
+            }
+          }
+        }
+        // Set rowspan and colspan of the target cell
+        targetCell.rowSpan = rowspan;
+        targetCell.colSpan = colspan;
+      }
+      // tinytable span after
+      window.addEventListener('load', function () {
+          var cellsToStyle = [
+            // tinytable style arrays after
+          { positions: [ { i: 0, j: 1 },  ], css_id: 'tinytable_css_x0z098sohcwnin3wyr0r',}, 
+          { positions: [ { i: 0, j: 0 },  ], css_id: 'tinytable_css_ven61a2dhs4zwvp7qppq',}, 
+          { positions: [ { i: 1, j: 0 },  ], css_id: 'tinytable_css_tftoatsl9l5tqbj8ubv9',}, 
+          { positions: [ { i: 2, j: 0 },  ], css_id: 'tinytable_css_j2e5vwdq9t13vxw6eozr',}, 
+          { positions: [ { i: 1, j: 1 },  ], css_id: 'tinytable_css_h7kwhimm1v02r4a9mzcv',}, 
+          { positions: [ { i: 2, j: 1 },  ], css_id: 'tinytable_css_1ew6cij1avpbtn89wbwp',}, 
+          ];
+
+          // Loop over the arrays to style the cells
+          cellsToStyle.forEach(function (group) {
+              group.positions.forEach(function (cell) {
+                  styleCell_92x3i114iuabra49vnre(cell.i, cell.j, group.css_id);
+              });
+          });
+      });
+    </script>
+
+    <style>
+      /* tinytable css entries after */
+      .table td.tinytable_css_x0z098sohcwnin3wyr0r, .table th.tinytable_css_x0z098sohcwnin3wyr0r { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; border-bottom: solid #d3d8dc 0.1em; padding-bottom: 0em; }
+      .table td.tinytable_css_ven61a2dhs4zwvp7qppq, .table th.tinytable_css_ven61a2dhs4zwvp7qppq { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; border-bottom: solid #d3d8dc 0.1em; padding-right: 0.1em; padding-bottom: 0em; }
+      .table td.tinytable_css_tftoatsl9l5tqbj8ubv9, .table th.tinytable_css_tftoatsl9l5tqbj8ubv9 { padding-right: 0.1em; padding-bottom: 0em; }
+      .table td.tinytable_css_j2e5vwdq9t13vxw6eozr, .table th.tinytable_css_j2e5vwdq9t13vxw6eozr { border-bottom: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.1em; padding-right: 0.1em; }
+      .table td.tinytable_css_h7kwhimm1v02r4a9mzcv, .table th.tinytable_css_h7kwhimm1v02r4a9mzcv { padding-bottom: 0em; }
+      .table td.tinytable_css_1ew6cij1avpbtn89wbwp, .table th.tinytable_css_1ew6cij1avpbtn89wbwp { border-bottom: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.1em; }
+    </style>
+    <div class="container">
+      <table class="table table-borderless" id="tinytable_92x3i114iuabra49vnre" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
+        <thead>
+        
+              <tr>
+                <th scope="col">same_year</th>
+                <th scope="col">n</th>
+              </tr>
+        </thead>
+        
+        <tbody>
+                <tr>
+                  <td>FALSE</td>
+                  <td>117</td>
+                </tr>
+                <tr>
+                  <td>   NA</td>
+                  <td>  1</td>
+                </tr>
+        </tbody>
+      </table>
+    </div>
+<!-- hack to avoid NA insertion in last line -->
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>stints_raw <span class="ot">&lt;-</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  legislators_terms <span class="sc">|&gt;</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(id_bioguide, term_type) <span class="sc">|&gt;</span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">window_order</span>(term_start) <span class="sc">|&gt;</span></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">same_year =</span> <span class="fu">year</span>(term_start) <span class="sc">==</span> <span class="fu">year</span>(<span class="fu">lag</span>(term_end)),</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>         <span class="at">new_stint =</span> <span class="fu">is.na</span>(same_year) <span class="sc">|</span> <span class="sc">!</span>same_year) <span class="sc">|&gt;</span></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(id_bioguide) <span class="sc">|&gt;</span></span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">window_order</span>(term_start) <span class="sc">|&gt;</span></span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">stint_number =</span> <span class="fu">cumsum</span>(<span class="fu">as.integer</span>(new_stint))) <span class="sc">|&gt;</span></span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">|&gt;</span></span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(id_bioguide, term_start) <span class="sc">|&gt;</span></span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(id_bioguide, term_type, term_start, term_end, </span>
+<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a>         same_year, new_stint, stint_number) <span class="sc">|&gt;</span></span>
+<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">compute</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>stints <span class="ot">&lt;-</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  stints_raw <span class="sc">|&gt;</span></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(id_bioguide, term_type, stint_number) <span class="sc">|&gt;</span></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">stint_start =</span> <span class="fu">min</span>(term_start, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>            <span class="at">stint_end =</span> <span class="fu">max</span>(term_end, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>            <span class="at">.groups =</span> <span class="st">"drop"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>legislators <span class="sc">|&gt;</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(id_bioguide, full_name) <span class="sc">|&gt;</span></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">inner_join</span>(stints, <span class="at">by =</span> <span class="st">"id_bioguide"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(id_bioguide <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"P000197"</span>, <span class="st">"A000009"</span>, <span class="st">"A000041"</span>)) <span class="sc">|&gt;</span> </span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(id_bioguide, stint_start)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<!-- preamble start -->
+
+    <script>
+
+      function styleCell_aic3o21mwlc4l5mndcij(i, j, css_id) {
+          var table = document.getElementById("tinytable_aic3o21mwlc4l5mndcij");
+          var cell = table.rows[i]?.cells[j];  // Safe navigation to avoid errors
+          if (cell) {
+              console.log(`Styling cell at (${i}, ${j}) with class ${css_id}`);
+              cell.classList.add(css_id);
+          } else {
+              console.warn(`Cell at (${i}, ${j}) not found.`);
+          }
+      }
+      function insertSpanRow(i, colspan, content) {
+        var table = document.getElementById('tinytable_aic3o21mwlc4l5mndcij');
+        var newRow = table.insertRow(i);
+        var newCell = newRow.insertCell(0);
+        newCell.setAttribute("colspan", colspan);
+        // newCell.innerText = content;
+        // this may be unsafe, but innerText does not interpret <br>
+        newCell.innerHTML = content;
+      }
+      function spanCell_aic3o21mwlc4l5mndcij(i, j, rowspan, colspan) {
+        var table = document.getElementById("tinytable_aic3o21mwlc4l5mndcij");
+        const targetRow = table.rows[i];
+        const targetCell = targetRow.cells[j];
+        for (let r = 0; r < rowspan; r++) {
+          // Only start deleting cells to the right for the first row (r == 0)
+          if (r === 0) {
+            // Delete cells to the right of the target cell in the first row
+            for (let c = colspan - 1; c > 0; c--) {
+              if (table.rows[i + r].cells[j + c]) {
+                table.rows[i + r].deleteCell(j + c);
+              }
+            }
+          }
+          // For rows below the first, delete starting from the target column
+          if (r > 0) {
+            for (let c = colspan - 1; c >= 0; c--) {
+              if (table.rows[i + r] && table.rows[i + r].cells[j]) {
+                table.rows[i + r].deleteCell(j);
+              }
+            }
+          }
+        }
+        // Set rowspan and colspan of the target cell
+        targetCell.rowSpan = rowspan;
+        targetCell.colSpan = colspan;
+      }
+      // tinytable span after
+      window.addEventListener('load', function () {
+          var cellsToStyle = [
+            // tinytable style arrays after
+          { positions: [ { i: 5, j: 5 },  ], css_id: 'tinytable_css_wnoryqnqke33wtve5xxr',}, 
+          { positions: [ { i: 1, j: 5 }, { i: 2, j: 5 }, { i: 3, j: 5 }, { i: 4, j: 5 },  ], css_id: 'tinytable_css_lg2y4uhzun53dvjsccyt',}, 
+          { positions: [ { i: 0, j: 0 }, { i: 0, j: 3 }, { i: 0, j: 1 }, { i: 0, j: 4 }, { i: 0, j: 2 },  ], css_id: 'tinytable_css_kjdoxru7kjo9wsfj6aj5',}, 
+          { positions: [ { i: 1, j: 0 }, { i: 2, j: 0 }, { i: 3, j: 0 }, { i: 4, j: 0 }, { i: 3, j: 1 }, { i: 4, j: 1 }, { i: 1, j: 1 }, { i: 2, j: 1 }, { i: 1, j: 2 }, { i: 2, j: 2 }, { i: 3, j: 2 }, { i: 4, j: 2 }, { i: 3, j: 3 }, { i: 4, j: 3 }, { i: 1, j: 3 }, { i: 2, j: 3 }, { i: 1, j: 4 }, { i: 2, j: 4 }, { i: 3, j: 4 }, { i: 4, j: 4 },  ], css_id: 'tinytable_css_dkt0c9z0ykb2543dh5fi',}, 
+          { positions: [ { i: 0, j: 5 },  ], css_id: 'tinytable_css_76y3o0q1opk3zlp1v8n6',}, 
+          { positions: [ { i: 5, j: 2 }, { i: 5, j: 0 }, { i: 5, j: 3 }, { i: 5, j: 1 }, { i: 5, j: 4 },  ], css_id: 'tinytable_css_0j5lls4sw8h9znstnlxh',}, 
+          ];
+
+          // Loop over the arrays to style the cells
+          cellsToStyle.forEach(function (group) {
+              group.positions.forEach(function (cell) {
+                  styleCell_aic3o21mwlc4l5mndcij(cell.i, cell.j, group.css_id);
+              });
+          });
+      });
+    </script>
+
+    <style>
+      /* tinytable css entries after */
+      .table td.tinytable_css_wnoryqnqke33wtve5xxr, .table th.tinytable_css_wnoryqnqke33wtve5xxr { border-bottom: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.1em; }
+      .table td.tinytable_css_lg2y4uhzun53dvjsccyt, .table th.tinytable_css_lg2y4uhzun53dvjsccyt { padding-bottom: 0em; }
+      .table td.tinytable_css_kjdoxru7kjo9wsfj6aj5, .table th.tinytable_css_kjdoxru7kjo9wsfj6aj5 { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; border-bottom: solid #d3d8dc 0.1em; padding-right: 0.1em; padding-bottom: 0em; }
+      .table td.tinytable_css_dkt0c9z0ykb2543dh5fi, .table th.tinytable_css_dkt0c9z0ykb2543dh5fi { padding-right: 0.1em; padding-bottom: 0em; }
+      .table td.tinytable_css_76y3o0q1opk3zlp1v8n6, .table th.tinytable_css_76y3o0q1opk3zlp1v8n6 { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; border-bottom: solid #d3d8dc 0.1em; padding-bottom: 0em; }
+      .table td.tinytable_css_0j5lls4sw8h9znstnlxh, .table th.tinytable_css_0j5lls4sw8h9znstnlxh { border-bottom: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.1em; padding-right: 0.1em; }
+    </style>
+    <div class="container">
+      <table class="table table-borderless" id="tinytable_aic3o21mwlc4l5mndcij" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
+        <thead>
+        
+              <tr>
+                <th scope="col">id_bioguide</th>
+                <th scope="col">full_name</th>
+                <th scope="col">term_type</th>
+                <th scope="col">stint_number</th>
+                <th scope="col">stint_start</th>
+                <th scope="col">stint_end</th>
+              </tr>
+        </thead>
+        
+        <tbody>
+                <tr>
+                  <td>A000009</td>
+                  <td>James Abdnor     </td>
+                  <td>rep</td>
+                  <td>1</td>
+                  <td>1973-01-03</td>
+                  <td>1981-01-03</td>
+                </tr>
+                <tr>
+                  <td>A000009</td>
+                  <td>James Abdnor     </td>
+                  <td>sen</td>
+                  <td>2</td>
+                  <td>1981-01-05</td>
+                  <td>1987-01-03</td>
+                </tr>
+                <tr>
+                  <td>A000041</td>
+                  <td>John Quincy Adams</td>
+                  <td>sen</td>
+                  <td>1</td>
+                  <td>1803-10-17</td>
+                  <td>1809-03-03</td>
+                </tr>
+                <tr>
+                  <td>A000041</td>
+                  <td>John Quincy Adams</td>
+                  <td>rep</td>
+                  <td>2</td>
+                  <td>1831-12-05</td>
+                  <td>1849-03-03</td>
+                </tr>
+                <tr>
+                  <td>P000197</td>
+                  <td>Nancy Pelosi     </td>
+                  <td>rep</td>
+                  <td>1</td>
+                  <td>1987-01-06</td>
+                  <td>2021-01-03</td>
+                </tr>
+        </tbody>
+      </table>
+    </div>
+<!-- hack to avoid NA insertion in last line -->
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>stints <span class="sc">|&gt;</span> <span class="fu">count</span>(stint_number)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<!-- preamble start -->
+
+    <script>
+
+      function styleCell_ajvle1e9prli5z73vdp2(i, j, css_id) {
+          var table = document.getElementById("tinytable_ajvle1e9prli5z73vdp2");
+          var cell = table.rows[i]?.cells[j];  // Safe navigation to avoid errors
+          if (cell) {
+              console.log(`Styling cell at (${i}, ${j}) with class ${css_id}`);
+              cell.classList.add(css_id);
+          } else {
+              console.warn(`Cell at (${i}, ${j}) not found.`);
+          }
+      }
+      function insertSpanRow(i, colspan, content) {
+        var table = document.getElementById('tinytable_ajvle1e9prli5z73vdp2');
+        var newRow = table.insertRow(i);
+        var newCell = newRow.insertCell(0);
+        newCell.setAttribute("colspan", colspan);
+        // newCell.innerText = content;
+        // this may be unsafe, but innerText does not interpret <br>
+        newCell.innerHTML = content;
+      }
+      function spanCell_ajvle1e9prli5z73vdp2(i, j, rowspan, colspan) {
+        var table = document.getElementById("tinytable_ajvle1e9prli5z73vdp2");
+        const targetRow = table.rows[i];
+        const targetCell = targetRow.cells[j];
+        for (let r = 0; r < rowspan; r++) {
+          // Only start deleting cells to the right for the first row (r == 0)
+          if (r === 0) {
+            // Delete cells to the right of the target cell in the first row
+            for (let c = colspan - 1; c > 0; c--) {
+              if (table.rows[i + r].cells[j + c]) {
+                table.rows[i + r].deleteCell(j + c);
+              }
+            }
+          }
+          // For rows below the first, delete starting from the target column
+          if (r > 0) {
+            for (let c = colspan - 1; c >= 0; c--) {
+              if (table.rows[i + r] && table.rows[i + r].cells[j]) {
+                table.rows[i + r].deleteCell(j);
+              }
+            }
+          }
+        }
+        // Set rowspan and colspan of the target cell
+        targetCell.rowSpan = rowspan;
+        targetCell.colSpan = colspan;
+      }
+      // tinytable span after
+      window.addEventListener('load', function () {
+          var cellsToStyle = [
+            // tinytable style arrays after
+          { positions: [ { i: 0, j: 0 },  ], css_id: 'tinytable_css_z7j7zsgvtl9ytpjn9q9h',}, 
+          { positions: [ { i: 1, j: 0 }, { i: 2, j: 0 }, { i: 3, j: 0 }, { i: 4, j: 0 }, { i: 5, j: 0 },  ], css_id: 'tinytable_css_ydoepps447a5a7ianve1',}, 
+          { positions: [ { i: 6, j: 0 },  ], css_id: 'tinytable_css_ukw8srp73i04gof47512',}, 
+          { positions: [ { i: 1, j: 1 }, { i: 2, j: 1 }, { i: 3, j: 1 }, { i: 4, j: 1 }, { i: 5, j: 1 },  ], css_id: 'tinytable_css_67vkd1zg3mxr2ubd0rgn',}, 
+          { positions: [ { i: 0, j: 1 },  ], css_id: 'tinytable_css_4c0b48msat7dshiqj46w',}, 
+          { positions: [ { i: 6, j: 1 },  ], css_id: 'tinytable_css_2u49tghh3f0ktengo8ul',}, 
+          ];
+
+          // Loop over the arrays to style the cells
+          cellsToStyle.forEach(function (group) {
+              group.positions.forEach(function (cell) {
+                  styleCell_ajvle1e9prli5z73vdp2(cell.i, cell.j, group.css_id);
+              });
+          });
+      });
+    </script>
+
+    <style>
+      /* tinytable css entries after */
+      .table td.tinytable_css_z7j7zsgvtl9ytpjn9q9h, .table th.tinytable_css_z7j7zsgvtl9ytpjn9q9h { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; border-bottom: solid #d3d8dc 0.1em; padding-right: 0.1em; padding-bottom: 0em; }
+      .table td.tinytable_css_ydoepps447a5a7ianve1, .table th.tinytable_css_ydoepps447a5a7ianve1 { padding-right: 0.1em; padding-bottom: 0em; }
+      .table td.tinytable_css_ukw8srp73i04gof47512, .table th.tinytable_css_ukw8srp73i04gof47512 { border-bottom: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.1em; padding-right: 0.1em; }
+      .table td.tinytable_css_67vkd1zg3mxr2ubd0rgn, .table th.tinytable_css_67vkd1zg3mxr2ubd0rgn { padding-bottom: 0em; }
+      .table td.tinytable_css_4c0b48msat7dshiqj46w, .table th.tinytable_css_4c0b48msat7dshiqj46w { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; border-bottom: solid #d3d8dc 0.1em; padding-bottom: 0em; }
+      .table td.tinytable_css_2u49tghh3f0ktengo8ul, .table th.tinytable_css_2u49tghh3f0ktengo8ul { border-bottom: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.1em; }
+    </style>
+    <div class="container">
+      <table class="table table-borderless" id="tinytable_ajvle1e9prli5z73vdp2" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
+        <thead>
+        
+              <tr>
+                <th scope="col">stint_number</th>
+                <th scope="col">n</th>
+              </tr>
+        </thead>
+        
+        <tbody>
+                <tr>
+                  <td>1</td>
+                  <td>12518</td>
+                </tr>
+                <tr>
+                  <td>2</td>
+                  <td> 1775</td>
+                </tr>
+                <tr>
+                  <td>3</td>
+                  <td>  250</td>
+                </tr>
+                <tr>
+                  <td>4</td>
+                  <td>   33</td>
+                </tr>
+                <tr>
+                  <td>5</td>
+                  <td>    7</td>
+                </tr>
+                <tr>
+                  <td>6</td>
+                  <td>    2</td>
+                </tr>
+        </tbody>
+      </table>
+    </div>
+<!-- hack to avoid NA insertion in last line -->
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>six_stinters <span class="ot">&lt;-</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>  stints <span class="sc">|&gt;</span></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(stint_number <span class="sc">==</span> <span class="dv">6</span>) <span class="sc">|&gt;</span></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">distinct</span>(id_bioguide) <span class="sc">|&gt;</span></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">inner_join</span>(legislators, <span class="at">by =</span> <span class="st">"id_bioguide"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(id_bioguide, full_name) <span class="sc">|&gt;</span></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">inner_join</span>(stints, <span class="at">by =</span> <span class="st">"id_bioguide"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(id_bioguide, stint_start) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div id="tbl-six-stints" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-six-stints-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;5.7: Legislators with six stints
+</figcaption>
+<div aria-describedby="tbl-six-stints-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<!-- preamble start -->
+
+    <script>
+
+      function styleCell_1n2g30xri2jxsusc5vm9(i, j, css_id) {
+          var table = document.getElementById("tinytable_1n2g30xri2jxsusc5vm9");
+          var cell = table.rows[i]?.cells[j];  // Safe navigation to avoid errors
+          if (cell) {
+              console.log(`Styling cell at (${i}, ${j}) with class ${css_id}`);
+              cell.classList.add(css_id);
+          } else {
+              console.warn(`Cell at (${i}, ${j}) not found.`);
+          }
+      }
+      function insertSpanRow(i, colspan, content) {
+        var table = document.getElementById('tinytable_1n2g30xri2jxsusc5vm9');
+        var newRow = table.insertRow(i);
+        var newCell = newRow.insertCell(0);
+        newCell.setAttribute("colspan", colspan);
+        // newCell.innerText = content;
+        // this may be unsafe, but innerText does not interpret <br>
+        newCell.innerHTML = content;
+      }
+      function spanCell_1n2g30xri2jxsusc5vm9(i, j, rowspan, colspan) {
+        var table = document.getElementById("tinytable_1n2g30xri2jxsusc5vm9");
+        const targetRow = table.rows[i];
+        const targetCell = targetRow.cells[j];
+        for (let r = 0; r < rowspan; r++) {
+          // Only start deleting cells to the right for the first row (r == 0)
+          if (r === 0) {
+            // Delete cells to the right of the target cell in the first row
+            for (let c = colspan - 1; c > 0; c--) {
+              if (table.rows[i + r].cells[j + c]) {
+                table.rows[i + r].deleteCell(j + c);
+              }
+            }
+          }
+          // For rows below the first, delete starting from the target column
+          if (r > 0) {
+            for (let c = colspan - 1; c >= 0; c--) {
+              if (table.rows[i + r] && table.rows[i + r].cells[j]) {
+                table.rows[i + r].deleteCell(j);
+              }
+            }
+          }
+        }
+        // Set rowspan and colspan of the target cell
+        targetCell.rowSpan = rowspan;
+        targetCell.colSpan = colspan;
+      }
+      // tinytable span after
+      window.addEventListener('load', function () {
+          var cellsToStyle = [
+            // tinytable style arrays after
+          { positions: [ { i: 0, j: 0 }, { i: 0, j: 1 }, { i: 0, j: 2 }, { i: 0, j: 3 }, { i: 0, j: 4 },  ], css_id: 'tinytable_css_kgo7vi5oruvyh5b0d1or',}, 
+          { positions: [ { i: 12, j: 5 },  ], css_id: 'tinytable_css_k1fnicoxvghy5rpxi9bu',}, 
+          { positions: [ { i: 1, j: 0 }, { i: 2, j: 0 }, { i: 3, j: 0 }, { i: 4, j: 0 }, { i: 5, j: 0 }, { i: 6, j: 0 }, { i: 7, j: 0 }, { i: 8, j: 0 }, { i: 9, j: 0 }, { i: 10, j: 0 }, { i: 11, j: 0 }, { i: 3, j: 1 }, { i: 4, j: 1 }, { i: 1, j: 1 }, { i: 2, j: 1 }, { i: 7, j: 1 }, { i: 8, j: 1 }, { i: 5, j: 1 }, { i: 6, j: 1 }, { i: 11, j: 1 }, { i: 3, j: 2 }, { i: 9, j: 1 }, { i: 10, j: 1 }, { i: 2, j: 2 }, { i: 7, j: 2 }, { i: 4, j: 2 }, { i: 1, j: 2 }, { i: 6, j: 2 }, { i: 11, j: 2 }, { i: 8, j: 2 }, { i: 5, j: 2 }, { i: 10, j: 2 }, { i: 2, j: 3 }, { i: 3, j: 3 }, { i: 9, j: 2 }, { i: 1, j: 3 }, { i: 6, j: 3 }, { i: 7, j: 3 }, { i: 4, j: 3 }, { i: 5, j: 3 }, { i: 10, j: 3 }, { i: 11, j: 3 }, { i: 8, j: 3 }, { i: 9, j: 3 }, { i: 1, j: 4 }, { i: 2, j: 4 }, { i: 3, j: 4 }, { i: 4, j: 4 }, { i: 5, j: 4 }, { i: 6, j: 4 }, { i: 7, j: 4 }, { i: 8, j: 4 }, { i: 9, j: 4 }, { i: 10, j: 4 }, { i: 11, j: 4 },  ], css_id: 'tinytable_css_jo84c4skaat1vxs82cqt',}, 
+          { positions: [ { i: 12, j: 0 }, { i: 12, j: 1 }, { i: 12, j: 2 }, { i: 12, j: 3 }, { i: 12, j: 4 },  ], css_id: 'tinytable_css_8yqx3p98945wan1wd77x',}, 
+          { positions: [ { i: 1, j: 5 }, { i: 2, j: 5 }, { i: 3, j: 5 }, { i: 4, j: 5 }, { i: 5, j: 5 }, { i: 6, j: 5 }, { i: 7, j: 5 }, { i: 8, j: 5 }, { i: 9, j: 5 }, { i: 10, j: 5 }, { i: 11, j: 5 },  ], css_id: 'tinytable_css_508itr7b29h03y75wt5j',}, 
+          { positions: [ { i: 0, j: 5 },  ], css_id: 'tinytable_css_1usk5yms1xzrlbx6s9nr',}, 
+          ];
+
+          // Loop over the arrays to style the cells
+          cellsToStyle.forEach(function (group) {
+              group.positions.forEach(function (cell) {
+                  styleCell_1n2g30xri2jxsusc5vm9(cell.i, cell.j, group.css_id);
+              });
+          });
+      });
+    </script>
+
+    <style>
+      /* tinytable css entries after */
+      .table td.tinytable_css_kgo7vi5oruvyh5b0d1or, .table th.tinytable_css_kgo7vi5oruvyh5b0d1or { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; border-bottom: solid #d3d8dc 0.1em; padding-right: 0.1em; padding-bottom: 0em; }
+      .table td.tinytable_css_k1fnicoxvghy5rpxi9bu, .table th.tinytable_css_k1fnicoxvghy5rpxi9bu { border-bottom: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.1em; }
+      .table td.tinytable_css_jo84c4skaat1vxs82cqt, .table th.tinytable_css_jo84c4skaat1vxs82cqt { padding-right: 0.1em; padding-bottom: 0em; }
+      .table td.tinytable_css_8yqx3p98945wan1wd77x, .table th.tinytable_css_8yqx3p98945wan1wd77x { border-bottom: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.1em; padding-right: 0.1em; }
+      .table td.tinytable_css_508itr7b29h03y75wt5j, .table th.tinytable_css_508itr7b29h03y75wt5j { padding-bottom: 0em; }
+      .table td.tinytable_css_1usk5yms1xzrlbx6s9nr, .table th.tinytable_css_1usk5yms1xzrlbx6s9nr { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; border-bottom: solid #d3d8dc 0.1em; padding-bottom: 0em; }
+    </style>
+    <div class="container">
+      <table class="table table-borderless" id="tinytable_1n2g30xri2jxsusc5vm9" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
+        <thead>
+        
+              <tr>
+                <th scope="col">id_bioguide</th>
+                <th scope="col">full_name</th>
+                <th scope="col">term_type</th>
+                <th scope="col">stint_number</th>
+                <th scope="col">stint_start</th>
+                <th scope="col">stint_end</th>
+              </tr>
+        </thead>
+        
+        <tbody>
+                <tr>
+                  <td>C000482</td>
+                  <td>Henry Clay   </td>
+                  <td>sen</td>
+                  <td>1</td>
+                  <td>1806-01-01</td>
+                  <td>1807-03-03</td>
+                </tr>
+                <tr>
+                  <td>C000482</td>
+                  <td>Henry Clay   </td>
+                  <td>sen</td>
+                  <td>2</td>
+                  <td>1810-01-01</td>
+                  <td>1811-03-03</td>
+                </tr>
+                <tr>
+                  <td>C000482</td>
+                  <td>Henry Clay   </td>
+                  <td>rep</td>
+                  <td>3</td>
+                  <td>1811-11-04</td>
+                  <td>1821-03-03</td>
+                </tr>
+                <tr>
+                  <td>C000482</td>
+                  <td>Henry Clay   </td>
+                  <td>rep</td>
+                  <td>4</td>
+                  <td>1823-12-01</td>
+                  <td>1827-03-03</td>
+                </tr>
+                <tr>
+                  <td>C000482</td>
+                  <td>Henry Clay   </td>
+                  <td>sen</td>
+                  <td>5</td>
+                  <td>1831-12-05</td>
+                  <td>1843-03-03</td>
+                </tr>
+                <tr>
+                  <td>C000482</td>
+                  <td>Henry Clay   </td>
+                  <td>sen</td>
+                  <td>6</td>
+                  <td>1849-12-03</td>
+                  <td>1853-03-03</td>
+                </tr>
+                <tr>
+                  <td>R000047</td>
+                  <td>John Randolph</td>
+                  <td>rep</td>
+                  <td>1</td>
+                  <td>1799-12-02</td>
+                  <td>1813-03-03</td>
+                </tr>
+                <tr>
+                  <td>R000047</td>
+                  <td>John Randolph</td>
+                  <td>rep</td>
+                  <td>2</td>
+                  <td>1815-12-04</td>
+                  <td>1817-03-03</td>
+                </tr>
+                <tr>
+                  <td>R000047</td>
+                  <td>John Randolph</td>
+                  <td>rep</td>
+                  <td>3</td>
+                  <td>1819-12-06</td>
+                  <td>1825-12-26</td>
+                </tr>
+                <tr>
+                  <td>R000047</td>
+                  <td>John Randolph</td>
+                  <td>sen</td>
+                  <td>4</td>
+                  <td>1825-12-26</td>
+                  <td>1827-03-03</td>
+                </tr>
+                <tr>
+                  <td>R000047</td>
+                  <td>John Randolph</td>
+                  <td>rep</td>
+                  <td>5</td>
+                  <td>1827-12-03</td>
+                  <td>1829-03-03</td>
+                </tr>
+                <tr>
+                  <td>R000047</td>
+                  <td>John Randolph</td>
+                  <td>rep</td>
+                  <td>6</td>
+                  <td>1833-12-02</td>
+                  <td>1835-03-03</td>
+                </tr>
+        </tbody>
+      </table>
+    </div>
+<!-- hack to avoid NA insertion in last line -->
+</div>
+</div>
+</figure>
+</div>
+</div>
+</section>
+</section>
+<section id="adding-cohorts-the-canonical-form" class="level2" data-number="5.2">
+<h2 data-number="5.2" class="anchored" data-anchor-id="adding-cohorts-the-canonical-form"><span class="header-section-number">5.2</span> Adding cohorts: The canonical form</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">OR</span> <span class="kw">REPLACE</span> <span class="kw">TABLE</span> date_dim <span class="kw">AS</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="kw">WITH</span> dates <span class="kw">AS</span> </span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>  (</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">SELECT</span> generate_series:<span class="ch">:date</span> <span class="kw">AS</span> <span class="dt">date</span></span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>    <span class="kw">FROM</span> generate_series(<span class="dt">DATE</span> <span class="st">'1770-01-01'</span>, </span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>                         <span class="dt">DATE</span> <span class="st">'2030-12-31'</span>,</span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>                         <span class="dt">INTERVAL</span> <span class="st">'1 day'</span>) )</span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="dt">date</span>, </span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>  strftime(<span class="dt">date</span>, <span class="st">'%B'</span>) <span class="kw">AS</span> month_name,</span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>  strftime(<span class="dt">date</span>, <span class="st">'%-d'</span>) <span class="kw">AS</span> day_of_month,</span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a>  <span class="dt">year</span>(<span class="dt">date</span>) <span class="kw">AS</span> <span class="dt">year</span></span>
+<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> dates;</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>date_dim <span class="ot">&lt;-</span> <span class="fu">tbl</span>(db, <span class="st">"date_dim"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>year_ends <span class="ot">&lt;-</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>  date_dim <span class="sc">|&gt;</span></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(month_name <span class="sc">==</span> <span class="st">'December'</span>, day_of_month <span class="sc">==</span> <span class="dv">31</span>) <span class="sc">|&gt;</span></span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(date)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="cohorts-considered-in-tanimura2021sql" class="level3" data-number="5.2.1">
+<h3 data-number="5.2.1" class="anchored" data-anchor-id="cohorts-considered-in-tanimura2021sql"><span class="header-section-number">5.2.1</span> Cohorts considered in <span class="citation" data-cites="tanimura2021sql">Tanimura (<a href="references.html#ref-tanimura2021sql" role="doc-biblioref">2021</a>)</span></h3>
+<p>There are several different cohorts uses in analyses in Chapter 4 of <span class="citation" data-cites="tanimura2021sql">Tanimura (<a href="references.html#ref-tanimura2021sql" role="doc-biblioref">2021</a>)</span>. Note that not all analyses involve cohorts. For example, pp.&nbsp;170–171.</p>
+<ul>
+<li><code>first_year</code></li>
+<li><code>first_century</code> (also called <code>cohort_century</code> or <code>century</code>)</li>
+<li><code>first_state</code></li>
+<li><code>gender</code></li>
+<li><code>first_state</code> and <code>gender</code></li>
+<li><code>term_type</code></li>
+<li><code>first_century</code> and <code>first_type</code></li>
+<li><code>date</code> (last day of the year) and <code>century</code> (<code>last_century</code>?)</li>
+</ul>
+<p>If you read <a href="original_sql.html" class="quarto-xref"><span>Chapter 2</span></a> carefully, you will see that any individual legislator is placed in no more than one cohort in any analysis. As such one particulaly clean (and clear) approach would create a table comprising the individual identifier (<code>id_bioguide</code>) and the cohort assignment for each individual. For example, the following code creates a <code>first_centuries</code> with cohort assignments for <code>first_century</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>first_centuries <span class="ot">&lt;-</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>  legislators_terms <span class="sc">|&gt;</span></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(id_bioguide) <span class="sc">|&gt;</span></span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">first_century =</span> <span class="fu">century</span>(<span class="fu">min</span>(term_start, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)),</span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>            <span class="at">.groups =</span> <span class="st">"drop"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="census-dates" class="level3" data-number="5.2.2">
+<h3 data-number="5.2.2" class="anchored" data-anchor-id="census-dates"><span class="header-section-number">5.2.2</span> Census dates</h3>
+<p>Why do we need to use census dates?</p>
+<p>One reason would seem to be to accounting for breaks in tenures. Is this intentional in all cases?</p>
+<p>Another reason would appear to relate to data collection strategies.</p>
+<p>Finally, is there something about discretizing the data on periods?</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>cohorts <span class="ot">&lt;-</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>  first_centuries <span class="sc">|&gt;</span></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">inner_join</span>(survival_data, <span class="at">by =</span> <span class="st">"id_bioguide"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">exit_date =</span> <span class="fu">coalesce</span>(exit_date, extract_date)) <span class="sc">|&gt;</span></span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(year_ends, </span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>             <span class="fu">join_by</span>(<span class="fu">between</span>(y<span class="sc">$</span>date, x<span class="sc">$</span>entry_date, x<span class="sc">$</span>exit_date))) <span class="sc">|&gt;</span></span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">period =</span> <span class="fu">coalesce</span>(<span class="fu">year</span>(<span class="fu">age</span>(date, entry_date)), <span class="dv">0</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(first_century, period) <span class="sc">|&gt;</span></span>
+<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">cohort_retained =</span> <span class="fu">n_distinct</span>(id_bioguide),</span>
+<span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a>            <span class="at">.groups =</span> <span class="st">"drop"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>cen_pct_retaineds <span class="ot">&lt;-</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>  cohorts <span class="sc">|&gt;</span></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(first_century) <span class="sc">|&gt;</span></span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">window_order</span>(period) <span class="sc">|&gt;</span></span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">cohort_size =</span> <span class="fu">first</span>(cohort_retained),</span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>         <span class="at">pct_retained =</span> cohort_retained <span class="sc">/</span> cohort_size) <span class="sc">|&gt;</span></span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">|&gt;</span></span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(first_century, period, cohort_size, cohort_retained,</span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a>         pct_retained)</span>
+<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a>cen_pct_retaineds <span class="sc">|&gt;</span></span>
+<span id="cb28-12"><a href="#cb28-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(first_century, period)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<!-- preamble start -->
+
+    <script>
+
+      function styleCell_zsyogqcopma3lunwsl7x(i, j, css_id) {
+          var table = document.getElementById("tinytable_zsyogqcopma3lunwsl7x");
+          var cell = table.rows[i]?.cells[j];  // Safe navigation to avoid errors
+          if (cell) {
+              console.log(`Styling cell at (${i}, ${j}) with class ${css_id}`);
+              cell.classList.add(css_id);
+          } else {
+              console.warn(`Cell at (${i}, ${j}) not found.`);
+          }
+      }
+      function insertSpanRow(i, colspan, content) {
+        var table = document.getElementById('tinytable_zsyogqcopma3lunwsl7x');
+        var newRow = table.insertRow(i);
+        var newCell = newRow.insertCell(0);
+        newCell.setAttribute("colspan", colspan);
+        // newCell.innerText = content;
+        // this may be unsafe, but innerText does not interpret <br>
+        newCell.innerHTML = content;
+      }
+      function spanCell_zsyogqcopma3lunwsl7x(i, j, rowspan, colspan) {
+        var table = document.getElementById("tinytable_zsyogqcopma3lunwsl7x");
+        const targetRow = table.rows[i];
+        const targetCell = targetRow.cells[j];
+        for (let r = 0; r < rowspan; r++) {
+          // Only start deleting cells to the right for the first row (r == 0)
+          if (r === 0) {
+            // Delete cells to the right of the target cell in the first row
+            for (let c = colspan - 1; c > 0; c--) {
+              if (table.rows[i + r].cells[j + c]) {
+                table.rows[i + r].deleteCell(j + c);
+              }
+            }
+          }
+          // For rows below the first, delete starting from the target column
+          if (r > 0) {
+            for (let c = colspan - 1; c >= 0; c--) {
+              if (table.rows[i + r] && table.rows[i + r].cells[j]) {
+                table.rows[i + r].deleteCell(j);
+              }
+            }
+          }
+        }
+        // Set rowspan and colspan of the target cell
+        targetCell.rowSpan = rowspan;
+        targetCell.colSpan = colspan;
+      }
+      // tinytable span after
+      window.addEventListener('load', function () {
+          var cellsToStyle = [
+            // tinytable style arrays after
+          { positions: [ { i: 10, j: 4 },  ], css_id: 'tinytable_css_w6g7qgayr6hlc7iwkt1g',}, 
+          { positions: [ { i: 0, j: 0 }, { i: 0, j: 2 }, { i: 0, j: 3 }, { i: 0, j: 1 },  ], css_id: 'tinytable_css_w32ucm1t3cq5j5ms8027',}, 
+          { positions: [ { i: 2, j: 0 }, { i: 4, j: 0 }, { i: 1, j: 0 }, { i: 6, j: 0 }, { i: 8, j: 0 }, { i: 5, j: 0 }, { i: 1, j: 2 }, { i: 3, j: 0 }, { i: 1, j: 1 }, { i: 2, j: 1 }, { i: 3, j: 1 }, { i: 4, j: 1 }, { i: 5, j: 1 }, { i: 6, j: 1 }, { i: 7, j: 1 }, { i: 8, j: 1 }, { i: 7, j: 0 }, { i: 1, j: 3 }, { i: 9, j: 0 }, { i: 3, j: 3 }, { i: 2, j: 2 }, { i: 3, j: 2 }, { i: 4, j: 2 }, { i: 5, j: 2 }, { i: 6, j: 2 }, { i: 7, j: 2 }, { i: 8, j: 2 }, { i: 9, j: 2 }, { i: 7, j: 3 }, { i: 9, j: 1 }, { i: 5, j: 3 }, { i: 2, j: 3 }, { i: 4, j: 3 }, { i: 9, j: 3 }, { i: 6, j: 3 }, { i: 8, j: 3 },  ], css_id: 'tinytable_css_r4c9wa9bbkstl2q398cb',}, 
+          { positions: [ { i: 0, j: 4 },  ], css_id: 'tinytable_css_hxwo363ods4fn490473q',}, 
+          { positions: [ { i: 1, j: 4 }, { i: 2, j: 4 }, { i: 3, j: 4 }, { i: 4, j: 4 }, { i: 5, j: 4 }, { i: 6, j: 4 }, { i: 7, j: 4 }, { i: 8, j: 4 }, { i: 9, j: 4 },  ], css_id: 'tinytable_css_grxdauc0rc3r40yu4agf',}, 
+          { positions: [ { i: 10, j: 2 }, { i: 10, j: 0 }, { i: 10, j: 1 }, { i: 10, j: 3 },  ], css_id: 'tinytable_css_beb7dttme8olwhrbtrs7',}, 
+          ];
+
+          // Loop over the arrays to style the cells
+          cellsToStyle.forEach(function (group) {
+              group.positions.forEach(function (cell) {
+                  styleCell_zsyogqcopma3lunwsl7x(cell.i, cell.j, group.css_id);
+              });
+          });
+      });
+    </script>
+
+    <style>
+      /* tinytable css entries after */
+      .table td.tinytable_css_w6g7qgayr6hlc7iwkt1g, .table th.tinytable_css_w6g7qgayr6hlc7iwkt1g { border-bottom: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.1em; }
+      .table td.tinytable_css_w32ucm1t3cq5j5ms8027, .table th.tinytable_css_w32ucm1t3cq5j5ms8027 { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; border-bottom: solid #d3d8dc 0.1em; padding-right: 0.1em; padding-bottom: 0em; }
+      .table td.tinytable_css_r4c9wa9bbkstl2q398cb, .table th.tinytable_css_r4c9wa9bbkstl2q398cb { padding-right: 0.1em; padding-bottom: 0em; }
+      .table td.tinytable_css_hxwo363ods4fn490473q, .table th.tinytable_css_hxwo363ods4fn490473q { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; border-bottom: solid #d3d8dc 0.1em; padding-bottom: 0em; }
+      .table td.tinytable_css_grxdauc0rc3r40yu4agf, .table th.tinytable_css_grxdauc0rc3r40yu4agf { padding-bottom: 0em; }
+      .table td.tinytable_css_beb7dttme8olwhrbtrs7, .table th.tinytable_css_beb7dttme8olwhrbtrs7 { border-bottom: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.1em; padding-right: 0.1em; }
+    </style>
+    <div class="container">
+      <table class="table table-borderless" id="tinytable_zsyogqcopma3lunwsl7x" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
+        <thead>
+        
+              <tr>
+                <th scope="col">first_century</th>
+                <th scope="col">period</th>
+                <th scope="col">cohort_size</th>
+                <th scope="col">cohort_retained</th>
+                <th scope="col">pct_retained</th>
+              </tr>
+        </thead>
+        
+        <tbody>
+                <tr>
+                  <td>18</td>
+                  <td>0</td>
+                  <td>368</td>
+                  <td>368</td>
+                  <td>1.0000000</td>
+                </tr>
+                <tr>
+                  <td>18</td>
+                  <td>1</td>
+                  <td>368</td>
+                  <td>363</td>
+                  <td>0.9864130</td>
+                </tr>
+                <tr>
+                  <td>18</td>
+                  <td>2</td>
+                  <td>368</td>
+                  <td>276</td>
+                  <td>0.7500000</td>
+                </tr>
+                <tr>
+                  <td>18</td>
+                  <td>3</td>
+                  <td>368</td>
+                  <td>268</td>
+                  <td>0.7282609</td>
+                </tr>
+                <tr>
+                  <td>18</td>
+                  <td>4</td>
+                  <td>368</td>
+                  <td>196</td>
+                  <td>0.5326087</td>
+                </tr>
+                <tr>
+                  <td>18</td>
+                  <td>5</td>
+                  <td>368</td>
+                  <td>190</td>
+                  <td>0.5163043</td>
+                </tr>
+                <tr>
+                  <td>18</td>
+                  <td>6</td>
+                  <td>368</td>
+                  <td>145</td>
+                  <td>0.3940217</td>
+                </tr>
+                <tr>
+                  <td>18</td>
+                  <td>7</td>
+                  <td>368</td>
+                  <td>144</td>
+                  <td>0.3913043</td>
+                </tr>
+                <tr>
+                  <td>18</td>
+                  <td>8</td>
+                  <td>368</td>
+                  <td>117</td>
+                  <td>0.3179348</td>
+                </tr>
+                <tr>
+                  <td>18</td>
+                  <td>9</td>
+                  <td>368</td>
+                  <td>112</td>
+                  <td>0.3043478</td>
+                </tr>
+        </tbody>
+      </table>
+    </div>
+<!-- hack to avoid NA insertion in last line -->
+</div>
+</div>
+
+
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list" style="display: none">
+<div id="ref-singer2003longitudinal" class="csl-entry" role="listitem">
+Singer, Judith D., and John B. Willett. 2003. <em>Applied Longitudinal Data Analysis: Modeling Change and Event Occurrence</em>. Oxford University PressNew York. <a href="https://doi.org/10.1093/acprof:oso/9780195152968.001.0001">https://doi.org/10.1093/acprof:oso/9780195152968.001.0001</a>.
+</div>
+<div id="ref-tanimura2021sql" class="csl-entry" role="listitem">
+Tanimura, C. 2021. <em>SQL for Data Analysis</em>. O’Reilly Media. <a href="https://books.google.com.au/books?id=ojhCEAAAQBAJ">https://books.google.com.au/books?id=ojhCEAAAQBAJ</a>.
+</div>
+</div>
+</section>
+</section>
+<section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes">
+<hr>
+<ol>
+<li id="fn1"><p>Most queries uses what I call a census-date approach that I discuss in <a href="#sec-census-date" class="quarto-xref"><span>Section 5.1.3</span></a>.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>The choice of <code>term_start</code> rather than <code>term_end</code> is an odd one that is justified by the notion that “we don’t need to know the specific dates of each term” because of a focus on “the share of legislators who survived in office for a decade or more after their first term started” <span class="citation" data-cites="tanimura2021sql">(<a href="references.html#ref-tanimura2021sql" role="doc-biblioref">Tanimura 2021, 154</a>)</span>. Of course, a two-term senator will serve for 12 years, but the tenure calculated in this way would be six years rather than 12, which would seem to be a serious error.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn3"><p>Things might be different for people born on 29 February.<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn4"><p>The <code>legislators_terms</code> data set ends before Pelosi’s term ending in January 2021. From that data set, it is not clear that Pelosi was elected to additional terms beginning in 2021 and 2023.<a href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn5"><p>According to <a href="https://en.wikipedia.org/wiki/Nancy_Pelosi#Electoral_history">Wikipedia</a>, the shifts from one district to another were due to redistricting, or the redrawing of electoral boundaries as population numbers changed.<a href="#fnref5" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./dbplyr.html" class="pagination-link" aria-label="Cohort using `dbplyr`">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Cohort using <code>dbplyr</code></span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./references.html" class="pagination-link" aria-label="References">
+        <span class="nav-page-text">References</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
