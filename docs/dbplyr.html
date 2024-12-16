@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>4&nbsp; Cohort using dbplyr – Cohort analysis</title>
+<title>4&nbsp; Cohorts using dbplyr – Cohort analysis</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -115,7 +115,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./dbplyr.html"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Cohort using <code>dbplyr</code></span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./dbplyr.html"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Cohorts using <code>dbplyr</code></span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -161,13 +161,19 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./dbplyr.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Cohort using <code>dbplyr</code></span></span></a>
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Cohorts using <code>dbplyr</code></span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./intermezzo.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Un intermezzo</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./revised.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Cohorts: Revised</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -213,7 +219,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title"><span id="sec-dbplyr" class="quarto-section-identifier"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Cohort using <code>dbplyr</code></span></span></h1>
+<h1 class="title"><span id="sec-dbplyr" class="quarto-section-identifier"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Cohorts using <code>dbplyr</code></span></span></h1>
 </div>
 
 
@@ -338,8 +344,8 @@ Table&nbsp;4.1: Sample of the <code>legislators</code> table
 
     <script>
 
-      function styleCell_er67djr0za7k1cotatvj(i, j, css_id) {
-          var table = document.getElementById("tinytable_er67djr0za7k1cotatvj");
+      function styleCell_ypwat4l3ecfdvkvh02pd(i, j, css_id) {
+          var table = document.getElementById("tinytable_ypwat4l3ecfdvkvh02pd");
           var cell = table.rows[i]?.cells[j];  // Safe navigation to avoid errors
           if (cell) {
               console.log(`Styling cell at (${i}, ${j}) with class ${css_id}`);
@@ -349,7 +355,7 @@ Table&nbsp;4.1: Sample of the <code>legislators</code> table
           }
       }
       function insertSpanRow(i, colspan, content) {
-        var table = document.getElementById('tinytable_er67djr0za7k1cotatvj');
+        var table = document.getElementById('tinytable_ypwat4l3ecfdvkvh02pd');
         var newRow = table.insertRow(i);
         var newCell = newRow.insertCell(0);
         newCell.setAttribute("colspan", colspan);
@@ -357,8 +363,8 @@ Table&nbsp;4.1: Sample of the <code>legislators</code> table
         // this may be unsafe, but innerText does not interpret <br>
         newCell.innerHTML = content;
       }
-      function spanCell_er67djr0za7k1cotatvj(i, j, rowspan, colspan) {
-        var table = document.getElementById("tinytable_er67djr0za7k1cotatvj");
+      function spanCell_ypwat4l3ecfdvkvh02pd(i, j, rowspan, colspan) {
+        var table = document.getElementById("tinytable_ypwat4l3ecfdvkvh02pd");
         const targetRow = table.rows[i];
         const targetCell = targetRow.cells[j];
         for (let r = 0; r < rowspan; r++) {
@@ -388,18 +394,18 @@ Table&nbsp;4.1: Sample of the <code>legislators</code> table
       window.addEventListener('load', function () {
           var cellsToStyle = [
             // tinytable style arrays after
-          { positions: [ { i: 0, j: 6 },  ], css_id: 'tinytable_css_yied8ybmewfz9bxfgsh2',}, 
-          { positions: [ { i: 19, j: 0 }, { i: 19, j: 2 }, { i: 19, j: 4 }, { i: 19, j: 1 }, { i: 19, j: 3 }, { i: 19, j: 5 },  ], css_id: 'tinytable_css_vxmax1cadre0y9y8miaf',}, 
-          { positions: [ { i: 0, j: 0 }, { i: 0, j: 2 }, { i: 0, j: 4 }, { i: 0, j: 1 }, { i: 0, j: 3 }, { i: 0, j: 5 },  ], css_id: 'tinytable_css_n37jk3k9vauq4atbc666',}, 
-          { positions: [ { i: 6, j: 0 }, { i: 3, j: 0 }, { i: 4, j: 0 }, { i: 5, j: 0 }, { i: 10, j: 0 }, { i: 11, j: 0 }, { i: 12, j: 0 }, { i: 13, j: 0 }, { i: 1, j: 0 }, { i: 2, j: 0 }, { i: 16, j: 0 }, { i: 17, j: 0 }, { i: 18, j: 0 }, { i: 12, j: 1 }, { i: 7, j: 0 }, { i: 8, j: 0 }, { i: 9, j: 0 }, { i: 3, j: 1 }, { i: 4, j: 1 }, { i: 5, j: 1 }, { i: 6, j: 1 }, { i: 14, j: 0 }, { i: 15, j: 0 }, { i: 9, j: 1 }, { i: 10, j: 1 }, { i: 11, j: 1 }, { i: 5, j: 2 }, { i: 13, j: 1 }, { i: 1, j: 1 }, { i: 2, j: 1 }, { i: 16, j: 1 }, { i: 17, j: 1 }, { i: 18, j: 1 }, { i: 12, j: 2 }, { i: 7, j: 1 }, { i: 8, j: 1 }, { i: 2, j: 2 }, { i: 3, j: 2 }, { i: 4, j: 2 }, { i: 18, j: 2 }, { i: 6, j: 2 }, { i: 14, j: 1 }, { i: 15, j: 1 }, { i: 9, j: 2 }, { i: 10, j: 2 }, { i: 11, j: 2 }, { i: 5, j: 3 }, { i: 13, j: 2 }, { i: 1, j: 2 }, { i: 15, j: 2 }, { i: 16, j: 2 }, { i: 17, j: 2 }, { i: 11, j: 3 }, { i: 12, j: 3 }, { i: 7, j: 2 }, { i: 8, j: 2 }, { i: 2, j: 3 }, { i: 3, j: 3 }, { i: 4, j: 3 }, { i: 18, j: 3 }, { i: 6, j: 3 }, { i: 14, j: 2 }, { i: 8, j: 3 }, { i: 9, j: 3 }, { i: 10, j: 3 }, { i: 4, j: 4 }, { i: 5, j: 4 }, { i: 13, j: 3 }, { i: 1, j: 3 }, { i: 15, j: 3 }, { i: 16, j: 3 }, { i: 17, j: 3 }, { i: 11, j: 4 }, { i: 12, j: 4 }, { i: 7, j: 3 }, { i: 1, j: 4 }, { i: 2, j: 4 }, { i: 3, j: 4 }, { i: 17, j: 4 }, { i: 18, j: 4 }, { i: 6, j: 4 }, { i: 14, j: 3 }, { i: 8, j: 4 }, { i: 9, j: 4 }, { i: 10, j: 4 }, { i: 4, j: 5 }, { i: 5, j: 5 }, { i: 13, j: 4 }, { i: 14, j: 4 }, { i: 15, j: 4 }, { i: 16, j: 4 }, { i: 10, j: 5 }, { i: 11, j: 5 }, { i: 12, j: 5 }, { i: 7, j: 4 }, { i: 1, j: 5 }, { i: 2, j: 5 }, { i: 3, j: 5 }, { i: 17, j: 5 }, { i: 18, j: 5 }, { i: 6, j: 5 }, { i: 7, j: 5 }, { i: 8, j: 5 }, { i: 9, j: 5 }, { i: 14, j: 5 }, { i: 15, j: 5 }, { i: 16, j: 5 }, { i: 13, j: 5 },  ], css_id: 'tinytable_css_mkjxfm7b3h7r0z5kzllk',}, 
-          { positions: [ { i: 1, j: 6 }, { i: 2, j: 6 }, { i: 3, j: 6 }, { i: 4, j: 6 }, { i: 5, j: 6 }, { i: 6, j: 6 }, { i: 7, j: 6 }, { i: 8, j: 6 }, { i: 9, j: 6 }, { i: 10, j: 6 }, { i: 11, j: 6 }, { i: 12, j: 6 }, { i: 13, j: 6 }, { i: 14, j: 6 }, { i: 15, j: 6 }, { i: 16, j: 6 }, { i: 17, j: 6 }, { i: 18, j: 6 },  ], css_id: 'tinytable_css_cmqfkn1o8chfvspkhxaz',}, 
-          { positions: [ { i: 19, j: 6 },  ], css_id: 'tinytable_css_87aobww866z68aitof4a',}, 
+          { positions: [ { i: 0, j: 0 }, { i: 0, j: 2 }, { i: 0, j: 4 }, { i: 0, j: 1 }, { i: 0, j: 3 }, { i: 0, j: 5 },  ], css_id: 'tinytable_css_y1tohbhff95y3ojykn56',}, 
+          { positions: [ { i: 6, j: 0 }, { i: 3, j: 0 }, { i: 4, j: 0 }, { i: 5, j: 0 }, { i: 10, j: 0 }, { i: 11, j: 0 }, { i: 12, j: 0 }, { i: 13, j: 0 }, { i: 1, j: 0 }, { i: 2, j: 0 }, { i: 16, j: 0 }, { i: 17, j: 0 }, { i: 18, j: 0 }, { i: 12, j: 1 }, { i: 7, j: 0 }, { i: 8, j: 0 }, { i: 9, j: 0 }, { i: 3, j: 1 }, { i: 4, j: 1 }, { i: 5, j: 1 }, { i: 6, j: 1 }, { i: 14, j: 0 }, { i: 15, j: 0 }, { i: 9, j: 1 }, { i: 10, j: 1 }, { i: 11, j: 1 }, { i: 5, j: 2 }, { i: 13, j: 1 }, { i: 1, j: 1 }, { i: 2, j: 1 }, { i: 16, j: 1 }, { i: 17, j: 1 }, { i: 18, j: 1 }, { i: 12, j: 2 }, { i: 7, j: 1 }, { i: 8, j: 1 }, { i: 2, j: 2 }, { i: 3, j: 2 }, { i: 4, j: 2 }, { i: 18, j: 2 }, { i: 6, j: 2 }, { i: 14, j: 1 }, { i: 15, j: 1 }, { i: 9, j: 2 }, { i: 10, j: 2 }, { i: 11, j: 2 }, { i: 5, j: 3 }, { i: 13, j: 2 }, { i: 1, j: 2 }, { i: 15, j: 2 }, { i: 16, j: 2 }, { i: 17, j: 2 }, { i: 11, j: 3 }, { i: 12, j: 3 }, { i: 7, j: 2 }, { i: 8, j: 2 }, { i: 2, j: 3 }, { i: 3, j: 3 }, { i: 4, j: 3 }, { i: 18, j: 3 }, { i: 6, j: 3 }, { i: 14, j: 2 }, { i: 8, j: 3 }, { i: 9, j: 3 }, { i: 10, j: 3 }, { i: 4, j: 4 }, { i: 5, j: 4 }, { i: 13, j: 3 }, { i: 1, j: 3 }, { i: 15, j: 3 }, { i: 16, j: 3 }, { i: 17, j: 3 }, { i: 11, j: 4 }, { i: 12, j: 4 }, { i: 7, j: 3 }, { i: 1, j: 4 }, { i: 2, j: 4 }, { i: 3, j: 4 }, { i: 17, j: 4 }, { i: 18, j: 4 }, { i: 6, j: 4 }, { i: 14, j: 3 }, { i: 8, j: 4 }, { i: 9, j: 4 }, { i: 10, j: 4 }, { i: 4, j: 5 }, { i: 5, j: 5 }, { i: 13, j: 4 }, { i: 14, j: 4 }, { i: 15, j: 4 }, { i: 16, j: 4 }, { i: 10, j: 5 }, { i: 11, j: 5 }, { i: 12, j: 5 }, { i: 7, j: 4 }, { i: 1, j: 5 }, { i: 2, j: 5 }, { i: 3, j: 5 }, { i: 17, j: 5 }, { i: 18, j: 5 }, { i: 6, j: 5 }, { i: 7, j: 5 }, { i: 8, j: 5 }, { i: 9, j: 5 }, { i: 14, j: 5 }, { i: 15, j: 5 }, { i: 16, j: 5 }, { i: 13, j: 5 },  ], css_id: 'tinytable_css_i762fw3ans4kaknbfa2v',}, 
+          { positions: [ { i: 1, j: 6 }, { i: 2, j: 6 }, { i: 3, j: 6 }, { i: 4, j: 6 }, { i: 5, j: 6 }, { i: 6, j: 6 }, { i: 7, j: 6 }, { i: 8, j: 6 }, { i: 9, j: 6 }, { i: 10, j: 6 }, { i: 11, j: 6 }, { i: 12, j: 6 }, { i: 13, j: 6 }, { i: 14, j: 6 }, { i: 15, j: 6 }, { i: 16, j: 6 }, { i: 17, j: 6 }, { i: 18, j: 6 },  ], css_id: 'tinytable_css_d44xuxvivydx0usggzd9',}, 
+          { positions: [ { i: 19, j: 0 }, { i: 19, j: 2 }, { i: 19, j: 4 }, { i: 19, j: 1 }, { i: 19, j: 3 }, { i: 19, j: 5 },  ], css_id: 'tinytable_css_asttlv2sg748y2o05kf1',}, 
+          { positions: [ { i: 19, j: 6 },  ], css_id: 'tinytable_css_9jdp4u5z9umx2tq2mpwj',}, 
+          { positions: [ { i: 0, j: 6 },  ], css_id: 'tinytable_css_39wmlux3cpnms0ja2qgx',}, 
           ];
 
           // Loop over the arrays to style the cells
           cellsToStyle.forEach(function (group) {
               group.positions.forEach(function (cell) {
-                  styleCell_er67djr0za7k1cotatvj(cell.i, cell.j, group.css_id);
+                  styleCell_ypwat4l3ecfdvkvh02pd(cell.i, cell.j, group.css_id);
               });
           });
       });
@@ -407,15 +413,15 @@ Table&nbsp;4.1: Sample of the <code>legislators</code> table
 
     <style>
       /* tinytable css entries after */
-      .table td.tinytable_css_yied8ybmewfz9bxfgsh2, .table th.tinytable_css_yied8ybmewfz9bxfgsh2 { font-size: 0.8em; border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; border-bottom: solid #d3d8dc 0.1em; padding-bottom: 0em; }
-      .table td.tinytable_css_vxmax1cadre0y9y8miaf, .table th.tinytable_css_vxmax1cadre0y9y8miaf { font-size: 0.8em; border-bottom: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.1em; padding-right: 0.1em; }
-      .table td.tinytable_css_n37jk3k9vauq4atbc666, .table th.tinytable_css_n37jk3k9vauq4atbc666 { font-size: 0.8em; border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; border-bottom: solid #d3d8dc 0.1em; padding-right: 0.1em; padding-bottom: 0em; }
-      .table td.tinytable_css_mkjxfm7b3h7r0z5kzllk, .table th.tinytable_css_mkjxfm7b3h7r0z5kzllk { font-size: 0.8em; padding-right: 0.1em; padding-bottom: 0em; }
-      .table td.tinytable_css_cmqfkn1o8chfvspkhxaz, .table th.tinytable_css_cmqfkn1o8chfvspkhxaz { font-size: 0.8em; padding-bottom: 0em; }
-      .table td.tinytable_css_87aobww866z68aitof4a, .table th.tinytable_css_87aobww866z68aitof4a { font-size: 0.8em; border-bottom: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.1em; }
+      .table td.tinytable_css_y1tohbhff95y3ojykn56, .table th.tinytable_css_y1tohbhff95y3ojykn56 { font-size: 0.8em; border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; border-bottom: solid #d3d8dc 0.1em; padding-right: 0.1em; padding-bottom: 0em; }
+      .table td.tinytable_css_i762fw3ans4kaknbfa2v, .table th.tinytable_css_i762fw3ans4kaknbfa2v { font-size: 0.8em; padding-right: 0.1em; padding-bottom: 0em; }
+      .table td.tinytable_css_d44xuxvivydx0usggzd9, .table th.tinytable_css_d44xuxvivydx0usggzd9 { font-size: 0.8em; padding-bottom: 0em; }
+      .table td.tinytable_css_asttlv2sg748y2o05kf1, .table th.tinytable_css_asttlv2sg748y2o05kf1 { font-size: 0.8em; border-bottom: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.1em; padding-right: 0.1em; }
+      .table td.tinytable_css_9jdp4u5z9umx2tq2mpwj, .table th.tinytable_css_9jdp4u5z9umx2tq2mpwj { font-size: 0.8em; border-bottom: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.1em; }
+      .table td.tinytable_css_39wmlux3cpnms0ja2qgx, .table th.tinytable_css_39wmlux3cpnms0ja2qgx { font-size: 0.8em; border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; border-bottom: solid #d3d8dc 0.1em; padding-bottom: 0em; }
     </style>
     <div class="container">
-      <table class="table table-borderless" id="tinytable_er67djr0za7k1cotatvj" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
+      <table class="table table-borderless" id="tinytable_ypwat4l3ecfdvkvh02pd" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
         <thead>
         
               <tr>
@@ -622,8 +628,8 @@ Table&nbsp;4.2: Sample of the <code>legislators_terms</code> table
 
     <script>
 
-      function styleCell_5w9bmfsg658bo9ri2xvf(i, j, css_id) {
-          var table = document.getElementById("tinytable_5w9bmfsg658bo9ri2xvf");
+      function styleCell_gvjwbuby4n92ccabstwf(i, j, css_id) {
+          var table = document.getElementById("tinytable_gvjwbuby4n92ccabstwf");
           var cell = table.rows[i]?.cells[j];  // Safe navigation to avoid errors
           if (cell) {
               console.log(`Styling cell at (${i}, ${j}) with class ${css_id}`);
@@ -633,7 +639,7 @@ Table&nbsp;4.2: Sample of the <code>legislators_terms</code> table
           }
       }
       function insertSpanRow(i, colspan, content) {
-        var table = document.getElementById('tinytable_5w9bmfsg658bo9ri2xvf');
+        var table = document.getElementById('tinytable_gvjwbuby4n92ccabstwf');
         var newRow = table.insertRow(i);
         var newCell = newRow.insertCell(0);
         newCell.setAttribute("colspan", colspan);
@@ -641,8 +647,8 @@ Table&nbsp;4.2: Sample of the <code>legislators_terms</code> table
         // this may be unsafe, but innerText does not interpret <br>
         newCell.innerHTML = content;
       }
-      function spanCell_5w9bmfsg658bo9ri2xvf(i, j, rowspan, colspan) {
-        var table = document.getElementById("tinytable_5w9bmfsg658bo9ri2xvf");
+      function spanCell_gvjwbuby4n92ccabstwf(i, j, rowspan, colspan) {
+        var table = document.getElementById("tinytable_gvjwbuby4n92ccabstwf");
         const targetRow = table.rows[i];
         const targetCell = targetRow.cells[j];
         for (let r = 0; r < rowspan; r++) {
@@ -672,18 +678,18 @@ Table&nbsp;4.2: Sample of the <code>legislators_terms</code> table
       window.addEventListener('load', function () {
           var cellsToStyle = [
             // tinytable style arrays after
-          { positions: [ { i: 0, j: 0 }, { i: 0, j: 2 }, { i: 0, j: 4 }, { i: 0, j: 6 }, { i: 0, j: 3 }, { i: 0, j: 5 }, { i: 0, j: 1 },  ], css_id: 'tinytable_css_x998fxfp79tu3ctoyt9j',}, 
-          { positions: [ { i: 19, j: 5 }, { i: 19, j: 1 }, { i: 19, j: 3 }, { i: 19, j: 0 }, { i: 19, j: 2 }, { i: 19, j: 4 }, { i: 19, j: 6 },  ], css_id: 'tinytable_css_tccbn7fstu9dbip7phuw',}, 
-          { positions: [ { i: 0, j: 7 },  ], css_id: 'tinytable_css_sfhf2755rrr92hpd77vs',}, 
-          { positions: [ { i: 6, j: 0 }, { i: 4, j: 0 }, { i: 5, j: 0 }, { i: 10, j: 0 }, { i: 11, j: 0 }, { i: 12, j: 0 }, { i: 13, j: 0 }, { i: 1, j: 0 }, { i: 2, j: 0 }, { i: 3, j: 0 }, { i: 17, j: 0 }, { i: 18, j: 0 }, { i: 12, j: 1 }, { i: 7, j: 0 }, { i: 8, j: 0 }, { i: 9, j: 0 }, { i: 3, j: 1 }, { i: 4, j: 1 }, { i: 5, j: 1 }, { i: 6, j: 1 }, { i: 14, j: 0 }, { i: 15, j: 0 }, { i: 16, j: 0 }, { i: 10, j: 1 }, { i: 11, j: 1 }, { i: 5, j: 2 }, { i: 13, j: 1 }, { i: 1, j: 1 }, { i: 2, j: 1 }, { i: 16, j: 1 }, { i: 17, j: 1 }, { i: 18, j: 1 }, { i: 12, j: 2 }, { i: 7, j: 1 }, { i: 8, j: 1 }, { i: 9, j: 1 }, { i: 3, j: 2 }, { i: 4, j: 2 }, { i: 18, j: 2 }, { i: 6, j: 2 }, { i: 14, j: 1 }, { i: 15, j: 1 }, { i: 9, j: 2 }, { i: 10, j: 2 }, { i: 11, j: 2 }, { i: 5, j: 3 }, { i: 13, j: 2 }, { i: 1, j: 2 }, { i: 2, j: 2 }, { i: 16, j: 2 }, { i: 17, j: 2 }, { i: 11, j: 3 }, { i: 12, j: 3 }, { i: 7, j: 2 }, { i: 8, j: 2 }, { i: 2, j: 3 }, { i: 3, j: 3 }, { i: 4, j: 3 }, { i: 18, j: 3 }, { i: 6, j: 3 }, { i: 14, j: 2 }, { i: 15, j: 2 }, { i: 9, j: 3 }, { i: 10, j: 3 }, { i: 4, j: 4 }, { i: 5, j: 4 }, { i: 13, j: 3 }, { i: 1, j: 3 }, { i: 15, j: 3 }, { i: 16, j: 3 }, { i: 17, j: 3 }, { i: 11, j: 4 }, { i: 12, j: 4 }, { i: 7, j: 3 }, { i: 8, j: 3 }, { i: 2, j: 4 }, { i: 3, j: 4 }, { i: 17, j: 4 }, { i: 18, j: 4 }, { i: 6, j: 4 }, { i: 14, j: 3 }, { i: 8, j: 4 }, { i: 9, j: 4 }, { i: 10, j: 4 }, { i: 4, j: 5 }, { i: 5, j: 5 }, { i: 13, j: 4 }, { i: 1, j: 4 }, { i: 15, j: 4 }, { i: 16, j: 4 }, { i: 10, j: 5 }, { i: 11, j: 5 }, { i: 12, j: 5 }, { i: 7, j: 4 }, { i: 1, j: 5 }, { i: 2, j: 5 }, { i: 3, j: 5 }, { i: 17, j: 5 }, { i: 18, j: 5 }, { i: 6, j: 5 }, { i: 14, j: 4 }, { i: 8, j: 5 }, { i: 9, j: 5 }, { i: 3, j: 6 }, { i: 4, j: 6 }, { i: 5, j: 6 }, { i: 13, j: 5 }, { i: 14, j: 5 }, { i: 15, j: 5 }, { i: 16, j: 5 }, { i: 10, j: 6 }, { i: 11, j: 6 }, { i: 12, j: 6 }, { i: 7, j: 5 }, { i: 1, j: 6 }, { i: 2, j: 6 }, { i: 16, j: 6 }, { i: 17, j: 6 }, { i: 18, j: 6 }, { i: 6, j: 6 }, { i: 7, j: 6 }, { i: 8, j: 6 }, { i: 9, j: 6 }, { i: 14, j: 6 }, { i: 15, j: 6 }, { i: 13, j: 6 },  ], css_id: 'tinytable_css_q4vbro70s1udr3j098i7',}, 
-          { positions: [ { i: 19, j: 7 },  ], css_id: 'tinytable_css_lj4vglgs8pjoi6esq0hi',}, 
-          { positions: [ { i: 1, j: 7 }, { i: 2, j: 7 }, { i: 3, j: 7 }, { i: 4, j: 7 }, { i: 5, j: 7 }, { i: 6, j: 7 }, { i: 7, j: 7 }, { i: 8, j: 7 }, { i: 9, j: 7 }, { i: 10, j: 7 }, { i: 11, j: 7 }, { i: 12, j: 7 }, { i: 13, j: 7 }, { i: 14, j: 7 }, { i: 15, j: 7 }, { i: 16, j: 7 }, { i: 17, j: 7 }, { i: 18, j: 7 },  ], css_id: 'tinytable_css_avzsrzsn20t48b8rjru5',}, 
+          { positions: [ { i: 0, j: 0 }, { i: 0, j: 2 }, { i: 0, j: 4 }, { i: 0, j: 6 }, { i: 0, j: 3 }, { i: 0, j: 5 }, { i: 0, j: 1 },  ], css_id: 'tinytable_css_r20aeih73fm4yh4pfrix',}, 
+          { positions: [ { i: 19, j: 7 },  ], css_id: 'tinytable_css_pgw6ll5msy7mk9qi0qsj',}, 
+          { positions: [ { i: 1, j: 7 }, { i: 2, j: 7 }, { i: 3, j: 7 }, { i: 4, j: 7 }, { i: 5, j: 7 }, { i: 6, j: 7 }, { i: 7, j: 7 }, { i: 8, j: 7 }, { i: 9, j: 7 }, { i: 10, j: 7 }, { i: 11, j: 7 }, { i: 12, j: 7 }, { i: 13, j: 7 }, { i: 14, j: 7 }, { i: 15, j: 7 }, { i: 16, j: 7 }, { i: 17, j: 7 }, { i: 18, j: 7 },  ], css_id: 'tinytable_css_mig4ct21opsk8qxab3sh',}, 
+          { positions: [ { i: 6, j: 0 }, { i: 4, j: 0 }, { i: 5, j: 0 }, { i: 10, j: 0 }, { i: 11, j: 0 }, { i: 12, j: 0 }, { i: 13, j: 0 }, { i: 1, j: 0 }, { i: 2, j: 0 }, { i: 3, j: 0 }, { i: 17, j: 0 }, { i: 18, j: 0 }, { i: 12, j: 1 }, { i: 7, j: 0 }, { i: 8, j: 0 }, { i: 9, j: 0 }, { i: 3, j: 1 }, { i: 4, j: 1 }, { i: 5, j: 1 }, { i: 6, j: 1 }, { i: 14, j: 0 }, { i: 15, j: 0 }, { i: 16, j: 0 }, { i: 10, j: 1 }, { i: 11, j: 1 }, { i: 5, j: 2 }, { i: 13, j: 1 }, { i: 1, j: 1 }, { i: 2, j: 1 }, { i: 16, j: 1 }, { i: 17, j: 1 }, { i: 18, j: 1 }, { i: 12, j: 2 }, { i: 7, j: 1 }, { i: 8, j: 1 }, { i: 9, j: 1 }, { i: 3, j: 2 }, { i: 4, j: 2 }, { i: 18, j: 2 }, { i: 6, j: 2 }, { i: 14, j: 1 }, { i: 15, j: 1 }, { i: 9, j: 2 }, { i: 10, j: 2 }, { i: 11, j: 2 }, { i: 5, j: 3 }, { i: 13, j: 2 }, { i: 1, j: 2 }, { i: 2, j: 2 }, { i: 16, j: 2 }, { i: 17, j: 2 }, { i: 11, j: 3 }, { i: 12, j: 3 }, { i: 7, j: 2 }, { i: 8, j: 2 }, { i: 2, j: 3 }, { i: 3, j: 3 }, { i: 4, j: 3 }, { i: 18, j: 3 }, { i: 6, j: 3 }, { i: 14, j: 2 }, { i: 15, j: 2 }, { i: 9, j: 3 }, { i: 10, j: 3 }, { i: 4, j: 4 }, { i: 5, j: 4 }, { i: 13, j: 3 }, { i: 1, j: 3 }, { i: 15, j: 3 }, { i: 16, j: 3 }, { i: 17, j: 3 }, { i: 11, j: 4 }, { i: 12, j: 4 }, { i: 7, j: 3 }, { i: 8, j: 3 }, { i: 2, j: 4 }, { i: 3, j: 4 }, { i: 17, j: 4 }, { i: 18, j: 4 }, { i: 6, j: 4 }, { i: 14, j: 3 }, { i: 8, j: 4 }, { i: 9, j: 4 }, { i: 10, j: 4 }, { i: 4, j: 5 }, { i: 5, j: 5 }, { i: 13, j: 4 }, { i: 1, j: 4 }, { i: 15, j: 4 }, { i: 16, j: 4 }, { i: 10, j: 5 }, { i: 11, j: 5 }, { i: 12, j: 5 }, { i: 7, j: 4 }, { i: 1, j: 5 }, { i: 2, j: 5 }, { i: 3, j: 5 }, { i: 17, j: 5 }, { i: 18, j: 5 }, { i: 6, j: 5 }, { i: 14, j: 4 }, { i: 8, j: 5 }, { i: 9, j: 5 }, { i: 3, j: 6 }, { i: 4, j: 6 }, { i: 5, j: 6 }, { i: 13, j: 5 }, { i: 14, j: 5 }, { i: 15, j: 5 }, { i: 16, j: 5 }, { i: 10, j: 6 }, { i: 11, j: 6 }, { i: 12, j: 6 }, { i: 7, j: 5 }, { i: 1, j: 6 }, { i: 2, j: 6 }, { i: 16, j: 6 }, { i: 17, j: 6 }, { i: 18, j: 6 }, { i: 6, j: 6 }, { i: 7, j: 6 }, { i: 8, j: 6 }, { i: 9, j: 6 }, { i: 14, j: 6 }, { i: 15, j: 6 }, { i: 13, j: 6 },  ], css_id: 'tinytable_css_l194gcarc09qiy8re3ap',}, 
+          { positions: [ { i: 0, j: 7 },  ], css_id: 'tinytable_css_ib18eegce8yuybf5inck',}, 
+          { positions: [ { i: 19, j: 5 }, { i: 19, j: 1 }, { i: 19, j: 3 }, { i: 19, j: 0 }, { i: 19, j: 2 }, { i: 19, j: 4 }, { i: 19, j: 6 },  ], css_id: 'tinytable_css_bwbni5anwcnsscfl1rn1',}, 
           ];
 
           // Loop over the arrays to style the cells
           cellsToStyle.forEach(function (group) {
               group.positions.forEach(function (cell) {
-                  styleCell_5w9bmfsg658bo9ri2xvf(cell.i, cell.j, group.css_id);
+                  styleCell_gvjwbuby4n92ccabstwf(cell.i, cell.j, group.css_id);
               });
           });
       });
@@ -691,15 +697,15 @@ Table&nbsp;4.2: Sample of the <code>legislators_terms</code> table
 
     <style>
       /* tinytable css entries after */
-      .table td.tinytable_css_x998fxfp79tu3ctoyt9j, .table th.tinytable_css_x998fxfp79tu3ctoyt9j { font-size: 0.8em; border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; border-bottom: solid #d3d8dc 0.1em; padding-right: 0.1em; padding-bottom: 0em; }
-      .table td.tinytable_css_tccbn7fstu9dbip7phuw, .table th.tinytable_css_tccbn7fstu9dbip7phuw { font-size: 0.8em; border-bottom: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.1em; padding-right: 0.1em; }
-      .table td.tinytable_css_sfhf2755rrr92hpd77vs, .table th.tinytable_css_sfhf2755rrr92hpd77vs { font-size: 0.8em; border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; border-bottom: solid #d3d8dc 0.1em; padding-bottom: 0em; }
-      .table td.tinytable_css_q4vbro70s1udr3j098i7, .table th.tinytable_css_q4vbro70s1udr3j098i7 { font-size: 0.8em; padding-right: 0.1em; padding-bottom: 0em; }
-      .table td.tinytable_css_lj4vglgs8pjoi6esq0hi, .table th.tinytable_css_lj4vglgs8pjoi6esq0hi { font-size: 0.8em; border-bottom: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.1em; }
-      .table td.tinytable_css_avzsrzsn20t48b8rjru5, .table th.tinytable_css_avzsrzsn20t48b8rjru5 { font-size: 0.8em; padding-bottom: 0em; }
+      .table td.tinytable_css_r20aeih73fm4yh4pfrix, .table th.tinytable_css_r20aeih73fm4yh4pfrix { font-size: 0.8em; border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; border-bottom: solid #d3d8dc 0.1em; padding-right: 0.1em; padding-bottom: 0em; }
+      .table td.tinytable_css_pgw6ll5msy7mk9qi0qsj, .table th.tinytable_css_pgw6ll5msy7mk9qi0qsj { font-size: 0.8em; border-bottom: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.1em; }
+      .table td.tinytable_css_mig4ct21opsk8qxab3sh, .table th.tinytable_css_mig4ct21opsk8qxab3sh { font-size: 0.8em; padding-bottom: 0em; }
+      .table td.tinytable_css_l194gcarc09qiy8re3ap, .table th.tinytable_css_l194gcarc09qiy8re3ap { font-size: 0.8em; padding-right: 0.1em; padding-bottom: 0em; }
+      .table td.tinytable_css_ib18eegce8yuybf5inck, .table th.tinytable_css_ib18eegce8yuybf5inck { font-size: 0.8em; border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; border-bottom: solid #d3d8dc 0.1em; padding-bottom: 0em; }
+      .table td.tinytable_css_bwbni5anwcnsscfl1rn1, .table th.tinytable_css_bwbni5anwcnsscfl1rn1 { font-size: 0.8em; border-bottom: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.1em; padding-right: 0.1em; }
     </style>
     <div class="container">
-      <table class="table table-borderless" id="tinytable_5w9bmfsg658bo9ri2xvf" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
+      <table class="table table-borderless" id="tinytable_gvjwbuby4n92ccabstwf" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
         <thead>
         
               <tr>
@@ -951,8 +957,8 @@ Converting code to <code>dbplyr</code>
 
     <script>
 
-      function styleCell_ryyd4l39nkhqpejvac8y(i, j, css_id) {
-          var table = document.getElementById("tinytable_ryyd4l39nkhqpejvac8y");
+      function styleCell_pgvxlq2g0h63z5z8c4te(i, j, css_id) {
+          var table = document.getElementById("tinytable_pgvxlq2g0h63z5z8c4te");
           var cell = table.rows[i]?.cells[j];  // Safe navigation to avoid errors
           if (cell) {
               console.log(`Styling cell at (${i}, ${j}) with class ${css_id}`);
@@ -962,7 +968,7 @@ Converting code to <code>dbplyr</code>
           }
       }
       function insertSpanRow(i, colspan, content) {
-        var table = document.getElementById('tinytable_ryyd4l39nkhqpejvac8y');
+        var table = document.getElementById('tinytable_pgvxlq2g0h63z5z8c4te');
         var newRow = table.insertRow(i);
         var newCell = newRow.insertCell(0);
         newCell.setAttribute("colspan", colspan);
@@ -970,8 +976,8 @@ Converting code to <code>dbplyr</code>
         // this may be unsafe, but innerText does not interpret <br>
         newCell.innerHTML = content;
       }
-      function spanCell_ryyd4l39nkhqpejvac8y(i, j, rowspan, colspan) {
-        var table = document.getElementById("tinytable_ryyd4l39nkhqpejvac8y");
+      function spanCell_pgvxlq2g0h63z5z8c4te(i, j, rowspan, colspan) {
+        var table = document.getElementById("tinytable_pgvxlq2g0h63z5z8c4te");
         const targetRow = table.rows[i];
         const targetCell = targetRow.cells[j];
         for (let r = 0; r < rowspan; r++) {
@@ -1001,14 +1007,14 @@ Converting code to <code>dbplyr</code>
       window.addEventListener('load', function () {
           var cellsToStyle = [
             // tinytable style arrays after
-          { positions: [ { i: 0, j: 0 }, { i: 0, j: 1 },  ], css_id: 'tinytable_css_l3bx6t1ajzqy5975jegt',}, 
-          { positions: [ { i: 4, j: 0 }, { i: 4, j: 1 },  ], css_id: 'tinytable_css_f4lgq9y2k87wmnqdi1xj',}, 
+          { positions: [ { i: 4, j: 0 }, { i: 4, j: 1 },  ], css_id: 'tinytable_css_w49wbt06s6g91ixqazs3',}, 
+          { positions: [ { i: 0, j: 0 }, { i: 0, j: 1 },  ], css_id: 'tinytable_css_12pbmb6h4du22v1vgdr6',}, 
           ];
 
           // Loop over the arrays to style the cells
           cellsToStyle.forEach(function (group) {
               group.positions.forEach(function (cell) {
-                  styleCell_ryyd4l39nkhqpejvac8y(cell.i, cell.j, group.css_id);
+                  styleCell_pgvxlq2g0h63z5z8c4te(cell.i, cell.j, group.css_id);
               });
           });
       });
@@ -1016,11 +1022,11 @@ Converting code to <code>dbplyr</code>
 
     <style>
       /* tinytable css entries after */
-      .table td.tinytable_css_l3bx6t1ajzqy5975jegt, .table th.tinytable_css_l3bx6t1ajzqy5975jegt { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
-      .table td.tinytable_css_f4lgq9y2k87wmnqdi1xj, .table th.tinytable_css_f4lgq9y2k87wmnqdi1xj { border-bottom: solid #d3d8dc 0.1em; }
+      .table td.tinytable_css_w49wbt06s6g91ixqazs3, .table th.tinytable_css_w49wbt06s6g91ixqazs3 { border-bottom: solid #d3d8dc 0.1em; }
+      .table td.tinytable_css_12pbmb6h4du22v1vgdr6, .table th.tinytable_css_12pbmb6h4du22v1vgdr6 { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
     </style>
     <div class="container">
-      <table class="table table-borderless" id="tinytable_ryyd4l39nkhqpejvac8y" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
+      <table class="table table-borderless" id="tinytable_pgvxlq2g0h63z5z8c4te" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
         <thead>
         
               <tr>
@@ -1031,20 +1037,20 @@ Converting code to <code>dbplyr</code>
         
         <tbody>
                 <tr>
-                  <td>T000464</td>
-                  <td>2007-01-04</td>
+                  <td>C000127</td>
+                  <td>1993-01-05</td>
                 </tr>
                 <tr>
-                  <td>W000802</td>
-                  <td>2007-01-04</td>
+                  <td>C000174</td>
+                  <td>1983-01-03</td>
                 </tr>
                 <tr>
-                  <td>M001176</td>
-                  <td>2009-01-06</td>
+                  <td>B001248</td>
+                  <td>2003-01-07</td>
                 </tr>
                 <tr>
-                  <td>R000584</td>
-                  <td>2009-01-06</td>
+                  <td>C001072</td>
+                  <td>2008-03-13</td>
                 </tr>
         </tbody>
       </table>
@@ -1148,8 +1154,8 @@ Using <code>collect()</code>
 
     <script>
 
-      function styleCell_4g35ykoxa6but4ggadly(i, j, css_id) {
-          var table = document.getElementById("tinytable_4g35ykoxa6but4ggadly");
+      function styleCell_b8xbuu2eaze4nahr32fe(i, j, css_id) {
+          var table = document.getElementById("tinytable_b8xbuu2eaze4nahr32fe");
           var cell = table.rows[i]?.cells[j];  // Safe navigation to avoid errors
           if (cell) {
               console.log(`Styling cell at (${i}, ${j}) with class ${css_id}`);
@@ -1159,7 +1165,7 @@ Using <code>collect()</code>
           }
       }
       function insertSpanRow(i, colspan, content) {
-        var table = document.getElementById('tinytable_4g35ykoxa6but4ggadly');
+        var table = document.getElementById('tinytable_b8xbuu2eaze4nahr32fe');
         var newRow = table.insertRow(i);
         var newCell = newRow.insertCell(0);
         newCell.setAttribute("colspan", colspan);
@@ -1167,8 +1173,8 @@ Using <code>collect()</code>
         // this may be unsafe, but innerText does not interpret <br>
         newCell.innerHTML = content;
       }
-      function spanCell_4g35ykoxa6but4ggadly(i, j, rowspan, colspan) {
-        var table = document.getElementById("tinytable_4g35ykoxa6but4ggadly");
+      function spanCell_b8xbuu2eaze4nahr32fe(i, j, rowspan, colspan) {
+        var table = document.getElementById("tinytable_b8xbuu2eaze4nahr32fe");
         const targetRow = table.rows[i];
         const targetCell = targetRow.cells[j];
         for (let r = 0; r < rowspan; r++) {
@@ -1198,14 +1204,14 @@ Using <code>collect()</code>
       window.addEventListener('load', function () {
           var cellsToStyle = [
             // tinytable style arrays after
-          { positions: [ { i: 0, j: 0 }, { i: 0, j: 1 },  ], css_id: 'tinytable_css_r7x41x3brkn12pm8v3un',}, 
-          { positions: [ { i: 4, j: 0 }, { i: 4, j: 1 },  ], css_id: 'tinytable_css_c8lv7l9bldu4dbsbkjqs',}, 
+          { positions: [ { i: 4, j: 0 }, { i: 4, j: 1 },  ], css_id: 'tinytable_css_nxq3csxe3ilrzjy6wdd5',}, 
+          { positions: [ { i: 0, j: 0 }, { i: 0, j: 1 },  ], css_id: 'tinytable_css_l1s67taeu9f8p1kun29f',}, 
           ];
 
           // Loop over the arrays to style the cells
           cellsToStyle.forEach(function (group) {
               group.positions.forEach(function (cell) {
-                  styleCell_4g35ykoxa6but4ggadly(cell.i, cell.j, group.css_id);
+                  styleCell_b8xbuu2eaze4nahr32fe(cell.i, cell.j, group.css_id);
               });
           });
       });
@@ -1213,11 +1219,11 @@ Using <code>collect()</code>
 
     <style>
       /* tinytable css entries after */
-      .table td.tinytable_css_r7x41x3brkn12pm8v3un, .table th.tinytable_css_r7x41x3brkn12pm8v3un { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
-      .table td.tinytable_css_c8lv7l9bldu4dbsbkjqs, .table th.tinytable_css_c8lv7l9bldu4dbsbkjqs { border-bottom: solid #d3d8dc 0.1em; }
+      .table td.tinytable_css_nxq3csxe3ilrzjy6wdd5, .table th.tinytable_css_nxq3csxe3ilrzjy6wdd5 { border-bottom: solid #d3d8dc 0.1em; }
+      .table td.tinytable_css_l1s67taeu9f8p1kun29f, .table th.tinytable_css_l1s67taeu9f8p1kun29f { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
     </style>
     <div class="container">
-      <table class="table table-borderless" id="tinytable_4g35ykoxa6but4ggadly" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
+      <table class="table table-borderless" id="tinytable_b8xbuu2eaze4nahr32fe" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
         <thead>
         
               <tr>
@@ -1296,8 +1302,8 @@ Accessing variables
 
     <script>
 
-      function styleCell_dzgj5z68zh629gn8f4fq(i, j, css_id) {
-          var table = document.getElementById("tinytable_dzgj5z68zh629gn8f4fq");
+      function styleCell_ya1ps838zowh9jb165cq(i, j, css_id) {
+          var table = document.getElementById("tinytable_ya1ps838zowh9jb165cq");
           var cell = table.rows[i]?.cells[j];  // Safe navigation to avoid errors
           if (cell) {
               console.log(`Styling cell at (${i}, ${j}) with class ${css_id}`);
@@ -1307,7 +1313,7 @@ Accessing variables
           }
       }
       function insertSpanRow(i, colspan, content) {
-        var table = document.getElementById('tinytable_dzgj5z68zh629gn8f4fq');
+        var table = document.getElementById('tinytable_ya1ps838zowh9jb165cq');
         var newRow = table.insertRow(i);
         var newCell = newRow.insertCell(0);
         newCell.setAttribute("colspan", colspan);
@@ -1315,8 +1321,8 @@ Accessing variables
         // this may be unsafe, but innerText does not interpret <br>
         newCell.innerHTML = content;
       }
-      function spanCell_dzgj5z68zh629gn8f4fq(i, j, rowspan, colspan) {
-        var table = document.getElementById("tinytable_dzgj5z68zh629gn8f4fq");
+      function spanCell_ya1ps838zowh9jb165cq(i, j, rowspan, colspan) {
+        var table = document.getElementById("tinytable_ya1ps838zowh9jb165cq");
         const targetRow = table.rows[i];
         const targetCell = targetRow.cells[j];
         for (let r = 0; r < rowspan; r++) {
@@ -1346,14 +1352,14 @@ Accessing variables
       window.addEventListener('load', function () {
           var cellsToStyle = [
             // tinytable style arrays after
-          { positions: [ { i: 4, j: 0 }, { i: 4, j: 1 }, { i: 4, j: 2 }, { i: 4, j: 3 },  ], css_id: 'tinytable_css_p6s7lz4u2wm01s5kb6ec',}, 
-          { positions: [ { i: 0, j: 0 }, { i: 0, j: 1 }, { i: 0, j: 2 }, { i: 0, j: 3 },  ], css_id: 'tinytable_css_efzar20a774nc1dvdnms',}, 
+          { positions: [ { i: 0, j: 0 }, { i: 0, j: 1 }, { i: 0, j: 2 }, { i: 0, j: 3 },  ], css_id: 'tinytable_css_oygkzwr7nvi7bid01fh3',}, 
+          { positions: [ { i: 4, j: 0 }, { i: 4, j: 1 }, { i: 4, j: 2 }, { i: 4, j: 3 },  ], css_id: 'tinytable_css_0lt7mk5wm24lksvz7lqq',}, 
           ];
 
           // Loop over the arrays to style the cells
           cellsToStyle.forEach(function (group) {
               group.positions.forEach(function (cell) {
-                  styleCell_dzgj5z68zh629gn8f4fq(cell.i, cell.j, group.css_id);
+                  styleCell_ya1ps838zowh9jb165cq(cell.i, cell.j, group.css_id);
               });
           });
       });
@@ -1361,11 +1367,11 @@ Accessing variables
 
     <style>
       /* tinytable css entries after */
-      .table td.tinytable_css_p6s7lz4u2wm01s5kb6ec, .table th.tinytable_css_p6s7lz4u2wm01s5kb6ec { border-bottom: solid #d3d8dc 0.1em; }
-      .table td.tinytable_css_efzar20a774nc1dvdnms, .table th.tinytable_css_efzar20a774nc1dvdnms { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
+      .table td.tinytable_css_oygkzwr7nvi7bid01fh3, .table th.tinytable_css_oygkzwr7nvi7bid01fh3 { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
+      .table td.tinytable_css_0lt7mk5wm24lksvz7lqq, .table th.tinytable_css_0lt7mk5wm24lksvz7lqq { border-bottom: solid #d3d8dc 0.1em; }
     </style>
     <div class="container">
-      <table class="table table-borderless" id="tinytable_dzgj5z68zh629gn8f4fq" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
+      <table class="table table-borderless" id="tinytable_ya1ps838zowh9jb165cq" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
         <thead>
         
               <tr>
@@ -1441,8 +1447,8 @@ Figure&nbsp;4.1: Retention from start of first term for US legislators
 
     <script>
 
-      function styleCell_mz6b9scj3v9mrc1w3b82(i, j, css_id) {
-          var table = document.getElementById("tinytable_mz6b9scj3v9mrc1w3b82");
+      function styleCell_lh2tvu981kbnupf7xvq7(i, j, css_id) {
+          var table = document.getElementById("tinytable_lh2tvu981kbnupf7xvq7");
           var cell = table.rows[i]?.cells[j];  // Safe navigation to avoid errors
           if (cell) {
               console.log(`Styling cell at (${i}, ${j}) with class ${css_id}`);
@@ -1452,7 +1458,7 @@ Figure&nbsp;4.1: Retention from start of first term for US legislators
           }
       }
       function insertSpanRow(i, colspan, content) {
-        var table = document.getElementById('tinytable_mz6b9scj3v9mrc1w3b82');
+        var table = document.getElementById('tinytable_lh2tvu981kbnupf7xvq7');
         var newRow = table.insertRow(i);
         var newCell = newRow.insertCell(0);
         newCell.setAttribute("colspan", colspan);
@@ -1460,8 +1466,8 @@ Figure&nbsp;4.1: Retention from start of first term for US legislators
         // this may be unsafe, but innerText does not interpret <br>
         newCell.innerHTML = content;
       }
-      function spanCell_mz6b9scj3v9mrc1w3b82(i, j, rowspan, colspan) {
-        var table = document.getElementById("tinytable_mz6b9scj3v9mrc1w3b82");
+      function spanCell_lh2tvu981kbnupf7xvq7(i, j, rowspan, colspan) {
+        var table = document.getElementById("tinytable_lh2tvu981kbnupf7xvq7");
         const targetRow = table.rows[i];
         const targetCell = targetRow.cells[j];
         for (let r = 0; r < rowspan; r++) {
@@ -1491,14 +1497,14 @@ Figure&nbsp;4.1: Retention from start of first term for US legislators
       window.addEventListener('load', function () {
           var cellsToStyle = [
             // tinytable style arrays after
-          { positions: [ { i: 1, j: 0 }, { i: 1, j: 1 }, { i: 1, j: 2 }, { i: 1, j: 3 }, { i: 1, j: 4 }, { i: 1, j: 5 },  ], css_id: 'tinytable_css_o9gopvk045y1zkuquv5s',}, 
-          { positions: [ { i: 0, j: 0 }, { i: 0, j: 1 }, { i: 0, j: 2 }, { i: 0, j: 3 }, { i: 0, j: 4 }, { i: 0, j: 5 },  ], css_id: 'tinytable_css_l151fsi4hpq4okjhdgx1',}, 
+          { positions: [ { i: 0, j: 0 }, { i: 0, j: 1 }, { i: 0, j: 2 }, { i: 0, j: 3 }, { i: 0, j: 4 }, { i: 0, j: 5 },  ], css_id: 'tinytable_css_k59r0se54bmvfus06ou1',}, 
+          { positions: [ { i: 1, j: 0 }, { i: 1, j: 1 }, { i: 1, j: 2 }, { i: 1, j: 3 }, { i: 1, j: 4 }, { i: 1, j: 5 },  ], css_id: 'tinytable_css_d9aqqk8vgde5khv0wyk6',}, 
           ];
 
           // Loop over the arrays to style the cells
           cellsToStyle.forEach(function (group) {
               group.positions.forEach(function (cell) {
-                  styleCell_mz6b9scj3v9mrc1w3b82(cell.i, cell.j, group.css_id);
+                  styleCell_lh2tvu981kbnupf7xvq7(cell.i, cell.j, group.css_id);
               });
           });
       });
@@ -1506,11 +1512,11 @@ Figure&nbsp;4.1: Retention from start of first term for US legislators
 
     <style>
       /* tinytable css entries after */
-      .table td.tinytable_css_o9gopvk045y1zkuquv5s, .table th.tinytable_css_o9gopvk045y1zkuquv5s { border-bottom: solid #d3d8dc 0.1em; }
-      .table td.tinytable_css_l151fsi4hpq4okjhdgx1, .table th.tinytable_css_l151fsi4hpq4okjhdgx1 { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
+      .table td.tinytable_css_k59r0se54bmvfus06ou1, .table th.tinytable_css_k59r0se54bmvfus06ou1 { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
+      .table td.tinytable_css_d9aqqk8vgde5khv0wyk6, .table th.tinytable_css_d9aqqk8vgde5khv0wyk6 { border-bottom: solid #d3d8dc 0.1em; }
     </style>
     <div class="container">
-      <table class="table table-borderless" id="tinytable_mz6b9scj3v9mrc1w3b82" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
+      <table class="table table-borderless" id="tinytable_lh2tvu981kbnupf7xvq7" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
         <thead>
         
               <tr>
@@ -1663,8 +1669,8 @@ Figure&nbsp;4.2: Legislator retention after adjusting for actual years in office
 
     <script>
 
-      function styleCell_u5r46hqdjsy3z9txjrw0(i, j, css_id) {
-          var table = document.getElementById("tinytable_u5r46hqdjsy3z9txjrw0");
+      function styleCell_bmqgrppo5uw2c9lqk8m7(i, j, css_id) {
+          var table = document.getElementById("tinytable_bmqgrppo5uw2c9lqk8m7");
           var cell = table.rows[i]?.cells[j];  // Safe navigation to avoid errors
           if (cell) {
               console.log(`Styling cell at (${i}, ${j}) with class ${css_id}`);
@@ -1674,7 +1680,7 @@ Figure&nbsp;4.2: Legislator retention after adjusting for actual years in office
           }
       }
       function insertSpanRow(i, colspan, content) {
-        var table = document.getElementById('tinytable_u5r46hqdjsy3z9txjrw0');
+        var table = document.getElementById('tinytable_bmqgrppo5uw2c9lqk8m7');
         var newRow = table.insertRow(i);
         var newCell = newRow.insertCell(0);
         newCell.setAttribute("colspan", colspan);
@@ -1682,8 +1688,8 @@ Figure&nbsp;4.2: Legislator retention after adjusting for actual years in office
         // this may be unsafe, but innerText does not interpret <br>
         newCell.innerHTML = content;
       }
-      function spanCell_u5r46hqdjsy3z9txjrw0(i, j, rowspan, colspan) {
-        var table = document.getElementById("tinytable_u5r46hqdjsy3z9txjrw0");
+      function spanCell_bmqgrppo5uw2c9lqk8m7(i, j, rowspan, colspan) {
+        var table = document.getElementById("tinytable_bmqgrppo5uw2c9lqk8m7");
         const targetRow = table.rows[i];
         const targetCell = targetRow.cells[j];
         for (let r = 0; r < rowspan; r++) {
@@ -1713,14 +1719,14 @@ Figure&nbsp;4.2: Legislator retention after adjusting for actual years in office
       window.addEventListener('load', function () {
           var cellsToStyle = [
             // tinytable style arrays after
-          { positions: [ { i: 0, j: 0 }, { i: 0, j: 1 }, { i: 0, j: 2 }, { i: 0, j: 3 },  ], css_id: 'tinytable_css_rcbvbxkrvlv6sfspbq55',}, 
-          { positions: [ { i: 4, j: 0 }, { i: 4, j: 1 }, { i: 4, j: 2 }, { i: 4, j: 3 },  ], css_id: 'tinytable_css_8ik228yf30dn0qz22xzz',}, 
+          { positions: [ { i: 4, j: 0 }, { i: 4, j: 1 }, { i: 4, j: 2 }, { i: 4, j: 3 },  ], css_id: 'tinytable_css_y5bobn5blrqkt8fdwf3j',}, 
+          { positions: [ { i: 0, j: 0 }, { i: 0, j: 1 }, { i: 0, j: 2 }, { i: 0, j: 3 },  ], css_id: 'tinytable_css_pgarpv316w8ga9jdjw08',}, 
           ];
 
           // Loop over the arrays to style the cells
           cellsToStyle.forEach(function (group) {
               group.positions.forEach(function (cell) {
-                  styleCell_u5r46hqdjsy3z9txjrw0(cell.i, cell.j, group.css_id);
+                  styleCell_bmqgrppo5uw2c9lqk8m7(cell.i, cell.j, group.css_id);
               });
           });
       });
@@ -1728,11 +1734,11 @@ Figure&nbsp;4.2: Legislator retention after adjusting for actual years in office
 
     <style>
       /* tinytable css entries after */
-      .table td.tinytable_css_rcbvbxkrvlv6sfspbq55, .table th.tinytable_css_rcbvbxkrvlv6sfspbq55 { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
-      .table td.tinytable_css_8ik228yf30dn0qz22xzz, .table th.tinytable_css_8ik228yf30dn0qz22xzz { border-bottom: solid #d3d8dc 0.1em; }
+      .table td.tinytable_css_y5bobn5blrqkt8fdwf3j, .table th.tinytable_css_y5bobn5blrqkt8fdwf3j { border-bottom: solid #d3d8dc 0.1em; }
+      .table td.tinytable_css_pgarpv316w8ga9jdjw08, .table th.tinytable_css_pgarpv316w8ga9jdjw08 { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
     </style>
     <div class="container">
-      <table class="table table-borderless" id="tinytable_u5r46hqdjsy3z9txjrw0" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
+      <table class="table table-borderless" id="tinytable_bmqgrppo5uw2c9lqk8m7" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
         <thead>
         
               <tr>
@@ -1792,8 +1798,8 @@ Figure&nbsp;4.2: Legislator retention after adjusting for actual years in office
 
     <script>
 
-      function styleCell_l4hteoxulyc8zcv6oqh5(i, j, css_id) {
-          var table = document.getElementById("tinytable_l4hteoxulyc8zcv6oqh5");
+      function styleCell_pypb4pyn6ooj1uubjwtx(i, j, css_id) {
+          var table = document.getElementById("tinytable_pypb4pyn6ooj1uubjwtx");
           var cell = table.rows[i]?.cells[j];  // Safe navigation to avoid errors
           if (cell) {
               console.log(`Styling cell at (${i}, ${j}) with class ${css_id}`);
@@ -1803,7 +1809,7 @@ Figure&nbsp;4.2: Legislator retention after adjusting for actual years in office
           }
       }
       function insertSpanRow(i, colspan, content) {
-        var table = document.getElementById('tinytable_l4hteoxulyc8zcv6oqh5');
+        var table = document.getElementById('tinytable_pypb4pyn6ooj1uubjwtx');
         var newRow = table.insertRow(i);
         var newCell = newRow.insertCell(0);
         newCell.setAttribute("colspan", colspan);
@@ -1811,8 +1817,8 @@ Figure&nbsp;4.2: Legislator retention after adjusting for actual years in office
         // this may be unsafe, but innerText does not interpret <br>
         newCell.innerHTML = content;
       }
-      function spanCell_l4hteoxulyc8zcv6oqh5(i, j, rowspan, colspan) {
-        var table = document.getElementById("tinytable_l4hteoxulyc8zcv6oqh5");
+      function spanCell_pypb4pyn6ooj1uubjwtx(i, j, rowspan, colspan) {
+        var table = document.getElementById("tinytable_pypb4pyn6ooj1uubjwtx");
         const targetRow = table.rows[i];
         const targetCell = targetRow.cells[j];
         for (let r = 0; r < rowspan; r++) {
@@ -1842,14 +1848,14 @@ Figure&nbsp;4.2: Legislator retention after adjusting for actual years in office
       window.addEventListener('load', function () {
           var cellsToStyle = [
             // tinytable style arrays after
-          { positions: [ { i: 0, j: 0 }, { i: 0, j: 1 }, { i: 0, j: 2 }, { i: 0, j: 3 },  ], css_id: 'tinytable_css_rhut5evpzovj7nq1km10',}, 
-          { positions: [ { i: 4, j: 0 }, { i: 4, j: 1 }, { i: 4, j: 2 }, { i: 4, j: 3 },  ], css_id: 'tinytable_css_h1dgs9gpr9jx8gnhay9h',}, 
+          { positions: [ { i: 0, j: 0 }, { i: 0, j: 1 }, { i: 0, j: 2 }, { i: 0, j: 3 },  ], css_id: 'tinytable_css_4pvi50xigqv5qs6xhrsd',}, 
+          { positions: [ { i: 4, j: 0 }, { i: 4, j: 1 }, { i: 4, j: 2 }, { i: 4, j: 3 },  ], css_id: 'tinytable_css_4n29ulmdcvsqo4aj54n0',}, 
           ];
 
           // Loop over the arrays to style the cells
           cellsToStyle.forEach(function (group) {
               group.positions.forEach(function (cell) {
-                  styleCell_l4hteoxulyc8zcv6oqh5(cell.i, cell.j, group.css_id);
+                  styleCell_pypb4pyn6ooj1uubjwtx(cell.i, cell.j, group.css_id);
               });
           });
       });
@@ -1857,11 +1863,11 @@ Figure&nbsp;4.2: Legislator retention after adjusting for actual years in office
 
     <style>
       /* tinytable css entries after */
-      .table td.tinytable_css_rhut5evpzovj7nq1km10, .table th.tinytable_css_rhut5evpzovj7nq1km10 { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
-      .table td.tinytable_css_h1dgs9gpr9jx8gnhay9h, .table th.tinytable_css_h1dgs9gpr9jx8gnhay9h { border-bottom: solid #d3d8dc 0.1em; }
+      .table td.tinytable_css_4pvi50xigqv5qs6xhrsd, .table th.tinytable_css_4pvi50xigqv5qs6xhrsd { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
+      .table td.tinytable_css_4n29ulmdcvsqo4aj54n0, .table th.tinytable_css_4n29ulmdcvsqo4aj54n0 { border-bottom: solid #d3d8dc 0.1em; }
     </style>
     <div class="container">
-      <table class="table table-borderless" id="tinytable_l4hteoxulyc8zcv6oqh5" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
+      <table class="table table-borderless" id="tinytable_pypb4pyn6ooj1uubjwtx" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
         <thead>
         
               <tr>
@@ -1932,8 +1938,8 @@ Figure&nbsp;4.2: Legislator retention after adjusting for actual years in office
 
     <script>
 
-      function styleCell_ysun1pslocdppiubntrq(i, j, css_id) {
-          var table = document.getElementById("tinytable_ysun1pslocdppiubntrq");
+      function styleCell_bfondg319bgtj7pq6vrs(i, j, css_id) {
+          var table = document.getElementById("tinytable_bfondg319bgtj7pq6vrs");
           var cell = table.rows[i]?.cells[j];  // Safe navigation to avoid errors
           if (cell) {
               console.log(`Styling cell at (${i}, ${j}) with class ${css_id}`);
@@ -1943,7 +1949,7 @@ Figure&nbsp;4.2: Legislator retention after adjusting for actual years in office
           }
       }
       function insertSpanRow(i, colspan, content) {
-        var table = document.getElementById('tinytable_ysun1pslocdppiubntrq');
+        var table = document.getElementById('tinytable_bfondg319bgtj7pq6vrs');
         var newRow = table.insertRow(i);
         var newCell = newRow.insertCell(0);
         newCell.setAttribute("colspan", colspan);
@@ -1951,8 +1957,8 @@ Figure&nbsp;4.2: Legislator retention after adjusting for actual years in office
         // this may be unsafe, but innerText does not interpret <br>
         newCell.innerHTML = content;
       }
-      function spanCell_ysun1pslocdppiubntrq(i, j, rowspan, colspan) {
-        var table = document.getElementById("tinytable_ysun1pslocdppiubntrq");
+      function spanCell_bfondg319bgtj7pq6vrs(i, j, rowspan, colspan) {
+        var table = document.getElementById("tinytable_bfondg319bgtj7pq6vrs");
         const targetRow = table.rows[i];
         const targetCell = targetRow.cells[j];
         for (let r = 0; r < rowspan; r++) {
@@ -1982,14 +1988,14 @@ Figure&nbsp;4.2: Legislator retention after adjusting for actual years in office
       window.addEventListener('load', function () {
           var cellsToStyle = [
             // tinytable style arrays after
-          { positions: [ { i: 0, j: 0 }, { i: 0, j: 1 }, { i: 0, j: 2 },  ], css_id: 'tinytable_css_qlufk2p1s3cpf2bl2g0n',}, 
-          { positions: [ { i: 4, j: 0 }, { i: 4, j: 1 }, { i: 4, j: 2 },  ], css_id: 'tinytable_css_am8mxdk8lkl8ircdag8b',}, 
+          { positions: [ { i: 0, j: 0 }, { i: 0, j: 1 }, { i: 0, j: 2 },  ], css_id: 'tinytable_css_woq4zjzjqmyxyf00oqyx',}, 
+          { positions: [ { i: 4, j: 0 }, { i: 4, j: 1 }, { i: 4, j: 2 },  ], css_id: 'tinytable_css_in5jg1cxukqzijxls30v',}, 
           ];
 
           // Loop over the arrays to style the cells
           cellsToStyle.forEach(function (group) {
               group.positions.forEach(function (cell) {
-                  styleCell_ysun1pslocdppiubntrq(cell.i, cell.j, group.css_id);
+                  styleCell_bfondg319bgtj7pq6vrs(cell.i, cell.j, group.css_id);
               });
           });
       });
@@ -1997,11 +2003,11 @@ Figure&nbsp;4.2: Legislator retention after adjusting for actual years in office
 
     <style>
       /* tinytable css entries after */
-      .table td.tinytable_css_qlufk2p1s3cpf2bl2g0n, .table th.tinytable_css_qlufk2p1s3cpf2bl2g0n { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
-      .table td.tinytable_css_am8mxdk8lkl8ircdag8b, .table th.tinytable_css_am8mxdk8lkl8ircdag8b { border-bottom: solid #d3d8dc 0.1em; }
+      .table td.tinytable_css_woq4zjzjqmyxyf00oqyx, .table th.tinytable_css_woq4zjzjqmyxyf00oqyx { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
+      .table td.tinytable_css_in5jg1cxukqzijxls30v, .table th.tinytable_css_in5jg1cxukqzijxls30v { border-bottom: solid #d3d8dc 0.1em; }
     </style>
     <div class="container">
-      <table class="table table-borderless" id="tinytable_ysun1pslocdppiubntrq" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
+      <table class="table table-borderless" id="tinytable_bfondg319bgtj7pq6vrs" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
         <thead>
         
               <tr>
@@ -2054,8 +2060,8 @@ Figure&nbsp;4.2: Legislator retention after adjusting for actual years in office
 
     <script>
 
-      function styleCell_0pbgjt5ux7t3yx7vwvx9(i, j, css_id) {
-          var table = document.getElementById("tinytable_0pbgjt5ux7t3yx7vwvx9");
+      function styleCell_i6ub0lbna1sg2holnvnx(i, j, css_id) {
+          var table = document.getElementById("tinytable_i6ub0lbna1sg2holnvnx");
           var cell = table.rows[i]?.cells[j];  // Safe navigation to avoid errors
           if (cell) {
               console.log(`Styling cell at (${i}, ${j}) with class ${css_id}`);
@@ -2065,7 +2071,7 @@ Figure&nbsp;4.2: Legislator retention after adjusting for actual years in office
           }
       }
       function insertSpanRow(i, colspan, content) {
-        var table = document.getElementById('tinytable_0pbgjt5ux7t3yx7vwvx9');
+        var table = document.getElementById('tinytable_i6ub0lbna1sg2holnvnx');
         var newRow = table.insertRow(i);
         var newCell = newRow.insertCell(0);
         newCell.setAttribute("colspan", colspan);
@@ -2073,8 +2079,8 @@ Figure&nbsp;4.2: Legislator retention after adjusting for actual years in office
         // this may be unsafe, but innerText does not interpret <br>
         newCell.innerHTML = content;
       }
-      function spanCell_0pbgjt5ux7t3yx7vwvx9(i, j, rowspan, colspan) {
-        var table = document.getElementById("tinytable_0pbgjt5ux7t3yx7vwvx9");
+      function spanCell_i6ub0lbna1sg2holnvnx(i, j, rowspan, colspan) {
+        var table = document.getElementById("tinytable_i6ub0lbna1sg2holnvnx");
         const targetRow = table.rows[i];
         const targetCell = targetRow.cells[j];
         for (let r = 0; r < rowspan; r++) {
@@ -2104,14 +2110,14 @@ Figure&nbsp;4.2: Legislator retention after adjusting for actual years in office
       window.addEventListener('load', function () {
           var cellsToStyle = [
             // tinytable style arrays after
-          { positions: [ { i: 0, j: 0 }, { i: 0, j: 1 }, { i: 0, j: 2 }, { i: 0, j: 3 }, { i: 0, j: 4 },  ], css_id: 'tinytable_css_xt1g85xed2bnek3mzjnd',}, 
-          { positions: [ { i: 4, j: 0 }, { i: 4, j: 1 }, { i: 4, j: 2 }, { i: 4, j: 3 }, { i: 4, j: 4 },  ], css_id: 'tinytable_css_6ozm51506waguct6y76a',}, 
+          { positions: [ { i: 0, j: 0 }, { i: 0, j: 1 }, { i: 0, j: 2 }, { i: 0, j: 3 }, { i: 0, j: 4 },  ], css_id: 'tinytable_css_wq0rt9d8kxz72fxf5pjh',}, 
+          { positions: [ { i: 4, j: 0 }, { i: 4, j: 1 }, { i: 4, j: 2 }, { i: 4, j: 3 }, { i: 4, j: 4 },  ], css_id: 'tinytable_css_aimoelohz97j5q8ygqzb',}, 
           ];
 
           // Loop over the arrays to style the cells
           cellsToStyle.forEach(function (group) {
               group.positions.forEach(function (cell) {
-                  styleCell_0pbgjt5ux7t3yx7vwvx9(cell.i, cell.j, group.css_id);
+                  styleCell_i6ub0lbna1sg2holnvnx(cell.i, cell.j, group.css_id);
               });
           });
       });
@@ -2119,11 +2125,11 @@ Figure&nbsp;4.2: Legislator retention after adjusting for actual years in office
 
     <style>
       /* tinytable css entries after */
-      .table td.tinytable_css_xt1g85xed2bnek3mzjnd, .table th.tinytable_css_xt1g85xed2bnek3mzjnd { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
-      .table td.tinytable_css_6ozm51506waguct6y76a, .table th.tinytable_css_6ozm51506waguct6y76a { border-bottom: solid #d3d8dc 0.1em; }
+      .table td.tinytable_css_wq0rt9d8kxz72fxf5pjh, .table th.tinytable_css_wq0rt9d8kxz72fxf5pjh { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
+      .table td.tinytable_css_aimoelohz97j5q8ygqzb, .table th.tinytable_css_aimoelohz97j5q8ygqzb { border-bottom: solid #d3d8dc 0.1em; }
     </style>
     <div class="container">
-      <table class="table table-borderless" id="tinytable_0pbgjt5ux7t3yx7vwvx9" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
+      <table class="table table-borderless" id="tinytable_i6ub0lbna1sg2holnvnx" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
         <thead>
         
               <tr>
@@ -2255,8 +2261,8 @@ Centuries
 
     <script>
 
-      function styleCell_dgbajnl2091ewjkc3wfv(i, j, css_id) {
-          var table = document.getElementById("tinytable_dgbajnl2091ewjkc3wfv");
+      function styleCell_prtzcnx3acnvdmya5er7(i, j, css_id) {
+          var table = document.getElementById("tinytable_prtzcnx3acnvdmya5er7");
           var cell = table.rows[i]?.cells[j];  // Safe navigation to avoid errors
           if (cell) {
               console.log(`Styling cell at (${i}, ${j}) with class ${css_id}`);
@@ -2266,7 +2272,7 @@ Centuries
           }
       }
       function insertSpanRow(i, colspan, content) {
-        var table = document.getElementById('tinytable_dgbajnl2091ewjkc3wfv');
+        var table = document.getElementById('tinytable_prtzcnx3acnvdmya5er7');
         var newRow = table.insertRow(i);
         var newCell = newRow.insertCell(0);
         newCell.setAttribute("colspan", colspan);
@@ -2274,8 +2280,8 @@ Centuries
         // this may be unsafe, but innerText does not interpret <br>
         newCell.innerHTML = content;
       }
-      function spanCell_dgbajnl2091ewjkc3wfv(i, j, rowspan, colspan) {
-        var table = document.getElementById("tinytable_dgbajnl2091ewjkc3wfv");
+      function spanCell_prtzcnx3acnvdmya5er7(i, j, rowspan, colspan) {
+        var table = document.getElementById("tinytable_prtzcnx3acnvdmya5er7");
         const targetRow = table.rows[i];
         const targetCell = targetRow.cells[j];
         for (let r = 0; r < rowspan; r++) {
@@ -2305,14 +2311,14 @@ Centuries
       window.addEventListener('load', function () {
           var cellsToStyle = [
             // tinytable style arrays after
-          { positions: [ { i: 4, j: 0 }, { i: 4, j: 1 }, { i: 4, j: 2 }, { i: 4, j: 3 }, { i: 4, j: 4 },  ], css_id: 'tinytable_css_lq91zhc6gjg44qpy6bnr',}, 
-          { positions: [ { i: 0, j: 0 }, { i: 0, j: 1 }, { i: 0, j: 2 }, { i: 0, j: 3 }, { i: 0, j: 4 },  ], css_id: 'tinytable_css_0dy92bil2hjunjwr61bg',}, 
+          { positions: [ { i: 0, j: 0 }, { i: 0, j: 1 }, { i: 0, j: 2 }, { i: 0, j: 3 }, { i: 0, j: 4 },  ], css_id: 'tinytable_css_wdfzmvkg5cx33nab0yxp',}, 
+          { positions: [ { i: 4, j: 0 }, { i: 4, j: 1 }, { i: 4, j: 2 }, { i: 4, j: 3 }, { i: 4, j: 4 },  ], css_id: 'tinytable_css_a3qt4y81tl4w8ewg6114',}, 
           ];
 
           // Loop over the arrays to style the cells
           cellsToStyle.forEach(function (group) {
               group.positions.forEach(function (cell) {
-                  styleCell_dgbajnl2091ewjkc3wfv(cell.i, cell.j, group.css_id);
+                  styleCell_prtzcnx3acnvdmya5er7(cell.i, cell.j, group.css_id);
               });
           });
       });
@@ -2320,11 +2326,11 @@ Centuries
 
     <style>
       /* tinytable css entries after */
-      .table td.tinytable_css_lq91zhc6gjg44qpy6bnr, .table th.tinytable_css_lq91zhc6gjg44qpy6bnr { border-bottom: solid #d3d8dc 0.1em; }
-      .table td.tinytable_css_0dy92bil2hjunjwr61bg, .table th.tinytable_css_0dy92bil2hjunjwr61bg { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
+      .table td.tinytable_css_wdfzmvkg5cx33nab0yxp, .table th.tinytable_css_wdfzmvkg5cx33nab0yxp { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
+      .table td.tinytable_css_a3qt4y81tl4w8ewg6114, .table th.tinytable_css_a3qt4y81tl4w8ewg6114 { border-bottom: solid #d3d8dc 0.1em; }
     </style>
     <div class="container">
-      <table class="table table-borderless" id="tinytable_dgbajnl2091ewjkc3wfv" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
+      <table class="table table-borderless" id="tinytable_prtzcnx3acnvdmya5er7" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
         <thead>
         
               <tr>
@@ -2460,8 +2466,8 @@ This warning is displayed once every 8 hours.</code></pre>
 
     <script>
 
-      function styleCell_4x6w2duzwl2i2nhjbefa(i, j, css_id) {
-          var table = document.getElementById("tinytable_4x6w2duzwl2i2nhjbefa");
+      function styleCell_6xdfbx5qkoat0q58428y(i, j, css_id) {
+          var table = document.getElementById("tinytable_6xdfbx5qkoat0q58428y");
           var cell = table.rows[i]?.cells[j];  // Safe navigation to avoid errors
           if (cell) {
               console.log(`Styling cell at (${i}, ${j}) with class ${css_id}`);
@@ -2471,7 +2477,7 @@ This warning is displayed once every 8 hours.</code></pre>
           }
       }
       function insertSpanRow(i, colspan, content) {
-        var table = document.getElementById('tinytable_4x6w2duzwl2i2nhjbefa');
+        var table = document.getElementById('tinytable_6xdfbx5qkoat0q58428y');
         var newRow = table.insertRow(i);
         var newCell = newRow.insertCell(0);
         newCell.setAttribute("colspan", colspan);
@@ -2479,8 +2485,8 @@ This warning is displayed once every 8 hours.</code></pre>
         // this may be unsafe, but innerText does not interpret <br>
         newCell.innerHTML = content;
       }
-      function spanCell_4x6w2duzwl2i2nhjbefa(i, j, rowspan, colspan) {
-        var table = document.getElementById("tinytable_4x6w2duzwl2i2nhjbefa");
+      function spanCell_6xdfbx5qkoat0q58428y(i, j, rowspan, colspan) {
+        var table = document.getElementById("tinytable_6xdfbx5qkoat0q58428y");
         const targetRow = table.rows[i];
         const targetCell = targetRow.cells[j];
         for (let r = 0; r < rowspan; r++) {
@@ -2510,14 +2516,14 @@ This warning is displayed once every 8 hours.</code></pre>
       window.addEventListener('load', function () {
           var cellsToStyle = [
             // tinytable style arrays after
-          { positions: [ { i: 0, j: 0 }, { i: 0, j: 1 }, { i: 0, j: 2 }, { i: 0, j: 3 }, { i: 0, j: 4 },  ], css_id: 'tinytable_css_uqdmapq6o4o1t3cftsvq',}, 
-          { positions: [ { i: 4, j: 0 }, { i: 4, j: 1 }, { i: 4, j: 2 }, { i: 4, j: 3 }, { i: 4, j: 4 },  ], css_id: 'tinytable_css_9ih62e3gabxdf4xvgs0z',}, 
+          { positions: [ { i: 0, j: 0 }, { i: 0, j: 1 }, { i: 0, j: 2 }, { i: 0, j: 3 }, { i: 0, j: 4 },  ], css_id: 'tinytable_css_g0pv8e533ag6t0j9eeh7',}, 
+          { positions: [ { i: 4, j: 0 }, { i: 4, j: 1 }, { i: 4, j: 2 }, { i: 4, j: 3 }, { i: 4, j: 4 },  ], css_id: 'tinytable_css_ctjwy02unnyshnuuldno',}, 
           ];
 
           // Loop over the arrays to style the cells
           cellsToStyle.forEach(function (group) {
               group.positions.forEach(function (cell) {
-                  styleCell_4x6w2duzwl2i2nhjbefa(cell.i, cell.j, group.css_id);
+                  styleCell_6xdfbx5qkoat0q58428y(cell.i, cell.j, group.css_id);
               });
           });
       });
@@ -2525,11 +2531,11 @@ This warning is displayed once every 8 hours.</code></pre>
 
     <style>
       /* tinytable css entries after */
-      .table td.tinytable_css_uqdmapq6o4o1t3cftsvq, .table th.tinytable_css_uqdmapq6o4o1t3cftsvq { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
-      .table td.tinytable_css_9ih62e3gabxdf4xvgs0z, .table th.tinytable_css_9ih62e3gabxdf4xvgs0z { border-bottom: solid #d3d8dc 0.1em; }
+      .table td.tinytable_css_g0pv8e533ag6t0j9eeh7, .table th.tinytable_css_g0pv8e533ag6t0j9eeh7 { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
+      .table td.tinytable_css_ctjwy02unnyshnuuldno, .table th.tinytable_css_ctjwy02unnyshnuuldno { border-bottom: solid #d3d8dc 0.1em; }
     </style>
     <div class="container">
-      <table class="table table-borderless" id="tinytable_4x6w2duzwl2i2nhjbefa" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
+      <table class="table table-borderless" id="tinytable_6xdfbx5qkoat0q58428y" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
         <thead>
         
               <tr>
@@ -2617,8 +2623,8 @@ Figure&nbsp;4.4: Legislator retention by first state: top five states by total l
 
     <script>
 
-      function styleCell_qjrowrsz2be85kvp6axu(i, j, css_id) {
-          var table = document.getElementById("tinytable_qjrowrsz2be85kvp6axu");
+      function styleCell_8f8wjykp0kjj2xzo19qc(i, j, css_id) {
+          var table = document.getElementById("tinytable_8f8wjykp0kjj2xzo19qc");
           var cell = table.rows[i]?.cells[j];  // Safe navigation to avoid errors
           if (cell) {
               console.log(`Styling cell at (${i}, ${j}) with class ${css_id}`);
@@ -2628,7 +2634,7 @@ Figure&nbsp;4.4: Legislator retention by first state: top five states by total l
           }
       }
       function insertSpanRow(i, colspan, content) {
-        var table = document.getElementById('tinytable_qjrowrsz2be85kvp6axu');
+        var table = document.getElementById('tinytable_8f8wjykp0kjj2xzo19qc');
         var newRow = table.insertRow(i);
         var newCell = newRow.insertCell(0);
         newCell.setAttribute("colspan", colspan);
@@ -2636,8 +2642,8 @@ Figure&nbsp;4.4: Legislator retention by first state: top five states by total l
         // this may be unsafe, but innerText does not interpret <br>
         newCell.innerHTML = content;
       }
-      function spanCell_qjrowrsz2be85kvp6axu(i, j, rowspan, colspan) {
-        var table = document.getElementById("tinytable_qjrowrsz2be85kvp6axu");
+      function spanCell_8f8wjykp0kjj2xzo19qc(i, j, rowspan, colspan) {
+        var table = document.getElementById("tinytable_8f8wjykp0kjj2xzo19qc");
         const targetRow = table.rows[i];
         const targetCell = targetRow.cells[j];
         for (let r = 0; r < rowspan; r++) {
@@ -2667,14 +2673,14 @@ Figure&nbsp;4.4: Legislator retention by first state: top five states by total l
       window.addEventListener('load', function () {
           var cellsToStyle = [
             // tinytable style arrays after
-          { positions: [ { i: 0, j: 0 }, { i: 0, j: 1 }, { i: 0, j: 2 },  ], css_id: 'tinytable_css_syx21q53igd26p3xd5mw',}, 
-          { positions: [ { i: 4, j: 0 }, { i: 4, j: 1 }, { i: 4, j: 2 },  ], css_id: 'tinytable_css_qga33pqrahpncre5d8o7',}, 
+          { positions: [ { i: 0, j: 0 }, { i: 0, j: 1 }, { i: 0, j: 2 },  ], css_id: 'tinytable_css_gybv6fk5b7apmtejc7oy',}, 
+          { positions: [ { i: 4, j: 0 }, { i: 4, j: 1 }, { i: 4, j: 2 },  ], css_id: 'tinytable_css_c9kuz084xhptys8wwllb',}, 
           ];
 
           // Loop over the arrays to style the cells
           cellsToStyle.forEach(function (group) {
               group.positions.forEach(function (cell) {
-                  styleCell_qjrowrsz2be85kvp6axu(cell.i, cell.j, group.css_id);
+                  styleCell_8f8wjykp0kjj2xzo19qc(cell.i, cell.j, group.css_id);
               });
           });
       });
@@ -2682,11 +2688,11 @@ Figure&nbsp;4.4: Legislator retention by first state: top five states by total l
 
     <style>
       /* tinytable css entries after */
-      .table td.tinytable_css_syx21q53igd26p3xd5mw, .table th.tinytable_css_syx21q53igd26p3xd5mw { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
-      .table td.tinytable_css_qga33pqrahpncre5d8o7, .table th.tinytable_css_qga33pqrahpncre5d8o7 { border-bottom: solid #d3d8dc 0.1em; }
+      .table td.tinytable_css_gybv6fk5b7apmtejc7oy, .table th.tinytable_css_gybv6fk5b7apmtejc7oy { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
+      .table td.tinytable_css_c9kuz084xhptys8wwllb, .table th.tinytable_css_c9kuz084xhptys8wwllb { border-bottom: solid #d3d8dc 0.1em; }
     </style>
     <div class="container">
-      <table class="table table-borderless" id="tinytable_qjrowrsz2be85kvp6axu" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
+      <table class="table table-borderless" id="tinytable_8f8wjykp0kjj2xzo19qc" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
         <thead>
         
               <tr>
@@ -2742,8 +2748,8 @@ Figure&nbsp;4.4: Legislator retention by first state: top five states by total l
 
     <script>
 
-      function styleCell_1fb0tkxuh0az84xbi6xz(i, j, css_id) {
-          var table = document.getElementById("tinytable_1fb0tkxuh0az84xbi6xz");
+      function styleCell_akupco30bgmnt4z2vs9q(i, j, css_id) {
+          var table = document.getElementById("tinytable_akupco30bgmnt4z2vs9q");
           var cell = table.rows[i]?.cells[j];  // Safe navigation to avoid errors
           if (cell) {
               console.log(`Styling cell at (${i}, ${j}) with class ${css_id}`);
@@ -2753,7 +2759,7 @@ Figure&nbsp;4.4: Legislator retention by first state: top five states by total l
           }
       }
       function insertSpanRow(i, colspan, content) {
-        var table = document.getElementById('tinytable_1fb0tkxuh0az84xbi6xz');
+        var table = document.getElementById('tinytable_akupco30bgmnt4z2vs9q');
         var newRow = table.insertRow(i);
         var newCell = newRow.insertCell(0);
         newCell.setAttribute("colspan", colspan);
@@ -2761,8 +2767,8 @@ Figure&nbsp;4.4: Legislator retention by first state: top five states by total l
         // this may be unsafe, but innerText does not interpret <br>
         newCell.innerHTML = content;
       }
-      function spanCell_1fb0tkxuh0az84xbi6xz(i, j, rowspan, colspan) {
-        var table = document.getElementById("tinytable_1fb0tkxuh0az84xbi6xz");
+      function spanCell_akupco30bgmnt4z2vs9q(i, j, rowspan, colspan) {
+        var table = document.getElementById("tinytable_akupco30bgmnt4z2vs9q");
         const targetRow = table.rows[i];
         const targetCell = targetRow.cells[j];
         for (let r = 0; r < rowspan; r++) {
@@ -2792,14 +2798,14 @@ Figure&nbsp;4.4: Legislator retention by first state: top five states by total l
       window.addEventListener('load', function () {
           var cellsToStyle = [
             // tinytable style arrays after
-          { positions: [ { i: 4, j: 0 }, { i: 4, j: 1 }, { i: 4, j: 2 }, { i: 4, j: 3 }, { i: 4, j: 4 },  ], css_id: 'tinytable_css_srgeihw248v2qvny6nfj',}, 
-          { positions: [ { i: 0, j: 0 }, { i: 0, j: 1 }, { i: 0, j: 2 }, { i: 0, j: 3 }, { i: 0, j: 4 },  ], css_id: 'tinytable_css_565cnw6d1sfh6mu580d9',}, 
+          { positions: [ { i: 4, j: 0 }, { i: 4, j: 1 }, { i: 4, j: 2 }, { i: 4, j: 3 }, { i: 4, j: 4 },  ], css_id: 'tinytable_css_wzisgo3qhktkkki3s5dw',}, 
+          { positions: [ { i: 0, j: 0 }, { i: 0, j: 1 }, { i: 0, j: 2 }, { i: 0, j: 3 }, { i: 0, j: 4 },  ], css_id: 'tinytable_css_3ggt4o9z0dzvvndvw0l2',}, 
           ];
 
           // Loop over the arrays to style the cells
           cellsToStyle.forEach(function (group) {
               group.positions.forEach(function (cell) {
-                  styleCell_1fb0tkxuh0az84xbi6xz(cell.i, cell.j, group.css_id);
+                  styleCell_akupco30bgmnt4z2vs9q(cell.i, cell.j, group.css_id);
               });
           });
       });
@@ -2807,11 +2813,11 @@ Figure&nbsp;4.4: Legislator retention by first state: top five states by total l
 
     <style>
       /* tinytable css entries after */
-      .table td.tinytable_css_srgeihw248v2qvny6nfj, .table th.tinytable_css_srgeihw248v2qvny6nfj { border-bottom: solid #d3d8dc 0.1em; }
-      .table td.tinytable_css_565cnw6d1sfh6mu580d9, .table th.tinytable_css_565cnw6d1sfh6mu580d9 { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
+      .table td.tinytable_css_wzisgo3qhktkkki3s5dw, .table th.tinytable_css_wzisgo3qhktkkki3s5dw { border-bottom: solid #d3d8dc 0.1em; }
+      .table td.tinytable_css_3ggt4o9z0dzvvndvw0l2, .table th.tinytable_css_3ggt4o9z0dzvvndvw0l2 { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
     </style>
     <div class="container">
-      <table class="table table-borderless" id="tinytable_1fb0tkxuh0az84xbi6xz" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
+      <table class="table table-borderless" id="tinytable_akupco30bgmnt4z2vs9q" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
         <thead>
         
               <tr>
@@ -2905,8 +2911,8 @@ Figure&nbsp;4.5: Legislator retention by gender
 
     <script>
 
-      function styleCell_1vj2xoxmhl010wqgim0q(i, j, css_id) {
-          var table = document.getElementById("tinytable_1vj2xoxmhl010wqgim0q");
+      function styleCell_m72r5u8w9wbeu7xhp1mg(i, j, css_id) {
+          var table = document.getElementById("tinytable_m72r5u8w9wbeu7xhp1mg");
           var cell = table.rows[i]?.cells[j];  // Safe navigation to avoid errors
           if (cell) {
               console.log(`Styling cell at (${i}, ${j}) with class ${css_id}`);
@@ -2916,7 +2922,7 @@ Figure&nbsp;4.5: Legislator retention by gender
           }
       }
       function insertSpanRow(i, colspan, content) {
-        var table = document.getElementById('tinytable_1vj2xoxmhl010wqgim0q');
+        var table = document.getElementById('tinytable_m72r5u8w9wbeu7xhp1mg');
         var newRow = table.insertRow(i);
         var newCell = newRow.insertCell(0);
         newCell.setAttribute("colspan", colspan);
@@ -2924,8 +2930,8 @@ Figure&nbsp;4.5: Legislator retention by gender
         // this may be unsafe, but innerText does not interpret <br>
         newCell.innerHTML = content;
       }
-      function spanCell_1vj2xoxmhl010wqgim0q(i, j, rowspan, colspan) {
-        var table = document.getElementById("tinytable_1vj2xoxmhl010wqgim0q");
+      function spanCell_m72r5u8w9wbeu7xhp1mg(i, j, rowspan, colspan) {
+        var table = document.getElementById("tinytable_m72r5u8w9wbeu7xhp1mg");
         const targetRow = table.rows[i];
         const targetCell = targetRow.cells[j];
         for (let r = 0; r < rowspan; r++) {
@@ -2955,14 +2961,14 @@ Figure&nbsp;4.5: Legislator retention by gender
       window.addEventListener('load', function () {
           var cellsToStyle = [
             // tinytable style arrays after
-          { positions: [ { i: 0, j: 0 }, { i: 0, j: 1 }, { i: 0, j: 2 }, { i: 0, j: 3 }, { i: 0, j: 4 },  ], css_id: 'tinytable_css_mggse55jx7mf3uz3m3bj',}, 
-          { positions: [ { i: 4, j: 0 }, { i: 4, j: 1 }, { i: 4, j: 2 }, { i: 4, j: 3 }, { i: 4, j: 4 },  ], css_id: 'tinytable_css_2bgyv9q0nae3ku9plifr',}, 
+          { positions: [ { i: 0, j: 0 }, { i: 0, j: 1 }, { i: 0, j: 2 }, { i: 0, j: 3 }, { i: 0, j: 4 },  ], css_id: 'tinytable_css_669s2ht04cqnwbqj8e93',}, 
+          { positions: [ { i: 4, j: 0 }, { i: 4, j: 1 }, { i: 4, j: 2 }, { i: 4, j: 3 }, { i: 4, j: 4 },  ], css_id: 'tinytable_css_42scm2ft07gk8lztl4jp',}, 
           ];
 
           // Loop over the arrays to style the cells
           cellsToStyle.forEach(function (group) {
               group.positions.forEach(function (cell) {
-                  styleCell_1vj2xoxmhl010wqgim0q(cell.i, cell.j, group.css_id);
+                  styleCell_m72r5u8w9wbeu7xhp1mg(cell.i, cell.j, group.css_id);
               });
           });
       });
@@ -2970,11 +2976,11 @@ Figure&nbsp;4.5: Legislator retention by gender
 
     <style>
       /* tinytable css entries after */
-      .table td.tinytable_css_mggse55jx7mf3uz3m3bj, .table th.tinytable_css_mggse55jx7mf3uz3m3bj { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
-      .table td.tinytable_css_2bgyv9q0nae3ku9plifr, .table th.tinytable_css_2bgyv9q0nae3ku9plifr { border-bottom: solid #d3d8dc 0.1em; }
+      .table td.tinytable_css_669s2ht04cqnwbqj8e93, .table th.tinytable_css_669s2ht04cqnwbqj8e93 { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
+      .table td.tinytable_css_42scm2ft07gk8lztl4jp, .table th.tinytable_css_42scm2ft07gk8lztl4jp { border-bottom: solid #d3d8dc 0.1em; }
     </style>
     <div class="container">
-      <table class="table table-borderless" id="tinytable_1vj2xoxmhl010wqgim0q" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
+      <table class="table table-borderless" id="tinytable_m72r5u8w9wbeu7xhp1mg" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
         <thead>
         
               <tr>
@@ -3074,8 +3080,8 @@ Figure&nbsp;4.6: Legislator retention by gender: cohorts from 1917 to 1999
 
     <script>
 
-      function styleCell_p2t3cqok1r59e0l7imbq(i, j, css_id) {
-          var table = document.getElementById("tinytable_p2t3cqok1r59e0l7imbq");
+      function styleCell_yxr5wrry322z4d4t20mo(i, j, css_id) {
+          var table = document.getElementById("tinytable_yxr5wrry322z4d4t20mo");
           var cell = table.rows[i]?.cells[j];  // Safe navigation to avoid errors
           if (cell) {
               console.log(`Styling cell at (${i}, ${j}) with class ${css_id}`);
@@ -3085,7 +3091,7 @@ Figure&nbsp;4.6: Legislator retention by gender: cohorts from 1917 to 1999
           }
       }
       function insertSpanRow(i, colspan, content) {
-        var table = document.getElementById('tinytable_p2t3cqok1r59e0l7imbq');
+        var table = document.getElementById('tinytable_yxr5wrry322z4d4t20mo');
         var newRow = table.insertRow(i);
         var newCell = newRow.insertCell(0);
         newCell.setAttribute("colspan", colspan);
@@ -3093,8 +3099,8 @@ Figure&nbsp;4.6: Legislator retention by gender: cohorts from 1917 to 1999
         // this may be unsafe, but innerText does not interpret <br>
         newCell.innerHTML = content;
       }
-      function spanCell_p2t3cqok1r59e0l7imbq(i, j, rowspan, colspan) {
-        var table = document.getElementById("tinytable_p2t3cqok1r59e0l7imbq");
+      function spanCell_yxr5wrry322z4d4t20mo(i, j, rowspan, colspan) {
+        var table = document.getElementById("tinytable_yxr5wrry322z4d4t20mo");
         const targetRow = table.rows[i];
         const targetCell = targetRow.cells[j];
         for (let r = 0; r < rowspan; r++) {
@@ -3124,14 +3130,14 @@ Figure&nbsp;4.6: Legislator retention by gender: cohorts from 1917 to 1999
       window.addEventListener('load', function () {
           var cellsToStyle = [
             // tinytable style arrays after
-          { positions: [ { i: 0, j: 0 }, { i: 0, j: 1 }, { i: 0, j: 2 }, { i: 0, j: 3 }, { i: 0, j: 4 }, { i: 0, j: 5 },  ], css_id: 'tinytable_css_h3f9zk0a6djpvyb6ihvs',}, 
-          { positions: [ { i: 4, j: 0 }, { i: 4, j: 1 }, { i: 4, j: 2 }, { i: 4, j: 3 }, { i: 4, j: 4 }, { i: 4, j: 5 },  ], css_id: 'tinytable_css_8djf49557trs4hhgobgp',}, 
+          { positions: [ { i: 0, j: 0 }, { i: 0, j: 1 }, { i: 0, j: 2 }, { i: 0, j: 3 }, { i: 0, j: 4 }, { i: 0, j: 5 },  ], css_id: 'tinytable_css_p86u379o2zmzeezxr5a4',}, 
+          { positions: [ { i: 4, j: 0 }, { i: 4, j: 1 }, { i: 4, j: 2 }, { i: 4, j: 3 }, { i: 4, j: 4 }, { i: 4, j: 5 },  ], css_id: 'tinytable_css_dhcmi33uwmcca7omhcfx',}, 
           ];
 
           // Loop over the arrays to style the cells
           cellsToStyle.forEach(function (group) {
               group.positions.forEach(function (cell) {
-                  styleCell_p2t3cqok1r59e0l7imbq(cell.i, cell.j, group.css_id);
+                  styleCell_yxr5wrry322z4d4t20mo(cell.i, cell.j, group.css_id);
               });
           });
       });
@@ -3139,11 +3145,11 @@ Figure&nbsp;4.6: Legislator retention by gender: cohorts from 1917 to 1999
 
     <style>
       /* tinytable css entries after */
-      .table td.tinytable_css_h3f9zk0a6djpvyb6ihvs, .table th.tinytable_css_h3f9zk0a6djpvyb6ihvs { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
-      .table td.tinytable_css_8djf49557trs4hhgobgp, .table th.tinytable_css_8djf49557trs4hhgobgp { border-bottom: solid #d3d8dc 0.1em; }
+      .table td.tinytable_css_p86u379o2zmzeezxr5a4, .table th.tinytable_css_p86u379o2zmzeezxr5a4 { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
+      .table td.tinytable_css_dhcmi33uwmcca7omhcfx, .table th.tinytable_css_dhcmi33uwmcca7omhcfx { border-bottom: solid #d3d8dc 0.1em; }
     </style>
     <div class="container">
-      <table class="table table-borderless" id="tinytable_p2t3cqok1r59e0l7imbq" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
+      <table class="table table-borderless" id="tinytable_yxr5wrry322z4d4t20mo" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
         <thead>
         
               <tr>
@@ -3254,8 +3260,8 @@ Figure&nbsp;4.7: Legislator retention by gender and first state
 
     <script>
 
-      function styleCell_2bzw0qd24mvis5o62i8v(i, j, css_id) {
-          var table = document.getElementById("tinytable_2bzw0qd24mvis5o62i8v");
+      function styleCell_yxv6vhuvyb63ttyisoqu(i, j, css_id) {
+          var table = document.getElementById("tinytable_yxv6vhuvyb63ttyisoqu");
           var cell = table.rows[i]?.cells[j];  // Safe navigation to avoid errors
           if (cell) {
               console.log(`Styling cell at (${i}, ${j}) with class ${css_id}`);
@@ -3265,7 +3271,7 @@ Figure&nbsp;4.7: Legislator retention by gender and first state
           }
       }
       function insertSpanRow(i, colspan, content) {
-        var table = document.getElementById('tinytable_2bzw0qd24mvis5o62i8v');
+        var table = document.getElementById('tinytable_yxv6vhuvyb63ttyisoqu');
         var newRow = table.insertRow(i);
         var newCell = newRow.insertCell(0);
         newCell.setAttribute("colspan", colspan);
@@ -3273,8 +3279,8 @@ Figure&nbsp;4.7: Legislator retention by gender and first state
         // this may be unsafe, but innerText does not interpret <br>
         newCell.innerHTML = content;
       }
-      function spanCell_2bzw0qd24mvis5o62i8v(i, j, rowspan, colspan) {
-        var table = document.getElementById("tinytable_2bzw0qd24mvis5o62i8v");
+      function spanCell_yxv6vhuvyb63ttyisoqu(i, j, rowspan, colspan) {
+        var table = document.getElementById("tinytable_yxv6vhuvyb63ttyisoqu");
         const targetRow = table.rows[i];
         const targetCell = targetRow.cells[j];
         for (let r = 0; r < rowspan; r++) {
@@ -3304,14 +3310,14 @@ Figure&nbsp;4.7: Legislator retention by gender and first state
       window.addEventListener('load', function () {
           var cellsToStyle = [
             // tinytable style arrays after
-          { positions: [ { i: 3, j: 0 }, { i: 3, j: 1 }, { i: 3, j: 2 }, { i: 3, j: 3 }, { i: 3, j: 4 }, { i: 3, j: 5 }, { i: 3, j: 6 }, { i: 3, j: 7 },  ], css_id: 'tinytable_css_obzjnr6a5zgocv0qsrhz',}, 
-          { positions: [ { i: 0, j: 0 }, { i: 0, j: 1 }, { i: 0, j: 2 }, { i: 0, j: 3 }, { i: 0, j: 4 }, { i: 0, j: 5 }, { i: 0, j: 6 }, { i: 0, j: 7 },  ], css_id: 'tinytable_css_2ivz3saxmot28qwc28lz',}, 
+          { positions: [ { i: 3, j: 0 }, { i: 3, j: 1 }, { i: 3, j: 2 }, { i: 3, j: 3 }, { i: 3, j: 4 }, { i: 3, j: 5 }, { i: 3, j: 6 }, { i: 3, j: 7 },  ], css_id: 'tinytable_css_j8gmjbliiwpfsfpwev3v',}, 
+          { positions: [ { i: 0, j: 0 }, { i: 0, j: 1 }, { i: 0, j: 2 }, { i: 0, j: 3 }, { i: 0, j: 4 }, { i: 0, j: 5 }, { i: 0, j: 6 }, { i: 0, j: 7 },  ], css_id: 'tinytable_css_0ysior5am97t998laall',}, 
           ];
 
           // Loop over the arrays to style the cells
           cellsToStyle.forEach(function (group) {
               group.positions.forEach(function (cell) {
-                  styleCell_2bzw0qd24mvis5o62i8v(cell.i, cell.j, group.css_id);
+                  styleCell_yxv6vhuvyb63ttyisoqu(cell.i, cell.j, group.css_id);
               });
           });
       });
@@ -3319,11 +3325,11 @@ Figure&nbsp;4.7: Legislator retention by gender and first state
 
     <style>
       /* tinytable css entries after */
-      .table td.tinytable_css_obzjnr6a5zgocv0qsrhz, .table th.tinytable_css_obzjnr6a5zgocv0qsrhz { border-bottom: solid #d3d8dc 0.1em; }
-      .table td.tinytable_css_2ivz3saxmot28qwc28lz, .table th.tinytable_css_2ivz3saxmot28qwc28lz { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
+      .table td.tinytable_css_j8gmjbliiwpfsfpwev3v, .table th.tinytable_css_j8gmjbliiwpfsfpwev3v { border-bottom: solid #d3d8dc 0.1em; }
+      .table td.tinytable_css_0ysior5am97t998laall, .table th.tinytable_css_0ysior5am97t998laall { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
     </style>
     <div class="container">
-      <table class="table table-borderless" id="tinytable_2bzw0qd24mvis5o62i8v" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
+      <table class="table table-borderless" id="tinytable_yxv6vhuvyb63ttyisoqu" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
         <thead>
         
               <tr>
@@ -3385,7 +3391,7 @@ Figure&nbsp;4.7: Legislator retention by gender and first state
 <p>Another option is to use a window of time such as a week or month. Any entity that appears in the data set during that window is included in the cohort. While this approach is often more representative of the business or process, the trade-off is that the SQL code will become more complex, and the query time may be slower due to more intense database calculations. Finding the right balance between query performance and accuracy of results is something of an art.</p>
 <p>Let’s take a look at how to calculate such midstream analysis with the legislators data set by considering retention for legislators who were in office in the year 2000. We’ll cohort by the <code>term_type</code>, which has values of “sen” for senators and “rep” for representatives. The definition will include any legislator in office at any time during the year 2000: those who started prior to 2000 and whose terms ended during or after 2000 qualify, as do those who started a term in 2000. We can hardcode any date in 2000 as the <code>first_term</code>, since we will later check whether they were in office at some point during 2000. The <code>min_start</code> of the terms falling in this window is also calculated for use in a later step:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>first_terms <span class="ot">&lt;-</span></span>
+<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>first_terms_2000 <span class="ot">&lt;-</span></span>
 <span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>  legislators_terms <span class="sc">|&gt;</span></span>
 <span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(term_start <span class="sc">&lt;=</span> <span class="st">"2000-12-31"</span>, </span>
 <span id="cb48-4"><a href="#cb48-4" aria-hidden="true" tabindex="-1"></a>         term_end <span class="sc">&gt;=</span> <span class="st">"2000-01-01"</span>) <span class="sc">|&gt;</span></span>
@@ -3396,7 +3402,7 @@ Figure&nbsp;4.7: Legislator retention by gender and first state
 <p>We can then plug this into our retention code, with two adjustments. First, an additional <code>JOIN</code> criterion between <code>first_terms</code> and the <code>legislators_terms</code> table is added in order to return only terms that started on or after the <code>min_start</code> date. Second, an additional filter is added to <code>year_ends</code> so that it only returns dates in 2000 or later:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a>cohorts <span class="ot">&lt;-</span></span>
-<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a>  first_terms <span class="sc">|&gt;</span></span>
+<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a>  first_terms_2000 <span class="sc">|&gt;</span></span>
 <span id="cb49-3"><a href="#cb49-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">inner_join</span>(legislators_terms <span class="sc">|&gt;</span> <span class="fu">select</span>(<span class="sc">-</span>term_type),</span>
 <span id="cb49-4"><a href="#cb49-4" aria-hidden="true" tabindex="-1"></a>             <span class="fu">join_by</span>(id_bioguide, y<span class="sc">$</span>term_start <span class="sc">&gt;=</span> x<span class="sc">$</span>min_start)) <span class="sc">|&gt;</span></span>
 <span id="cb49-5"><a href="#cb49-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(year_ends <span class="sc">|&gt;</span> <span class="fu">filter</span>(<span class="fu">year</span>(date) <span class="sc">&gt;=</span> <span class="dv">2000</span>), </span>
@@ -3475,8 +3481,8 @@ Figure&nbsp;4.8: Retention by term type for legislators in office during the yea
 
     <script>
 
-      function styleCell_ybu84rj5oml5s8mhy0o8(i, j, css_id) {
-          var table = document.getElementById("tinytable_ybu84rj5oml5s8mhy0o8");
+      function styleCell_dxfyv0pco41mf2216kvf(i, j, css_id) {
+          var table = document.getElementById("tinytable_dxfyv0pco41mf2216kvf");
           var cell = table.rows[i]?.cells[j];  // Safe navigation to avoid errors
           if (cell) {
               console.log(`Styling cell at (${i}, ${j}) with class ${css_id}`);
@@ -3486,7 +3492,7 @@ Figure&nbsp;4.8: Retention by term type for legislators in office during the yea
           }
       }
       function insertSpanRow(i, colspan, content) {
-        var table = document.getElementById('tinytable_ybu84rj5oml5s8mhy0o8');
+        var table = document.getElementById('tinytable_dxfyv0pco41mf2216kvf');
         var newRow = table.insertRow(i);
         var newCell = newRow.insertCell(0);
         newCell.setAttribute("colspan", colspan);
@@ -3494,8 +3500,8 @@ Figure&nbsp;4.8: Retention by term type for legislators in office during the yea
         // this may be unsafe, but innerText does not interpret <br>
         newCell.innerHTML = content;
       }
-      function spanCell_ybu84rj5oml5s8mhy0o8(i, j, rowspan, colspan) {
-        var table = document.getElementById("tinytable_ybu84rj5oml5s8mhy0o8");
+      function spanCell_dxfyv0pco41mf2216kvf(i, j, rowspan, colspan) {
+        var table = document.getElementById("tinytable_dxfyv0pco41mf2216kvf");
         const targetRow = table.rows[i];
         const targetCell = targetRow.cells[j];
         for (let r = 0; r < rowspan; r++) {
@@ -3525,14 +3531,14 @@ Figure&nbsp;4.8: Retention by term type for legislators in office during the yea
       window.addEventListener('load', function () {
           var cellsToStyle = [
             // tinytable style arrays after
-          { positions: [ { i: 0, j: 0 }, { i: 0, j: 1 }, { i: 0, j: 2 }, { i: 0, j: 3 },  ], css_id: 'tinytable_css_lf49p5o3pkcm4f3w0lhw',}, 
-          { positions: [ { i: 4, j: 0 }, { i: 4, j: 1 }, { i: 4, j: 2 }, { i: 4, j: 3 },  ], css_id: 'tinytable_css_75ykd7avvah9ok0qm90x',}, 
+          { positions: [ { i: 4, j: 0 }, { i: 4, j: 1 }, { i: 4, j: 2 }, { i: 4, j: 3 },  ], css_id: 'tinytable_css_linya5mqu31djg43x3oj',}, 
+          { positions: [ { i: 0, j: 0 }, { i: 0, j: 1 }, { i: 0, j: 2 }, { i: 0, j: 3 },  ], css_id: 'tinytable_css_dpkt1vkachsnxx0nlpio',}, 
           ];
 
           // Loop over the arrays to style the cells
           cellsToStyle.forEach(function (group) {
               group.positions.forEach(function (cell) {
-                  styleCell_ybu84rj5oml5s8mhy0o8(cell.i, cell.j, group.css_id);
+                  styleCell_dxfyv0pco41mf2216kvf(cell.i, cell.j, group.css_id);
               });
           });
       });
@@ -3540,11 +3546,11 @@ Figure&nbsp;4.8: Retention by term type for legislators in office during the yea
 
     <style>
       /* tinytable css entries after */
-      .table td.tinytable_css_lf49p5o3pkcm4f3w0lhw, .table th.tinytable_css_lf49p5o3pkcm4f3w0lhw { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
-      .table td.tinytable_css_75ykd7avvah9ok0qm90x, .table th.tinytable_css_75ykd7avvah9ok0qm90x { border-bottom: solid #d3d8dc 0.1em; }
+      .table td.tinytable_css_linya5mqu31djg43x3oj, .table th.tinytable_css_linya5mqu31djg43x3oj { border-bottom: solid #d3d8dc 0.1em; }
+      .table td.tinytable_css_dpkt1vkachsnxx0nlpio, .table th.tinytable_css_dpkt1vkachsnxx0nlpio { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
     </style>
     <div class="container">
-      <table class="table table-borderless" id="tinytable_ybu84rj5oml5s8mhy0o8" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
+      <table class="table table-borderless" id="tinytable_dxfyv0pco41mf2216kvf" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
         <thead>
         
               <tr>
@@ -3609,8 +3615,8 @@ Figure&nbsp;4.8: Retention by term type for legislators in office during the yea
 
     <script>
 
-      function styleCell_f9et9do98rm3cq47nsgn(i, j, css_id) {
-          var table = document.getElementById("tinytable_f9et9do98rm3cq47nsgn");
+      function styleCell_ic1vq4uwm0gkqc9ylm44(i, j, css_id) {
+          var table = document.getElementById("tinytable_ic1vq4uwm0gkqc9ylm44");
           var cell = table.rows[i]?.cells[j];  // Safe navigation to avoid errors
           if (cell) {
               console.log(`Styling cell at (${i}, ${j}) with class ${css_id}`);
@@ -3620,7 +3626,7 @@ Figure&nbsp;4.8: Retention by term type for legislators in office during the yea
           }
       }
       function insertSpanRow(i, colspan, content) {
-        var table = document.getElementById('tinytable_f9et9do98rm3cq47nsgn');
+        var table = document.getElementById('tinytable_ic1vq4uwm0gkqc9ylm44');
         var newRow = table.insertRow(i);
         var newCell = newRow.insertCell(0);
         newCell.setAttribute("colspan", colspan);
@@ -3628,8 +3634,8 @@ Figure&nbsp;4.8: Retention by term type for legislators in office during the yea
         // this may be unsafe, but innerText does not interpret <br>
         newCell.innerHTML = content;
       }
-      function spanCell_f9et9do98rm3cq47nsgn(i, j, rowspan, colspan) {
-        var table = document.getElementById("tinytable_f9et9do98rm3cq47nsgn");
+      function spanCell_ic1vq4uwm0gkqc9ylm44(i, j, rowspan, colspan) {
+        var table = document.getElementById("tinytable_ic1vq4uwm0gkqc9ylm44");
         const targetRow = table.rows[i];
         const targetCell = targetRow.cells[j];
         for (let r = 0; r < rowspan; r++) {
@@ -3659,14 +3665,14 @@ Figure&nbsp;4.8: Retention by term type for legislators in office during the yea
       window.addEventListener('load', function () {
           var cellsToStyle = [
             // tinytable style arrays after
-          { positions: [ { i: 0, j: 0 }, { i: 0, j: 1 }, { i: 0, j: 2 }, { i: 0, j: 3 },  ], css_id: 'tinytable_css_oga3bcmlu9cocfctf2nx',}, 
-          { positions: [ { i: 4, j: 0 }, { i: 4, j: 1 }, { i: 4, j: 2 }, { i: 4, j: 3 },  ], css_id: 'tinytable_css_2394bq77nwb0ozxh5bmx',}, 
+          { positions: [ { i: 0, j: 0 }, { i: 0, j: 1 }, { i: 0, j: 2 }, { i: 0, j: 3 },  ], css_id: 'tinytable_css_l7yircaq13k14k2mx22j',}, 
+          { positions: [ { i: 4, j: 0 }, { i: 4, j: 1 }, { i: 4, j: 2 }, { i: 4, j: 3 },  ], css_id: 'tinytable_css_1hykmqxbih5k9xfmmso4',}, 
           ];
 
           // Loop over the arrays to style the cells
           cellsToStyle.forEach(function (group) {
               group.positions.forEach(function (cell) {
-                  styleCell_f9et9do98rm3cq47nsgn(cell.i, cell.j, group.css_id);
+                  styleCell_ic1vq4uwm0gkqc9ylm44(cell.i, cell.j, group.css_id);
               });
           });
       });
@@ -3674,11 +3680,11 @@ Figure&nbsp;4.8: Retention by term type for legislators in office during the yea
 
     <style>
       /* tinytable css entries after */
-      .table td.tinytable_css_oga3bcmlu9cocfctf2nx, .table th.tinytable_css_oga3bcmlu9cocfctf2nx { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
-      .table td.tinytable_css_2394bq77nwb0ozxh5bmx, .table th.tinytable_css_2394bq77nwb0ozxh5bmx { border-bottom: solid #d3d8dc 0.1em; }
+      .table td.tinytable_css_l7yircaq13k14k2mx22j, .table th.tinytable_css_l7yircaq13k14k2mx22j { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
+      .table td.tinytable_css_1hykmqxbih5k9xfmmso4, .table th.tinytable_css_1hykmqxbih5k9xfmmso4 { border-bottom: solid #d3d8dc 0.1em; }
     </style>
     <div class="container">
-      <table class="table table-borderless" id="tinytable_f9et9do98rm3cq47nsgn" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
+      <table class="table table-borderless" id="tinytable_ic1vq4uwm0gkqc9ylm44" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
         <thead>
         
               <tr>
@@ -3741,8 +3747,8 @@ Figure&nbsp;4.8: Retention by term type for legislators in office during the yea
 
     <script>
 
-      function styleCell_7hhuvdosuw6xqgvr63n8(i, j, css_id) {
-          var table = document.getElementById("tinytable_7hhuvdosuw6xqgvr63n8");
+      function styleCell_z2glc3irfxiekys6765x(i, j, css_id) {
+          var table = document.getElementById("tinytable_z2glc3irfxiekys6765x");
           var cell = table.rows[i]?.cells[j];  // Safe navigation to avoid errors
           if (cell) {
               console.log(`Styling cell at (${i}, ${j}) with class ${css_id}`);
@@ -3752,7 +3758,7 @@ Figure&nbsp;4.8: Retention by term type for legislators in office during the yea
           }
       }
       function insertSpanRow(i, colspan, content) {
-        var table = document.getElementById('tinytable_7hhuvdosuw6xqgvr63n8');
+        var table = document.getElementById('tinytable_z2glc3irfxiekys6765x');
         var newRow = table.insertRow(i);
         var newCell = newRow.insertCell(0);
         newCell.setAttribute("colspan", colspan);
@@ -3760,8 +3766,8 @@ Figure&nbsp;4.8: Retention by term type for legislators in office during the yea
         // this may be unsafe, but innerText does not interpret <br>
         newCell.innerHTML = content;
       }
-      function spanCell_7hhuvdosuw6xqgvr63n8(i, j, rowspan, colspan) {
-        var table = document.getElementById("tinytable_7hhuvdosuw6xqgvr63n8");
+      function spanCell_z2glc3irfxiekys6765x(i, j, rowspan, colspan) {
+        var table = document.getElementById("tinytable_z2glc3irfxiekys6765x");
         const targetRow = table.rows[i];
         const targetCell = targetRow.cells[j];
         for (let r = 0; r < rowspan; r++) {
@@ -3791,14 +3797,14 @@ Figure&nbsp;4.8: Retention by term type for legislators in office during the yea
       window.addEventListener('load', function () {
           var cellsToStyle = [
             // tinytable style arrays after
-          { positions: [ { i: 4, j: 0 }, { i: 4, j: 1 }, { i: 4, j: 2 }, { i: 4, j: 3 }, { i: 4, j: 4 },  ], css_id: 'tinytable_css_pc2j8e6ug7oxxy8nhw7q',}, 
-          { positions: [ { i: 0, j: 0 }, { i: 0, j: 1 }, { i: 0, j: 2 }, { i: 0, j: 3 }, { i: 0, j: 4 },  ], css_id: 'tinytable_css_n9y6tawqytvdbsnciflb',}, 
+          { positions: [ { i: 4, j: 0 }, { i: 4, j: 1 }, { i: 4, j: 2 }, { i: 4, j: 3 }, { i: 4, j: 4 },  ], css_id: 'tinytable_css_wzkyjbuvj1e0d6wqieyu',}, 
+          { positions: [ { i: 0, j: 0 }, { i: 0, j: 1 }, { i: 0, j: 2 }, { i: 0, j: 3 }, { i: 0, j: 4 },  ], css_id: 'tinytable_css_1j1q3l07uy1j0z1aa9ac',}, 
           ];
 
           // Loop over the arrays to style the cells
           cellsToStyle.forEach(function (group) {
               group.positions.forEach(function (cell) {
-                  styleCell_7hhuvdosuw6xqgvr63n8(cell.i, cell.j, group.css_id);
+                  styleCell_z2glc3irfxiekys6765x(cell.i, cell.j, group.css_id);
               });
           });
       });
@@ -3806,11 +3812,11 @@ Figure&nbsp;4.8: Retention by term type for legislators in office during the yea
 
     <style>
       /* tinytable css entries after */
-      .table td.tinytable_css_pc2j8e6ug7oxxy8nhw7q, .table th.tinytable_css_pc2j8e6ug7oxxy8nhw7q { border-bottom: solid #d3d8dc 0.1em; }
-      .table td.tinytable_css_n9y6tawqytvdbsnciflb, .table th.tinytable_css_n9y6tawqytvdbsnciflb { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
+      .table td.tinytable_css_wzkyjbuvj1e0d6wqieyu, .table th.tinytable_css_wzkyjbuvj1e0d6wqieyu { border-bottom: solid #d3d8dc 0.1em; }
+      .table td.tinytable_css_1j1q3l07uy1j0z1aa9ac, .table th.tinytable_css_1j1q3l07uy1j0z1aa9ac { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
     </style>
     <div class="container">
-      <table class="table table-borderless" id="tinytable_7hhuvdosuw6xqgvr63n8" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
+      <table class="table table-borderless" id="tinytable_z2glc3irfxiekys6765x" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
         <thead>
         
               <tr>
@@ -3905,8 +3911,8 @@ Figure&nbsp;4.9: Retention by term type for legislators in office during the yea
 
     <script>
 
-      function styleCell_fgh12s25qrmiwi38h4hg(i, j, css_id) {
-          var table = document.getElementById("tinytable_fgh12s25qrmiwi38h4hg");
+      function styleCell_bjuq8dosgm7y9wuwuu6r(i, j, css_id) {
+          var table = document.getElementById("tinytable_bjuq8dosgm7y9wuwuu6r");
           var cell = table.rows[i]?.cells[j];  // Safe navigation to avoid errors
           if (cell) {
               console.log(`Styling cell at (${i}, ${j}) with class ${css_id}`);
@@ -3916,7 +3922,7 @@ Figure&nbsp;4.9: Retention by term type for legislators in office during the yea
           }
       }
       function insertSpanRow(i, colspan, content) {
-        var table = document.getElementById('tinytable_fgh12s25qrmiwi38h4hg');
+        var table = document.getElementById('tinytable_bjuq8dosgm7y9wuwuu6r');
         var newRow = table.insertRow(i);
         var newCell = newRow.insertCell(0);
         newCell.setAttribute("colspan", colspan);
@@ -3924,8 +3930,8 @@ Figure&nbsp;4.9: Retention by term type for legislators in office during the yea
         // this may be unsafe, but innerText does not interpret <br>
         newCell.innerHTML = content;
       }
-      function spanCell_fgh12s25qrmiwi38h4hg(i, j, rowspan, colspan) {
-        var table = document.getElementById("tinytable_fgh12s25qrmiwi38h4hg");
+      function spanCell_bjuq8dosgm7y9wuwuu6r(i, j, rowspan, colspan) {
+        var table = document.getElementById("tinytable_bjuq8dosgm7y9wuwuu6r");
         const targetRow = table.rows[i];
         const targetCell = targetRow.cells[j];
         for (let r = 0; r < rowspan; r++) {
@@ -3955,14 +3961,14 @@ Figure&nbsp;4.9: Retention by term type for legislators in office during the yea
       window.addEventListener('load', function () {
           var cellsToStyle = [
             // tinytable style arrays after
-          { positions: [ { i: 0, j: 0 }, { i: 0, j: 1 },  ], css_id: 'tinytable_css_n7ibx4x5qxnpu9g2fh2w',}, 
-          { positions: [ { i: 4, j: 0 }, { i: 4, j: 1 },  ], css_id: 'tinytable_css_i46ndmllev2f2qy53ftg',}, 
+          { positions: [ { i: 4, j: 0 }, { i: 4, j: 1 },  ], css_id: 'tinytable_css_yckxk7d9cm4v5xj0ydk0',}, 
+          { positions: [ { i: 0, j: 0 }, { i: 0, j: 1 },  ], css_id: 'tinytable_css_aorza386spb88rmxzfsk',}, 
           ];
 
           // Loop over the arrays to style the cells
           cellsToStyle.forEach(function (group) {
               group.positions.forEach(function (cell) {
-                  styleCell_fgh12s25qrmiwi38h4hg(cell.i, cell.j, group.css_id);
+                  styleCell_bjuq8dosgm7y9wuwuu6r(cell.i, cell.j, group.css_id);
               });
           });
       });
@@ -3970,11 +3976,11 @@ Figure&nbsp;4.9: Retention by term type for legislators in office during the yea
 
     <style>
       /* tinytable css entries after */
-      .table td.tinytable_css_n7ibx4x5qxnpu9g2fh2w, .table th.tinytable_css_n7ibx4x5qxnpu9g2fh2w { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
-      .table td.tinytable_css_i46ndmllev2f2qy53ftg, .table th.tinytable_css_i46ndmllev2f2qy53ftg { border-bottom: solid #d3d8dc 0.1em; }
+      .table td.tinytable_css_yckxk7d9cm4v5xj0ydk0, .table th.tinytable_css_yckxk7d9cm4v5xj0ydk0 { border-bottom: solid #d3d8dc 0.1em; }
+      .table td.tinytable_css_aorza386spb88rmxzfsk, .table th.tinytable_css_aorza386spb88rmxzfsk { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
     </style>
     <div class="container">
-      <table class="table table-borderless" id="tinytable_fgh12s25qrmiwi38h4hg" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
+      <table class="table table-borderless" id="tinytable_bjuq8dosgm7y9wuwuu6r" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
         <thead>
         
               <tr>
@@ -4025,8 +4031,8 @@ Figure&nbsp;4.9: Retention by term type for legislators in office during the yea
 
     <script>
 
-      function styleCell_hf4trt2hvk965ybko8ek(i, j, css_id) {
-          var table = document.getElementById("tinytable_hf4trt2hvk965ybko8ek");
+      function styleCell_xh3x46rv4259x19aofb1(i, j, css_id) {
+          var table = document.getElementById("tinytable_xh3x46rv4259x19aofb1");
           var cell = table.rows[i]?.cells[j];  // Safe navigation to avoid errors
           if (cell) {
               console.log(`Styling cell at (${i}, ${j}) with class ${css_id}`);
@@ -4036,7 +4042,7 @@ Figure&nbsp;4.9: Retention by term type for legislators in office during the yea
           }
       }
       function insertSpanRow(i, colspan, content) {
-        var table = document.getElementById('tinytable_hf4trt2hvk965ybko8ek');
+        var table = document.getElementById('tinytable_xh3x46rv4259x19aofb1');
         var newRow = table.insertRow(i);
         var newCell = newRow.insertCell(0);
         newCell.setAttribute("colspan", colspan);
@@ -4044,8 +4050,8 @@ Figure&nbsp;4.9: Retention by term type for legislators in office during the yea
         // this may be unsafe, but innerText does not interpret <br>
         newCell.innerHTML = content;
       }
-      function spanCell_hf4trt2hvk965ybko8ek(i, j, rowspan, colspan) {
-        var table = document.getElementById("tinytable_hf4trt2hvk965ybko8ek");
+      function spanCell_xh3x46rv4259x19aofb1(i, j, rowspan, colspan) {
+        var table = document.getElementById("tinytable_xh3x46rv4259x19aofb1");
         const targetRow = table.rows[i];
         const targetCell = targetRow.cells[j];
         for (let r = 0; r < rowspan; r++) {
@@ -4075,14 +4081,14 @@ Figure&nbsp;4.9: Retention by term type for legislators in office during the yea
       window.addEventListener('load', function () {
           var cellsToStyle = [
             // tinytable style arrays after
-          { positions: [ { i: 0, j: 0 }, { i: 0, j: 1 },  ], css_id: 'tinytable_css_e08lklh9s5pp0pe7zzub',}, 
-          { positions: [ { i: 4, j: 0 }, { i: 4, j: 1 },  ], css_id: 'tinytable_css_7l8tm6imwd5hli24q4j4',}, 
+          { positions: [ { i: 4, j: 0 }, { i: 4, j: 1 },  ], css_id: 'tinytable_css_s69nnb067nyvk5a9i0sp',}, 
+          { positions: [ { i: 0, j: 0 }, { i: 0, j: 1 },  ], css_id: 'tinytable_css_o703rczfwtqwh2kioqm0',}, 
           ];
 
           // Loop over the arrays to style the cells
           cellsToStyle.forEach(function (group) {
               group.positions.forEach(function (cell) {
-                  styleCell_hf4trt2hvk965ybko8ek(cell.i, cell.j, group.css_id);
+                  styleCell_xh3x46rv4259x19aofb1(cell.i, cell.j, group.css_id);
               });
           });
       });
@@ -4090,11 +4096,11 @@ Figure&nbsp;4.9: Retention by term type for legislators in office during the yea
 
     <style>
       /* tinytable css entries after */
-      .table td.tinytable_css_e08lklh9s5pp0pe7zzub, .table th.tinytable_css_e08lklh9s5pp0pe7zzub { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
-      .table td.tinytable_css_7l8tm6imwd5hli24q4j4, .table th.tinytable_css_7l8tm6imwd5hli24q4j4 { border-bottom: solid #d3d8dc 0.1em; }
+      .table td.tinytable_css_s69nnb067nyvk5a9i0sp, .table th.tinytable_css_s69nnb067nyvk5a9i0sp { border-bottom: solid #d3d8dc 0.1em; }
+      .table td.tinytable_css_o703rczfwtqwh2kioqm0, .table th.tinytable_css_o703rczfwtqwh2kioqm0 { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
     </style>
     <div class="container">
-      <table class="table table-borderless" id="tinytable_hf4trt2hvk965ybko8ek" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
+      <table class="table table-borderless" id="tinytable_xh3x46rv4259x19aofb1" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
         <thead>
         
               <tr>
@@ -4138,8 +4144,8 @@ Figure&nbsp;4.9: Retention by term type for legislators in office during the yea
 
     <script>
 
-      function styleCell_9iccfhzuaqmojl0urlxp(i, j, css_id) {
-          var table = document.getElementById("tinytable_9iccfhzuaqmojl0urlxp");
+      function styleCell_e158b8cwxjtvngq0ccuw(i, j, css_id) {
+          var table = document.getElementById("tinytable_e158b8cwxjtvngq0ccuw");
           var cell = table.rows[i]?.cells[j];  // Safe navigation to avoid errors
           if (cell) {
               console.log(`Styling cell at (${i}, ${j}) with class ${css_id}`);
@@ -4149,7 +4155,7 @@ Figure&nbsp;4.9: Retention by term type for legislators in office during the yea
           }
       }
       function insertSpanRow(i, colspan, content) {
-        var table = document.getElementById('tinytable_9iccfhzuaqmojl0urlxp');
+        var table = document.getElementById('tinytable_e158b8cwxjtvngq0ccuw');
         var newRow = table.insertRow(i);
         var newCell = newRow.insertCell(0);
         newCell.setAttribute("colspan", colspan);
@@ -4157,8 +4163,8 @@ Figure&nbsp;4.9: Retention by term type for legislators in office during the yea
         // this may be unsafe, but innerText does not interpret <br>
         newCell.innerHTML = content;
       }
-      function spanCell_9iccfhzuaqmojl0urlxp(i, j, rowspan, colspan) {
-        var table = document.getElementById("tinytable_9iccfhzuaqmojl0urlxp");
+      function spanCell_e158b8cwxjtvngq0ccuw(i, j, rowspan, colspan) {
+        var table = document.getElementById("tinytable_e158b8cwxjtvngq0ccuw");
         const targetRow = table.rows[i];
         const targetCell = targetRow.cells[j];
         for (let r = 0; r < rowspan; r++) {
@@ -4188,14 +4194,14 @@ Figure&nbsp;4.9: Retention by term type for legislators in office during the yea
       window.addEventListener('load', function () {
           var cellsToStyle = [
             // tinytable style arrays after
-          { positions: [ { i: 0, j: 0 }, { i: 0, j: 1 },  ], css_id: 'tinytable_css_vhb3fygpzb0tvsy3h447',}, 
-          { positions: [ { i: 4, j: 0 }, { i: 4, j: 1 },  ], css_id: 'tinytable_css_60k4lnstev4g8wzvbevr',}, 
+          { positions: [ { i: 0, j: 0 }, { i: 0, j: 1 },  ], css_id: 'tinytable_css_gq8tdy4tn75m5xc95qyr',}, 
+          { positions: [ { i: 4, j: 0 }, { i: 4, j: 1 },  ], css_id: 'tinytable_css_eqm79lklxei5g103quo6',}, 
           ];
 
           // Loop over the arrays to style the cells
           cellsToStyle.forEach(function (group) {
               group.positions.forEach(function (cell) {
-                  styleCell_9iccfhzuaqmojl0urlxp(cell.i, cell.j, group.css_id);
+                  styleCell_e158b8cwxjtvngq0ccuw(cell.i, cell.j, group.css_id);
               });
           });
       });
@@ -4203,11 +4209,11 @@ Figure&nbsp;4.9: Retention by term type for legislators in office during the yea
 
     <style>
       /* tinytable css entries after */
-      .table td.tinytable_css_vhb3fygpzb0tvsy3h447, .table th.tinytable_css_vhb3fygpzb0tvsy3h447 { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
-      .table td.tinytable_css_60k4lnstev4g8wzvbevr, .table th.tinytable_css_60k4lnstev4g8wzvbevr { border-bottom: solid #d3d8dc 0.1em; }
+      .table td.tinytable_css_gq8tdy4tn75m5xc95qyr, .table th.tinytable_css_gq8tdy4tn75m5xc95qyr { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
+      .table td.tinytable_css_eqm79lklxei5g103quo6, .table th.tinytable_css_eqm79lklxei5g103quo6 { border-bottom: solid #d3d8dc 0.1em; }
     </style>
     <div class="container">
-      <table class="table table-borderless" id="tinytable_9iccfhzuaqmojl0urlxp" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
+      <table class="table table-borderless" id="tinytable_e158b8cwxjtvngq0ccuw" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
         <thead>
         
               <tr>
@@ -4271,8 +4277,8 @@ Figure&nbsp;4.9: Retention by term type for legislators in office during the yea
 
     <script>
 
-      function styleCell_scyzokh7kmxpow1qrq58(i, j, css_id) {
-          var table = document.getElementById("tinytable_scyzokh7kmxpow1qrq58");
+      function styleCell_h5wm3rdi2p6oo52dlzb0(i, j, css_id) {
+          var table = document.getElementById("tinytable_h5wm3rdi2p6oo52dlzb0");
           var cell = table.rows[i]?.cells[j];  // Safe navigation to avoid errors
           if (cell) {
               console.log(`Styling cell at (${i}, ${j}) with class ${css_id}`);
@@ -4282,7 +4288,7 @@ Figure&nbsp;4.9: Retention by term type for legislators in office during the yea
           }
       }
       function insertSpanRow(i, colspan, content) {
-        var table = document.getElementById('tinytable_scyzokh7kmxpow1qrq58');
+        var table = document.getElementById('tinytable_h5wm3rdi2p6oo52dlzb0');
         var newRow = table.insertRow(i);
         var newCell = newRow.insertCell(0);
         newCell.setAttribute("colspan", colspan);
@@ -4290,8 +4296,8 @@ Figure&nbsp;4.9: Retention by term type for legislators in office during the yea
         // this may be unsafe, but innerText does not interpret <br>
         newCell.innerHTML = content;
       }
-      function spanCell_scyzokh7kmxpow1qrq58(i, j, rowspan, colspan) {
-        var table = document.getElementById("tinytable_scyzokh7kmxpow1qrq58");
+      function spanCell_h5wm3rdi2p6oo52dlzb0(i, j, rowspan, colspan) {
+        var table = document.getElementById("tinytable_h5wm3rdi2p6oo52dlzb0");
         const targetRow = table.rows[i];
         const targetCell = targetRow.cells[j];
         for (let r = 0; r < rowspan; r++) {
@@ -4321,14 +4327,14 @@ Figure&nbsp;4.9: Retention by term type for legislators in office during the yea
       window.addEventListener('load', function () {
           var cellsToStyle = [
             // tinytable style arrays after
-          { positions: [ { i: 0, j: 0 }, { i: 0, j: 1 },  ], css_id: 'tinytable_css_kvq35rct0xh3w7v0vj0b',}, 
-          { positions: [ { i: 4, j: 0 }, { i: 4, j: 1 },  ], css_id: 'tinytable_css_f0wy1q8cv8ujruh7d2zl',}, 
+          { positions: [ { i: 0, j: 0 }, { i: 0, j: 1 },  ], css_id: 'tinytable_css_w3uy9u5e0danivzvtxk0',}, 
+          { positions: [ { i: 4, j: 0 }, { i: 4, j: 1 },  ], css_id: 'tinytable_css_dw0piq92yv3ffbm85znn',}, 
           ];
 
           // Loop over the arrays to style the cells
           cellsToStyle.forEach(function (group) {
               group.positions.forEach(function (cell) {
-                  styleCell_scyzokh7kmxpow1qrq58(cell.i, cell.j, group.css_id);
+                  styleCell_h5wm3rdi2p6oo52dlzb0(cell.i, cell.j, group.css_id);
               });
           });
       });
@@ -4336,11 +4342,11 @@ Figure&nbsp;4.9: Retention by term type for legislators in office during the yea
 
     <style>
       /* tinytable css entries after */
-      .table td.tinytable_css_kvq35rct0xh3w7v0vj0b, .table th.tinytable_css_kvq35rct0xh3w7v0vj0b { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
-      .table td.tinytable_css_f0wy1q8cv8ujruh7d2zl, .table th.tinytable_css_f0wy1q8cv8ujruh7d2zl { border-bottom: solid #d3d8dc 0.1em; }
+      .table td.tinytable_css_w3uy9u5e0danivzvtxk0, .table th.tinytable_css_w3uy9u5e0danivzvtxk0 { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
+      .table td.tinytable_css_dw0piq92yv3ffbm85znn, .table th.tinytable_css_dw0piq92yv3ffbm85znn { border-bottom: solid #d3d8dc 0.1em; }
     </style>
     <div class="container">
-      <table class="table table-borderless" id="tinytable_scyzokh7kmxpow1qrq58" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
+      <table class="table table-borderless" id="tinytable_h5wm3rdi2p6oo52dlzb0" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
         <thead>
         
               <tr>
@@ -4408,8 +4414,8 @@ Figure&nbsp;4.9: Retention by term type for legislators in office during the yea
 
     <script>
 
-      function styleCell_jf6c7bdbaxmujkxnop9g(i, j, css_id) {
-          var table = document.getElementById("tinytable_jf6c7bdbaxmujkxnop9g");
+      function styleCell_ry6ebnwjyylbcqwx4qpf(i, j, css_id) {
+          var table = document.getElementById("tinytable_ry6ebnwjyylbcqwx4qpf");
           var cell = table.rows[i]?.cells[j];  // Safe navigation to avoid errors
           if (cell) {
               console.log(`Styling cell at (${i}, ${j}) with class ${css_id}`);
@@ -4419,7 +4425,7 @@ Figure&nbsp;4.9: Retention by term type for legislators in office during the yea
           }
       }
       function insertSpanRow(i, colspan, content) {
-        var table = document.getElementById('tinytable_jf6c7bdbaxmujkxnop9g');
+        var table = document.getElementById('tinytable_ry6ebnwjyylbcqwx4qpf');
         var newRow = table.insertRow(i);
         var newCell = newRow.insertCell(0);
         newCell.setAttribute("colspan", colspan);
@@ -4427,8 +4433,8 @@ Figure&nbsp;4.9: Retention by term type for legislators in office during the yea
         // this may be unsafe, but innerText does not interpret <br>
         newCell.innerHTML = content;
       }
-      function spanCell_jf6c7bdbaxmujkxnop9g(i, j, rowspan, colspan) {
-        var table = document.getElementById("tinytable_jf6c7bdbaxmujkxnop9g");
+      function spanCell_ry6ebnwjyylbcqwx4qpf(i, j, rowspan, colspan) {
+        var table = document.getElementById("tinytable_ry6ebnwjyylbcqwx4qpf");
         const targetRow = table.rows[i];
         const targetCell = targetRow.cells[j];
         for (let r = 0; r < rowspan; r++) {
@@ -4458,14 +4464,14 @@ Figure&nbsp;4.9: Retention by term type for legislators in office during the yea
       window.addEventListener('load', function () {
           var cellsToStyle = [
             // tinytable style arrays after
-          { positions: [ { i: 4, j: 0 }, { i: 4, j: 1 }, { i: 4, j: 2 }, { i: 4, j: 3 },  ], css_id: 'tinytable_css_xuovjpcjettl1yl7ct5j',}, 
-          { positions: [ { i: 0, j: 0 }, { i: 0, j: 1 }, { i: 0, j: 2 }, { i: 0, j: 3 },  ], css_id: 'tinytable_css_hdgyvt4stgnp43f4hg6h',}, 
+          { positions: [ { i: 4, j: 0 }, { i: 4, j: 1 }, { i: 4, j: 2 }, { i: 4, j: 3 },  ], css_id: 'tinytable_css_7dqybfvus1syn35f8clp',}, 
+          { positions: [ { i: 0, j: 0 }, { i: 0, j: 1 }, { i: 0, j: 2 }, { i: 0, j: 3 },  ], css_id: 'tinytable_css_04lqfr01o3hxf0dcvmpk',}, 
           ];
 
           // Loop over the arrays to style the cells
           cellsToStyle.forEach(function (group) {
               group.positions.forEach(function (cell) {
-                  styleCell_jf6c7bdbaxmujkxnop9g(cell.i, cell.j, group.css_id);
+                  styleCell_ry6ebnwjyylbcqwx4qpf(cell.i, cell.j, group.css_id);
               });
           });
       });
@@ -4473,11 +4479,11 @@ Figure&nbsp;4.9: Retention by term type for legislators in office during the yea
 
     <style>
       /* tinytable css entries after */
-      .table td.tinytable_css_xuovjpcjettl1yl7ct5j, .table th.tinytable_css_xuovjpcjettl1yl7ct5j { border-bottom: solid #d3d8dc 0.1em; }
-      .table td.tinytable_css_hdgyvt4stgnp43f4hg6h, .table th.tinytable_css_hdgyvt4stgnp43f4hg6h { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
+      .table td.tinytable_css_7dqybfvus1syn35f8clp, .table th.tinytable_css_7dqybfvus1syn35f8clp { border-bottom: solid #d3d8dc 0.1em; }
+      .table td.tinytable_css_04lqfr01o3hxf0dcvmpk, .table th.tinytable_css_04lqfr01o3hxf0dcvmpk { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
     </style>
     <div class="container">
-      <table class="table table-borderless" id="tinytable_jf6c7bdbaxmujkxnop9g" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
+      <table class="table table-borderless" id="tinytable_ry6ebnwjyylbcqwx4qpf" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
         <thead>
         
               <tr>
@@ -4599,8 +4605,8 @@ Figure&nbsp;4.10: Trend of the share of representatives for each cohort, defined
 
     <script>
 
-      function styleCell_7e6f4cxytgm1lc44ph9k(i, j, css_id) {
-          var table = document.getElementById("tinytable_7e6f4cxytgm1lc44ph9k");
+      function styleCell_wuci330bjco1l46qrs15(i, j, css_id) {
+          var table = document.getElementById("tinytable_wuci330bjco1l46qrs15");
           var cell = table.rows[i]?.cells[j];  // Safe navigation to avoid errors
           if (cell) {
               console.log(`Styling cell at (${i}, ${j}) with class ${css_id}`);
@@ -4610,7 +4616,7 @@ Figure&nbsp;4.10: Trend of the share of representatives for each cohort, defined
           }
       }
       function insertSpanRow(i, colspan, content) {
-        var table = document.getElementById('tinytable_7e6f4cxytgm1lc44ph9k');
+        var table = document.getElementById('tinytable_wuci330bjco1l46qrs15');
         var newRow = table.insertRow(i);
         var newCell = newRow.insertCell(0);
         newCell.setAttribute("colspan", colspan);
@@ -4618,8 +4624,8 @@ Figure&nbsp;4.10: Trend of the share of representatives for each cohort, defined
         // this may be unsafe, but innerText does not interpret <br>
         newCell.innerHTML = content;
       }
-      function spanCell_7e6f4cxytgm1lc44ph9k(i, j, rowspan, colspan) {
-        var table = document.getElementById("tinytable_7e6f4cxytgm1lc44ph9k");
+      function spanCell_wuci330bjco1l46qrs15(i, j, rowspan, colspan) {
+        var table = document.getElementById("tinytable_wuci330bjco1l46qrs15");
         const targetRow = table.rows[i];
         const targetCell = targetRow.cells[j];
         for (let r = 0; r < rowspan; r++) {
@@ -4649,14 +4655,14 @@ Figure&nbsp;4.10: Trend of the share of representatives for each cohort, defined
       window.addEventListener('load', function () {
           var cellsToStyle = [
             // tinytable style arrays after
-          { positions: [ { i: 4, j: 0 }, { i: 4, j: 1 }, { i: 4, j: 2 }, { i: 4, j: 3 }, { i: 4, j: 4 },  ], css_id: 'tinytable_css_j6a8vd3ydaicittigozp',}, 
-          { positions: [ { i: 0, j: 0 }, { i: 0, j: 1 }, { i: 0, j: 2 }, { i: 0, j: 3 }, { i: 0, j: 4 },  ], css_id: 'tinytable_css_a2xlz94kjj4zm02hefpa',}, 
+          { positions: [ { i: 0, j: 0 }, { i: 0, j: 1 }, { i: 0, j: 2 }, { i: 0, j: 3 }, { i: 0, j: 4 },  ], css_id: 'tinytable_css_d7uupvkultw2nzpc5n81',}, 
+          { positions: [ { i: 4, j: 0 }, { i: 4, j: 1 }, { i: 4, j: 2 }, { i: 4, j: 3 }, { i: 4, j: 4 },  ], css_id: 'tinytable_css_69oc64m0j3cw97rxgk31',}, 
           ];
 
           // Loop over the arrays to style the cells
           cellsToStyle.forEach(function (group) {
               group.positions.forEach(function (cell) {
-                  styleCell_7e6f4cxytgm1lc44ph9k(cell.i, cell.j, group.css_id);
+                  styleCell_wuci330bjco1l46qrs15(cell.i, cell.j, group.css_id);
               });
           });
       });
@@ -4664,11 +4670,11 @@ Figure&nbsp;4.10: Trend of the share of representatives for each cohort, defined
 
     <style>
       /* tinytable css entries after */
-      .table td.tinytable_css_j6a8vd3ydaicittigozp, .table th.tinytable_css_j6a8vd3ydaicittigozp { border-bottom: solid #d3d8dc 0.1em; }
-      .table td.tinytable_css_a2xlz94kjj4zm02hefpa, .table th.tinytable_css_a2xlz94kjj4zm02hefpa { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
+      .table td.tinytable_css_d7uupvkultw2nzpc5n81, .table th.tinytable_css_d7uupvkultw2nzpc5n81 { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
+      .table td.tinytable_css_69oc64m0j3cw97rxgk31, .table th.tinytable_css_69oc64m0j3cw97rxgk31 { border-bottom: solid #d3d8dc 0.1em; }
     </style>
     <div class="container">
-      <table class="table table-borderless" id="tinytable_7e6f4cxytgm1lc44ph9k" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
+      <table class="table table-borderless" id="tinytable_wuci330bjco1l46qrs15" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
         <thead>
         
               <tr>
@@ -4730,8 +4736,8 @@ Figure&nbsp;4.10: Trend of the share of representatives for each cohort, defined
 
     <script>
 
-      function styleCell_r3nxi3hz0cjmp4it8eop(i, j, css_id) {
-          var table = document.getElementById("tinytable_r3nxi3hz0cjmp4it8eop");
+      function styleCell_uvxj50t9zu418863c8zh(i, j, css_id) {
+          var table = document.getElementById("tinytable_uvxj50t9zu418863c8zh");
           var cell = table.rows[i]?.cells[j];  // Safe navigation to avoid errors
           if (cell) {
               console.log(`Styling cell at (${i}, ${j}) with class ${css_id}`);
@@ -4741,7 +4747,7 @@ Figure&nbsp;4.10: Trend of the share of representatives for each cohort, defined
           }
       }
       function insertSpanRow(i, colspan, content) {
-        var table = document.getElementById('tinytable_r3nxi3hz0cjmp4it8eop');
+        var table = document.getElementById('tinytable_uvxj50t9zu418863c8zh');
         var newRow = table.insertRow(i);
         var newCell = newRow.insertCell(0);
         newCell.setAttribute("colspan", colspan);
@@ -4749,8 +4755,8 @@ Figure&nbsp;4.10: Trend of the share of representatives for each cohort, defined
         // this may be unsafe, but innerText does not interpret <br>
         newCell.innerHTML = content;
       }
-      function spanCell_r3nxi3hz0cjmp4it8eop(i, j, rowspan, colspan) {
-        var table = document.getElementById("tinytable_r3nxi3hz0cjmp4it8eop");
+      function spanCell_uvxj50t9zu418863c8zh(i, j, rowspan, colspan) {
+        var table = document.getElementById("tinytable_uvxj50t9zu418863c8zh");
         const targetRow = table.rows[i];
         const targetCell = targetRow.cells[j];
         for (let r = 0; r < rowspan; r++) {
@@ -4780,14 +4786,14 @@ Figure&nbsp;4.10: Trend of the share of representatives for each cohort, defined
       window.addEventListener('load', function () {
           var cellsToStyle = [
             // tinytable style arrays after
-          { positions: [ { i: 4, j: 0 }, { i: 4, j: 1 }, { i: 4, j: 2 }, { i: 4, j: 3 }, { i: 4, j: 4 },  ], css_id: 'tinytable_css_wazptu7c9nb6r1kit6ya',}, 
-          { positions: [ { i: 0, j: 0 }, { i: 0, j: 1 }, { i: 0, j: 2 }, { i: 0, j: 3 }, { i: 0, j: 4 },  ], css_id: 'tinytable_css_1kgw7gvubz5nv7efy2xm',}, 
+          { positions: [ { i: 4, j: 0 }, { i: 4, j: 1 }, { i: 4, j: 2 }, { i: 4, j: 3 }, { i: 4, j: 4 },  ], css_id: 'tinytable_css_zsbqcjkk6klh755y82q4',}, 
+          { positions: [ { i: 0, j: 0 }, { i: 0, j: 1 }, { i: 0, j: 2 }, { i: 0, j: 3 }, { i: 0, j: 4 },  ], css_id: 'tinytable_css_44dkwg77fupl4exu4qxm',}, 
           ];
 
           // Loop over the arrays to style the cells
           cellsToStyle.forEach(function (group) {
               group.positions.forEach(function (cell) {
-                  styleCell_r3nxi3hz0cjmp4it8eop(cell.i, cell.j, group.css_id);
+                  styleCell_uvxj50t9zu418863c8zh(cell.i, cell.j, group.css_id);
               });
           });
       });
@@ -4795,11 +4801,11 @@ Figure&nbsp;4.10: Trend of the share of representatives for each cohort, defined
 
     <style>
       /* tinytable css entries after */
-      .table td.tinytable_css_wazptu7c9nb6r1kit6ya, .table th.tinytable_css_wazptu7c9nb6r1kit6ya { border-bottom: solid #d3d8dc 0.1em; }
-      .table td.tinytable_css_1kgw7gvubz5nv7efy2xm, .table th.tinytable_css_1kgw7gvubz5nv7efy2xm { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
+      .table td.tinytable_css_zsbqcjkk6klh755y82q4, .table th.tinytable_css_zsbqcjkk6klh755y82q4 { border-bottom: solid #d3d8dc 0.1em; }
+      .table td.tinytable_css_44dkwg77fupl4exu4qxm, .table th.tinytable_css_44dkwg77fupl4exu4qxm { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
     </style>
     <div class="container">
-      <table class="table table-borderless" id="tinytable_r3nxi3hz0cjmp4it8eop" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
+      <table class="table table-borderless" id="tinytable_uvxj50t9zu418863c8zh" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
         <thead>
         
               <tr>
@@ -4909,8 +4915,8 @@ Survivorship bias
 
     <script>
 
-      function styleCell_b4pln0mx3ytui3r31c3w(i, j, css_id) {
-          var table = document.getElementById("tinytable_b4pln0mx3ytui3r31c3w");
+      function styleCell_w1dvqupwogrfcogirmy7(i, j, css_id) {
+          var table = document.getElementById("tinytable_w1dvqupwogrfcogirmy7");
           var cell = table.rows[i]?.cells[j];  // Safe navigation to avoid errors
           if (cell) {
               console.log(`Styling cell at (${i}, ${j}) with class ${css_id}`);
@@ -4920,7 +4926,7 @@ Survivorship bias
           }
       }
       function insertSpanRow(i, colspan, content) {
-        var table = document.getElementById('tinytable_b4pln0mx3ytui3r31c3w');
+        var table = document.getElementById('tinytable_w1dvqupwogrfcogirmy7');
         var newRow = table.insertRow(i);
         var newCell = newRow.insertCell(0);
         newCell.setAttribute("colspan", colspan);
@@ -4928,8 +4934,8 @@ Survivorship bias
         // this may be unsafe, but innerText does not interpret <br>
         newCell.innerHTML = content;
       }
-      function spanCell_b4pln0mx3ytui3r31c3w(i, j, rowspan, colspan) {
-        var table = document.getElementById("tinytable_b4pln0mx3ytui3r31c3w");
+      function spanCell_w1dvqupwogrfcogirmy7(i, j, rowspan, colspan) {
+        var table = document.getElementById("tinytable_w1dvqupwogrfcogirmy7");
         const targetRow = table.rows[i];
         const targetCell = targetRow.cells[j];
         for (let r = 0; r < rowspan; r++) {
@@ -4959,14 +4965,14 @@ Survivorship bias
       window.addEventListener('load', function () {
           var cellsToStyle = [
             // tinytable style arrays after
-          { positions: [ { i: 0, j: 0 }, { i: 0, j: 1 },  ], css_id: 'tinytable_css_7phrl2qmad66z5do4v60',}, 
-          { positions: [ { i: 4, j: 0 }, { i: 4, j: 1 },  ], css_id: 'tinytable_css_2m692sdte0jnnrnygfns',}, 
+          { positions: [ { i: 0, j: 0 }, { i: 0, j: 1 },  ], css_id: 'tinytable_css_qmn5232ofdur4efv73f6',}, 
+          { positions: [ { i: 4, j: 0 }, { i: 4, j: 1 },  ], css_id: 'tinytable_css_mx35qg4axorlu8kpsg7y',}, 
           ];
 
           // Loop over the arrays to style the cells
           cellsToStyle.forEach(function (group) {
               group.positions.forEach(function (cell) {
-                  styleCell_b4pln0mx3ytui3r31c3w(cell.i, cell.j, group.css_id);
+                  styleCell_w1dvqupwogrfcogirmy7(cell.i, cell.j, group.css_id);
               });
           });
       });
@@ -4974,11 +4980,11 @@ Survivorship bias
 
     <style>
       /* tinytable css entries after */
-      .table td.tinytable_css_7phrl2qmad66z5do4v60, .table th.tinytable_css_7phrl2qmad66z5do4v60 { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
-      .table td.tinytable_css_2m692sdte0jnnrnygfns, .table th.tinytable_css_2m692sdte0jnnrnygfns { border-bottom: solid #d3d8dc 0.1em; }
+      .table td.tinytable_css_qmn5232ofdur4efv73f6, .table th.tinytable_css_qmn5232ofdur4efv73f6 { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
+      .table td.tinytable_css_mx35qg4axorlu8kpsg7y, .table th.tinytable_css_mx35qg4axorlu8kpsg7y { border-bottom: solid #d3d8dc 0.1em; }
     </style>
     <div class="container">
-      <table class="table table-borderless" id="tinytable_b4pln0mx3ytui3r31c3w" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
+      <table class="table table-borderless" id="tinytable_w1dvqupwogrfcogirmy7" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
         <thead>
         
               <tr>
@@ -5034,8 +5040,8 @@ Survivorship bias
 
     <script>
 
-      function styleCell_ozdmmlgku7anhgjrupjr(i, j, css_id) {
-          var table = document.getElementById("tinytable_ozdmmlgku7anhgjrupjr");
+      function styleCell_5it3fm0m8e3jv2h4sdak(i, j, css_id) {
+          var table = document.getElementById("tinytable_5it3fm0m8e3jv2h4sdak");
           var cell = table.rows[i]?.cells[j];  // Safe navigation to avoid errors
           if (cell) {
               console.log(`Styling cell at (${i}, ${j}) with class ${css_id}`);
@@ -5045,7 +5051,7 @@ Survivorship bias
           }
       }
       function insertSpanRow(i, colspan, content) {
-        var table = document.getElementById('tinytable_ozdmmlgku7anhgjrupjr');
+        var table = document.getElementById('tinytable_5it3fm0m8e3jv2h4sdak');
         var newRow = table.insertRow(i);
         var newCell = newRow.insertCell(0);
         newCell.setAttribute("colspan", colspan);
@@ -5053,8 +5059,8 @@ Survivorship bias
         // this may be unsafe, but innerText does not interpret <br>
         newCell.innerHTML = content;
       }
-      function spanCell_ozdmmlgku7anhgjrupjr(i, j, rowspan, colspan) {
-        var table = document.getElementById("tinytable_ozdmmlgku7anhgjrupjr");
+      function spanCell_5it3fm0m8e3jv2h4sdak(i, j, rowspan, colspan) {
+        var table = document.getElementById("tinytable_5it3fm0m8e3jv2h4sdak");
         const targetRow = table.rows[i];
         const targetCell = targetRow.cells[j];
         for (let r = 0; r < rowspan; r++) {
@@ -5084,14 +5090,14 @@ Survivorship bias
       window.addEventListener('load', function () {
           var cellsToStyle = [
             // tinytable style arrays after
-          { positions: [ { i: 0, j: 0 }, { i: 0, j: 1 }, { i: 0, j: 2 },  ], css_id: 'tinytable_css_8vu3ptamkbo576x9anrt',}, 
-          { positions: [ { i: 4, j: 0 }, { i: 4, j: 1 }, { i: 4, j: 2 },  ], css_id: 'tinytable_css_254zl5m0am1ep3hl4wy0',}, 
+          { positions: [ { i: 0, j: 0 }, { i: 0, j: 1 }, { i: 0, j: 2 },  ], css_id: 'tinytable_css_z3oag1lk4t5hc0f3equk',}, 
+          { positions: [ { i: 4, j: 0 }, { i: 4, j: 1 }, { i: 4, j: 2 },  ], css_id: 'tinytable_css_krgcs1gplt0c5cgfvbvq',}, 
           ];
 
           // Loop over the arrays to style the cells
           cellsToStyle.forEach(function (group) {
               group.positions.forEach(function (cell) {
-                  styleCell_ozdmmlgku7anhgjrupjr(cell.i, cell.j, group.css_id);
+                  styleCell_5it3fm0m8e3jv2h4sdak(cell.i, cell.j, group.css_id);
               });
           });
       });
@@ -5099,11 +5105,11 @@ Survivorship bias
 
     <style>
       /* tinytable css entries after */
-      .table td.tinytable_css_8vu3ptamkbo576x9anrt, .table th.tinytable_css_8vu3ptamkbo576x9anrt { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
-      .table td.tinytable_css_254zl5m0am1ep3hl4wy0, .table th.tinytable_css_254zl5m0am1ep3hl4wy0 { border-bottom: solid #d3d8dc 0.1em; }
+      .table td.tinytable_css_z3oag1lk4t5hc0f3equk, .table th.tinytable_css_z3oag1lk4t5hc0f3equk { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
+      .table td.tinytable_css_krgcs1gplt0c5cgfvbvq, .table th.tinytable_css_krgcs1gplt0c5cgfvbvq { border-bottom: solid #d3d8dc 0.1em; }
     </style>
     <div class="container">
-      <table class="table table-borderless" id="tinytable_ozdmmlgku7anhgjrupjr" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
+      <table class="table table-borderless" id="tinytable_5it3fm0m8e3jv2h4sdak" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
         <thead>
         
               <tr>
@@ -5158,8 +5164,8 @@ Survivorship bias
 
     <script>
 
-      function styleCell_f4grvckboal9pw8u3b13(i, j, css_id) {
-          var table = document.getElementById("tinytable_f4grvckboal9pw8u3b13");
+      function styleCell_2rpffb8ahmayqm1gglon(i, j, css_id) {
+          var table = document.getElementById("tinytable_2rpffb8ahmayqm1gglon");
           var cell = table.rows[i]?.cells[j];  // Safe navigation to avoid errors
           if (cell) {
               console.log(`Styling cell at (${i}, ${j}) with class ${css_id}`);
@@ -5169,7 +5175,7 @@ Survivorship bias
           }
       }
       function insertSpanRow(i, colspan, content) {
-        var table = document.getElementById('tinytable_f4grvckboal9pw8u3b13');
+        var table = document.getElementById('tinytable_2rpffb8ahmayqm1gglon');
         var newRow = table.insertRow(i);
         var newCell = newRow.insertCell(0);
         newCell.setAttribute("colspan", colspan);
@@ -5177,8 +5183,8 @@ Survivorship bias
         // this may be unsafe, but innerText does not interpret <br>
         newCell.innerHTML = content;
       }
-      function spanCell_f4grvckboal9pw8u3b13(i, j, rowspan, colspan) {
-        var table = document.getElementById("tinytable_f4grvckboal9pw8u3b13");
+      function spanCell_2rpffb8ahmayqm1gglon(i, j, rowspan, colspan) {
+        var table = document.getElementById("tinytable_2rpffb8ahmayqm1gglon");
         const targetRow = table.rows[i];
         const targetCell = targetRow.cells[j];
         for (let r = 0; r < rowspan; r++) {
@@ -5208,14 +5214,14 @@ Survivorship bias
       window.addEventListener('load', function () {
           var cellsToStyle = [
             // tinytable style arrays after
-          { positions: [ { i: 4, j: 0 }, { i: 4, j: 1 }, { i: 4, j: 2 }, { i: 4, j: 3 }, { i: 4, j: 4 },  ], css_id: 'tinytable_css_xr9uaajpjvsr5n1m0wji',}, 
-          { positions: [ { i: 0, j: 0 }, { i: 0, j: 1 }, { i: 0, j: 2 }, { i: 0, j: 3 }, { i: 0, j: 4 },  ], css_id: 'tinytable_css_ay2f4wv79o0ae2fbrdep',}, 
+          { positions: [ { i: 0, j: 0 }, { i: 0, j: 1 }, { i: 0, j: 2 }, { i: 0, j: 3 }, { i: 0, j: 4 },  ], css_id: 'tinytable_css_33f4v4kky5v5xniqr9jc',}, 
+          { positions: [ { i: 4, j: 0 }, { i: 4, j: 1 }, { i: 4, j: 2 }, { i: 4, j: 3 }, { i: 4, j: 4 },  ], css_id: 'tinytable_css_2o1ftvvpy5rl46uism4s',}, 
           ];
 
           // Loop over the arrays to style the cells
           cellsToStyle.forEach(function (group) {
               group.positions.forEach(function (cell) {
-                  styleCell_f4grvckboal9pw8u3b13(cell.i, cell.j, group.css_id);
+                  styleCell_2rpffb8ahmayqm1gglon(cell.i, cell.j, group.css_id);
               });
           });
       });
@@ -5223,11 +5229,11 @@ Survivorship bias
 
     <style>
       /* tinytable css entries after */
-      .table td.tinytable_css_xr9uaajpjvsr5n1m0wji, .table th.tinytable_css_xr9uaajpjvsr5n1m0wji { border-bottom: solid #d3d8dc 0.1em; }
-      .table td.tinytable_css_ay2f4wv79o0ae2fbrdep, .table th.tinytable_css_ay2f4wv79o0ae2fbrdep { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
+      .table td.tinytable_css_33f4v4kky5v5xniqr9jc, .table th.tinytable_css_33f4v4kky5v5xniqr9jc { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
+      .table td.tinytable_css_2o1ftvvpy5rl46uism4s, .table th.tinytable_css_2o1ftvvpy5rl46uism4s { border-bottom: solid #d3d8dc 0.1em; }
     </style>
     <div class="container">
-      <table class="table table-borderless" id="tinytable_f4grvckboal9pw8u3b13" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
+      <table class="table table-borderless" id="tinytable_2rpffb8ahmayqm1gglon" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
         <thead>
         
               <tr>
@@ -5291,8 +5297,8 @@ Survivorship bias
 
     <script>
 
-      function styleCell_noxt9pvt3h9gjumgpkw2(i, j, css_id) {
-          var table = document.getElementById("tinytable_noxt9pvt3h9gjumgpkw2");
+      function styleCell_66hkyrd6sz94gv6zfah0(i, j, css_id) {
+          var table = document.getElementById("tinytable_66hkyrd6sz94gv6zfah0");
           var cell = table.rows[i]?.cells[j];  // Safe navigation to avoid errors
           if (cell) {
               console.log(`Styling cell at (${i}, ${j}) with class ${css_id}`);
@@ -5302,7 +5308,7 @@ Survivorship bias
           }
       }
       function insertSpanRow(i, colspan, content) {
-        var table = document.getElementById('tinytable_noxt9pvt3h9gjumgpkw2');
+        var table = document.getElementById('tinytable_66hkyrd6sz94gv6zfah0');
         var newRow = table.insertRow(i);
         var newCell = newRow.insertCell(0);
         newCell.setAttribute("colspan", colspan);
@@ -5310,8 +5316,8 @@ Survivorship bias
         // this may be unsafe, but innerText does not interpret <br>
         newCell.innerHTML = content;
       }
-      function spanCell_noxt9pvt3h9gjumgpkw2(i, j, rowspan, colspan) {
-        var table = document.getElementById("tinytable_noxt9pvt3h9gjumgpkw2");
+      function spanCell_66hkyrd6sz94gv6zfah0(i, j, rowspan, colspan) {
+        var table = document.getElementById("tinytable_66hkyrd6sz94gv6zfah0");
         const targetRow = table.rows[i];
         const targetCell = targetRow.cells[j];
         for (let r = 0; r < rowspan; r++) {
@@ -5341,14 +5347,14 @@ Survivorship bias
       window.addEventListener('load', function () {
           var cellsToStyle = [
             // tinytable style arrays after
-          { positions: [ { i: 0, j: 0 }, { i: 0, j: 1 }, { i: 0, j: 2 }, { i: 0, j: 3 }, { i: 0, j: 4 },  ], css_id: 'tinytable_css_w3ggwf1w8rpnnljboqwl',}, 
-          { positions: [ { i: 3, j: 0 }, { i: 3, j: 1 }, { i: 3, j: 2 }, { i: 3, j: 3 }, { i: 3, j: 4 },  ], css_id: 'tinytable_css_lfp925cqik0zgji2antz',}, 
+          { positions: [ { i: 3, j: 0 }, { i: 3, j: 1 }, { i: 3, j: 2 }, { i: 3, j: 3 }, { i: 3, j: 4 },  ], css_id: 'tinytable_css_52hxb36git63zfh45imn',}, 
+          { positions: [ { i: 0, j: 0 }, { i: 0, j: 1 }, { i: 0, j: 2 }, { i: 0, j: 3 }, { i: 0, j: 4 },  ], css_id: 'tinytable_css_0w0azgzrzsx6jy3xe6st',}, 
           ];
 
           // Loop over the arrays to style the cells
           cellsToStyle.forEach(function (group) {
               group.positions.forEach(function (cell) {
-                  styleCell_noxt9pvt3h9gjumgpkw2(cell.i, cell.j, group.css_id);
+                  styleCell_66hkyrd6sz94gv6zfah0(cell.i, cell.j, group.css_id);
               });
           });
       });
@@ -5356,11 +5362,11 @@ Survivorship bias
 
     <style>
       /* tinytable css entries after */
-      .table td.tinytable_css_w3ggwf1w8rpnnljboqwl, .table th.tinytable_css_w3ggwf1w8rpnnljboqwl { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
-      .table td.tinytable_css_lfp925cqik0zgji2antz, .table th.tinytable_css_lfp925cqik0zgji2antz { border-bottom: solid #d3d8dc 0.1em; }
+      .table td.tinytable_css_52hxb36git63zfh45imn, .table th.tinytable_css_52hxb36git63zfh45imn { border-bottom: solid #d3d8dc 0.1em; }
+      .table td.tinytable_css_0w0azgzrzsx6jy3xe6st, .table th.tinytable_css_0w0azgzrzsx6jy3xe6st { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
     </style>
     <div class="container">
-      <table class="table table-borderless" id="tinytable_noxt9pvt3h9gjumgpkw2" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
+      <table class="table table-borderless" id="tinytable_66hkyrd6sz94gv6zfah0" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
         <thead>
         
               <tr>
@@ -5442,8 +5448,8 @@ Figure&nbsp;4.11: Percent of legislators each year, by century first elected
 
     <script>
 
-      function styleCell_hztcdvar97sj9cbuhfme(i, j, css_id) {
-          var table = document.getElementById("tinytable_hztcdvar97sj9cbuhfme");
+      function styleCell_952lgh9zeoqn73yyp61f(i, j, css_id) {
+          var table = document.getElementById("tinytable_952lgh9zeoqn73yyp61f");
           var cell = table.rows[i]?.cells[j];  // Safe navigation to avoid errors
           if (cell) {
               console.log(`Styling cell at (${i}, ${j}) with class ${css_id}`);
@@ -5453,7 +5459,7 @@ Figure&nbsp;4.11: Percent of legislators each year, by century first elected
           }
       }
       function insertSpanRow(i, colspan, content) {
-        var table = document.getElementById('tinytable_hztcdvar97sj9cbuhfme');
+        var table = document.getElementById('tinytable_952lgh9zeoqn73yyp61f');
         var newRow = table.insertRow(i);
         var newCell = newRow.insertCell(0);
         newCell.setAttribute("colspan", colspan);
@@ -5461,8 +5467,8 @@ Figure&nbsp;4.11: Percent of legislators each year, by century first elected
         // this may be unsafe, but innerText does not interpret <br>
         newCell.innerHTML = content;
       }
-      function spanCell_hztcdvar97sj9cbuhfme(i, j, rowspan, colspan) {
-        var table = document.getElementById("tinytable_hztcdvar97sj9cbuhfme");
+      function spanCell_952lgh9zeoqn73yyp61f(i, j, rowspan, colspan) {
+        var table = document.getElementById("tinytable_952lgh9zeoqn73yyp61f");
         const targetRow = table.rows[i];
         const targetCell = targetRow.cells[j];
         for (let r = 0; r < rowspan; r++) {
@@ -5492,14 +5498,14 @@ Figure&nbsp;4.11: Percent of legislators each year, by century first elected
       window.addEventListener('load', function () {
           var cellsToStyle = [
             // tinytable style arrays after
-          { positions: [ { i: 4, j: 0 }, { i: 4, j: 1 }, { i: 4, j: 2 },  ], css_id: 'tinytable_css_nkoy0we6v0r6ek242tho',}, 
-          { positions: [ { i: 0, j: 0 }, { i: 0, j: 1 }, { i: 0, j: 2 },  ], css_id: 'tinytable_css_ho27jk1j1o7wy8dpnrro',}, 
+          { positions: [ { i: 4, j: 0 }, { i: 4, j: 1 }, { i: 4, j: 2 },  ], css_id: 'tinytable_css_dz3ng0wukw2olqornlpx',}, 
+          { positions: [ { i: 0, j: 0 }, { i: 0, j: 1 }, { i: 0, j: 2 },  ], css_id: 'tinytable_css_6x8q0h6r2rhquixhgm4b',}, 
           ];
 
           // Loop over the arrays to style the cells
           cellsToStyle.forEach(function (group) {
               group.positions.forEach(function (cell) {
-                  styleCell_hztcdvar97sj9cbuhfme(cell.i, cell.j, group.css_id);
+                  styleCell_952lgh9zeoqn73yyp61f(cell.i, cell.j, group.css_id);
               });
           });
       });
@@ -5507,11 +5513,11 @@ Figure&nbsp;4.11: Percent of legislators each year, by century first elected
 
     <style>
       /* tinytable css entries after */
-      .table td.tinytable_css_nkoy0we6v0r6ek242tho, .table th.tinytable_css_nkoy0we6v0r6ek242tho { border-bottom: solid #d3d8dc 0.1em; }
-      .table td.tinytable_css_ho27jk1j1o7wy8dpnrro, .table th.tinytable_css_ho27jk1j1o7wy8dpnrro { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
+      .table td.tinytable_css_dz3ng0wukw2olqornlpx, .table th.tinytable_css_dz3ng0wukw2olqornlpx { border-bottom: solid #d3d8dc 0.1em; }
+      .table td.tinytable_css_6x8q0h6r2rhquixhgm4b, .table th.tinytable_css_6x8q0h6r2rhquixhgm4b { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
     </style>
     <div class="container">
-      <table class="table table-borderless" id="tinytable_hztcdvar97sj9cbuhfme" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
+      <table class="table table-borderless" id="tinytable_952lgh9zeoqn73yyp61f" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
         <thead>
         
               <tr>
@@ -5563,8 +5569,8 @@ Figure&nbsp;4.11: Percent of legislators each year, by century first elected
 
     <script>
 
-      function styleCell_inq0uz5k3u4xfwiv2jd7(i, j, css_id) {
-          var table = document.getElementById("tinytable_inq0uz5k3u4xfwiv2jd7");
+      function styleCell_zl177lfv34jzerdsb4hp(i, j, css_id) {
+          var table = document.getElementById("tinytable_zl177lfv34jzerdsb4hp");
           var cell = table.rows[i]?.cells[j];  // Safe navigation to avoid errors
           if (cell) {
               console.log(`Styling cell at (${i}, ${j}) with class ${css_id}`);
@@ -5574,7 +5580,7 @@ Figure&nbsp;4.11: Percent of legislators each year, by century first elected
           }
       }
       function insertSpanRow(i, colspan, content) {
-        var table = document.getElementById('tinytable_inq0uz5k3u4xfwiv2jd7');
+        var table = document.getElementById('tinytable_zl177lfv34jzerdsb4hp');
         var newRow = table.insertRow(i);
         var newCell = newRow.insertCell(0);
         newCell.setAttribute("colspan", colspan);
@@ -5582,8 +5588,8 @@ Figure&nbsp;4.11: Percent of legislators each year, by century first elected
         // this may be unsafe, but innerText does not interpret <br>
         newCell.innerHTML = content;
       }
-      function spanCell_inq0uz5k3u4xfwiv2jd7(i, j, rowspan, colspan) {
-        var table = document.getElementById("tinytable_inq0uz5k3u4xfwiv2jd7");
+      function spanCell_zl177lfv34jzerdsb4hp(i, j, rowspan, colspan) {
+        var table = document.getElementById("tinytable_zl177lfv34jzerdsb4hp");
         const targetRow = table.rows[i];
         const targetCell = targetRow.cells[j];
         for (let r = 0; r < rowspan; r++) {
@@ -5613,14 +5619,14 @@ Figure&nbsp;4.11: Percent of legislators each year, by century first elected
       window.addEventListener('load', function () {
           var cellsToStyle = [
             // tinytable style arrays after
-          { positions: [ { i: 0, j: 0 }, { i: 0, j: 1 },  ], css_id: 'tinytable_css_qvs4enc9w879du7enarz',}, 
-          { positions: [ { i: 4, j: 0 }, { i: 4, j: 1 },  ], css_id: 'tinytable_css_4h43mc6n2a9sjvrs5yjd',}, 
+          { positions: [ { i: 4, j: 0 }, { i: 4, j: 1 },  ], css_id: 'tinytable_css_x59t10uafcwcrdep8m0p',}, 
+          { positions: [ { i: 0, j: 0 }, { i: 0, j: 1 },  ], css_id: 'tinytable_css_ecuo9xzz1cw0szsae54g',}, 
           ];
 
           // Loop over the arrays to style the cells
           cellsToStyle.forEach(function (group) {
               group.positions.forEach(function (cell) {
-                  styleCell_inq0uz5k3u4xfwiv2jd7(cell.i, cell.j, group.css_id);
+                  styleCell_zl177lfv34jzerdsb4hp(cell.i, cell.j, group.css_id);
               });
           });
       });
@@ -5628,11 +5634,11 @@ Figure&nbsp;4.11: Percent of legislators each year, by century first elected
 
     <style>
       /* tinytable css entries after */
-      .table td.tinytable_css_qvs4enc9w879du7enarz, .table th.tinytable_css_qvs4enc9w879du7enarz { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
-      .table td.tinytable_css_4h43mc6n2a9sjvrs5yjd, .table th.tinytable_css_4h43mc6n2a9sjvrs5yjd { border-bottom: solid #d3d8dc 0.1em; }
+      .table td.tinytable_css_x59t10uafcwcrdep8m0p, .table th.tinytable_css_x59t10uafcwcrdep8m0p { border-bottom: solid #d3d8dc 0.1em; }
+      .table td.tinytable_css_ecuo9xzz1cw0szsae54g, .table th.tinytable_css_ecuo9xzz1cw0szsae54g { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
     </style>
     <div class="container">
-      <table class="table table-borderless" id="tinytable_inq0uz5k3u4xfwiv2jd7" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
+      <table class="table table-borderless" id="tinytable_zl177lfv34jzerdsb4hp" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
         <thead>
         
               <tr>

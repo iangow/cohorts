@@ -181,13 +181,19 @@ div.csl-indent {
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./dbplyr.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Cohort using <code>dbplyr</code></span></span></a>
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Cohorts using <code>dbplyr</code></span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./intermezzo.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Un intermezzo</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./revised.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Cohorts: Revised</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -262,11 +268,11 @@ CTE Version
 <div class="callout-body-container callout-body">
 <p>In this version of the chapter, I do a number of things. First, I add some commentary on the original approach in Chapter 4 of <span class="citation" data-cites="tanimura2021sql">Tanimura (<a href="references.html#ref-tanimura2021sql" role="doc-biblioref">2021</a>)</span>. This commentary can be found below in “callout blocks” like this one. Second, I replace subqueries with common table expressions (CTEs) where applicable. Third, as a concomitant of using the CTEs, I clean up the SQL in other ways.</p>
 <ul>
-<li>I can’t take the “leading commas” used in <span class="citation" data-cites="tanimura2021sql">Tanimura (<a href="references.html#ref-tanimura2021sql" role="doc-biblioref">2021</a>)</span>: <a href="@tanimura2021sql">“We’re living in a society!”</a> … so these go!</li>
+<li>I can’t tolerate the “leading commas” used in <span class="citation" data-cites="tanimura2021sql">Tanimura (<a href="references.html#ref-tanimura2021sql" role="doc-biblioref">2021</a>)</span>: <a href="https://youtu.be/LHhbdXCzt_A?si=3H-GaZJ8OrWJshE2&amp;t=22">“We’re living in a society!”</a> … so these go!</li>
 <li>I make other changes to the SQL for a more consistent style (e.g., SQL keywords are capitalized).</li>
-<li>I use <code>USING</code> for cleaner SQL. For example <code>USING (id_bioguide)</code> is shorter than <code>ON a.id_bioguide = b.id_bioguide</code> and often obviates the need to use aliases (<code>a</code> and <code>b</code> here).</li>
+<li>I use <code>USING</code> for cleaner SQL. For example <code>USING (id_bioguide)</code> is shorter than <code>ON a.id_bioguide = b.id_bioguide</code> and often obviates the need for aliases such as <code>a</code> and <code>b</code>.</li>
 </ul>
-<p>Fourth, I delete some text, such as the introductory text that was in this very spot in the original chapter. Fifth, I modify some of the original text when it no longer reflects the approach used here.</p>
+<p>Fourth, I delete some text, such as the introductory text that was in this very spot in the original chapter. Fifth, I modify some of the original text when it no longer accurately describes the queries used here.</p>
 </div>
 </div>
 <div class="callout callout-style-default callout-note callout-titled">
@@ -344,8 +350,8 @@ Table&nbsp;3.1: Sample of the <code>legislators</code> table
 
     <script>
 
-      function styleCell_da6hghaeudpado0rapwv(i, j, css_id) {
-          var table = document.getElementById("tinytable_da6hghaeudpado0rapwv");
+      function styleCell_bugkcgxkv8q6x525jyyn(i, j, css_id) {
+          var table = document.getElementById("tinytable_bugkcgxkv8q6x525jyyn");
           var cell = table.rows[i]?.cells[j];  // Safe navigation to avoid errors
           if (cell) {
               console.log(`Styling cell at (${i}, ${j}) with class ${css_id}`);
@@ -355,7 +361,7 @@ Table&nbsp;3.1: Sample of the <code>legislators</code> table
           }
       }
       function insertSpanRow(i, colspan, content) {
-        var table = document.getElementById('tinytable_da6hghaeudpado0rapwv');
+        var table = document.getElementById('tinytable_bugkcgxkv8q6x525jyyn');
         var newRow = table.insertRow(i);
         var newCell = newRow.insertCell(0);
         newCell.setAttribute("colspan", colspan);
@@ -363,8 +369,8 @@ Table&nbsp;3.1: Sample of the <code>legislators</code> table
         // this may be unsafe, but innerText does not interpret <br>
         newCell.innerHTML = content;
       }
-      function spanCell_da6hghaeudpado0rapwv(i, j, rowspan, colspan) {
-        var table = document.getElementById("tinytable_da6hghaeudpado0rapwv");
+      function spanCell_bugkcgxkv8q6x525jyyn(i, j, rowspan, colspan) {
+        var table = document.getElementById("tinytable_bugkcgxkv8q6x525jyyn");
         const targetRow = table.rows[i];
         const targetCell = targetRow.cells[j];
         for (let r = 0; r < rowspan; r++) {
@@ -394,18 +400,18 @@ Table&nbsp;3.1: Sample of the <code>legislators</code> table
       window.addEventListener('load', function () {
           var cellsToStyle = [
             // tinytable style arrays after
-          { positions: [ { i: 19, j: 0 }, { i: 19, j: 2 }, { i: 19, j: 4 }, { i: 19, j: 1 }, { i: 19, j: 3 }, { i: 19, j: 5 },  ], css_id: 'tinytable_css_vkmam6dl3gm2k5l03u3u',}, 
-          { positions: [ { i: 19, j: 6 },  ], css_id: 'tinytable_css_rfvtqzc6pb37k1gdnybj',}, 
-          { positions: [ { i: 6, j: 0 }, { i: 3, j: 0 }, { i: 4, j: 0 }, { i: 5, j: 0 }, { i: 10, j: 0 }, { i: 11, j: 0 }, { i: 12, j: 0 }, { i: 13, j: 0 }, { i: 1, j: 0 }, { i: 2, j: 0 }, { i: 16, j: 0 }, { i: 17, j: 0 }, { i: 18, j: 0 }, { i: 12, j: 1 }, { i: 7, j: 0 }, { i: 8, j: 0 }, { i: 9, j: 0 }, { i: 3, j: 1 }, { i: 4, j: 1 }, { i: 5, j: 1 }, { i: 6, j: 1 }, { i: 14, j: 0 }, { i: 15, j: 0 }, { i: 9, j: 1 }, { i: 10, j: 1 }, { i: 11, j: 1 }, { i: 5, j: 2 }, { i: 13, j: 1 }, { i: 1, j: 1 }, { i: 2, j: 1 }, { i: 16, j: 1 }, { i: 17, j: 1 }, { i: 18, j: 1 }, { i: 12, j: 2 }, { i: 7, j: 1 }, { i: 8, j: 1 }, { i: 2, j: 2 }, { i: 3, j: 2 }, { i: 4, j: 2 }, { i: 18, j: 2 }, { i: 6, j: 2 }, { i: 14, j: 1 }, { i: 15, j: 1 }, { i: 9, j: 2 }, { i: 10, j: 2 }, { i: 11, j: 2 }, { i: 5, j: 3 }, { i: 13, j: 2 }, { i: 1, j: 2 }, { i: 15, j: 2 }, { i: 16, j: 2 }, { i: 17, j: 2 }, { i: 11, j: 3 }, { i: 12, j: 3 }, { i: 7, j: 2 }, { i: 8, j: 2 }, { i: 2, j: 3 }, { i: 3, j: 3 }, { i: 4, j: 3 }, { i: 18, j: 3 }, { i: 6, j: 3 }, { i: 14, j: 2 }, { i: 8, j: 3 }, { i: 9, j: 3 }, { i: 10, j: 3 }, { i: 4, j: 4 }, { i: 5, j: 4 }, { i: 13, j: 3 }, { i: 1, j: 3 }, { i: 15, j: 3 }, { i: 16, j: 3 }, { i: 17, j: 3 }, { i: 11, j: 4 }, { i: 12, j: 4 }, { i: 7, j: 3 }, { i: 1, j: 4 }, { i: 2, j: 4 }, { i: 3, j: 4 }, { i: 17, j: 4 }, { i: 18, j: 4 }, { i: 6, j: 4 }, { i: 14, j: 3 }, { i: 8, j: 4 }, { i: 9, j: 4 }, { i: 10, j: 4 }, { i: 4, j: 5 }, { i: 5, j: 5 }, { i: 13, j: 4 }, { i: 14, j: 4 }, { i: 15, j: 4 }, { i: 16, j: 4 }, { i: 10, j: 5 }, { i: 11, j: 5 }, { i: 12, j: 5 }, { i: 7, j: 4 }, { i: 1, j: 5 }, { i: 2, j: 5 }, { i: 3, j: 5 }, { i: 17, j: 5 }, { i: 18, j: 5 }, { i: 6, j: 5 }, { i: 7, j: 5 }, { i: 8, j: 5 }, { i: 9, j: 5 }, { i: 14, j: 5 }, { i: 15, j: 5 }, { i: 16, j: 5 }, { i: 13, j: 5 },  ], css_id: 'tinytable_css_aggykf3wwamyv4vlexub',}, 
-          { positions: [ { i: 1, j: 6 }, { i: 2, j: 6 }, { i: 3, j: 6 }, { i: 4, j: 6 }, { i: 5, j: 6 }, { i: 6, j: 6 }, { i: 7, j: 6 }, { i: 8, j: 6 }, { i: 9, j: 6 }, { i: 10, j: 6 }, { i: 11, j: 6 }, { i: 12, j: 6 }, { i: 13, j: 6 }, { i: 14, j: 6 }, { i: 15, j: 6 }, { i: 16, j: 6 }, { i: 17, j: 6 }, { i: 18, j: 6 },  ], css_id: 'tinytable_css_5ih8nr73h97f2f514umo',}, 
-          { positions: [ { i: 0, j: 6 },  ], css_id: 'tinytable_css_3czpjgxf5jxp3oxjk1x1',}, 
-          { positions: [ { i: 0, j: 0 }, { i: 0, j: 2 }, { i: 0, j: 4 }, { i: 0, j: 1 }, { i: 0, j: 3 }, { i: 0, j: 5 },  ], css_id: 'tinytable_css_1pm3njlyfnvui5l3mx42',}, 
+          { positions: [ { i: 19, j: 0 }, { i: 19, j: 2 }, { i: 19, j: 4 }, { i: 19, j: 1 }, { i: 19, j: 3 }, { i: 19, j: 5 },  ], css_id: 'tinytable_css_x7awngyji16roejzfvde',}, 
+          { positions: [ { i: 6, j: 0 }, { i: 3, j: 0 }, { i: 4, j: 0 }, { i: 5, j: 0 }, { i: 10, j: 0 }, { i: 11, j: 0 }, { i: 12, j: 0 }, { i: 13, j: 0 }, { i: 1, j: 0 }, { i: 2, j: 0 }, { i: 16, j: 0 }, { i: 17, j: 0 }, { i: 18, j: 0 }, { i: 12, j: 1 }, { i: 7, j: 0 }, { i: 8, j: 0 }, { i: 9, j: 0 }, { i: 3, j: 1 }, { i: 4, j: 1 }, { i: 5, j: 1 }, { i: 6, j: 1 }, { i: 14, j: 0 }, { i: 15, j: 0 }, { i: 9, j: 1 }, { i: 10, j: 1 }, { i: 11, j: 1 }, { i: 5, j: 2 }, { i: 13, j: 1 }, { i: 1, j: 1 }, { i: 2, j: 1 }, { i: 16, j: 1 }, { i: 17, j: 1 }, { i: 18, j: 1 }, { i: 12, j: 2 }, { i: 7, j: 1 }, { i: 8, j: 1 }, { i: 2, j: 2 }, { i: 3, j: 2 }, { i: 4, j: 2 }, { i: 18, j: 2 }, { i: 6, j: 2 }, { i: 14, j: 1 }, { i: 15, j: 1 }, { i: 9, j: 2 }, { i: 10, j: 2 }, { i: 11, j: 2 }, { i: 5, j: 3 }, { i: 13, j: 2 }, { i: 1, j: 2 }, { i: 15, j: 2 }, { i: 16, j: 2 }, { i: 17, j: 2 }, { i: 11, j: 3 }, { i: 12, j: 3 }, { i: 7, j: 2 }, { i: 8, j: 2 }, { i: 2, j: 3 }, { i: 3, j: 3 }, { i: 4, j: 3 }, { i: 18, j: 3 }, { i: 6, j: 3 }, { i: 14, j: 2 }, { i: 8, j: 3 }, { i: 9, j: 3 }, { i: 10, j: 3 }, { i: 4, j: 4 }, { i: 5, j: 4 }, { i: 13, j: 3 }, { i: 1, j: 3 }, { i: 15, j: 3 }, { i: 16, j: 3 }, { i: 17, j: 3 }, { i: 11, j: 4 }, { i: 12, j: 4 }, { i: 7, j: 3 }, { i: 1, j: 4 }, { i: 2, j: 4 }, { i: 3, j: 4 }, { i: 17, j: 4 }, { i: 18, j: 4 }, { i: 6, j: 4 }, { i: 14, j: 3 }, { i: 8, j: 4 }, { i: 9, j: 4 }, { i: 10, j: 4 }, { i: 4, j: 5 }, { i: 5, j: 5 }, { i: 13, j: 4 }, { i: 14, j: 4 }, { i: 15, j: 4 }, { i: 16, j: 4 }, { i: 10, j: 5 }, { i: 11, j: 5 }, { i: 12, j: 5 }, { i: 7, j: 4 }, { i: 1, j: 5 }, { i: 2, j: 5 }, { i: 3, j: 5 }, { i: 17, j: 5 }, { i: 18, j: 5 }, { i: 6, j: 5 }, { i: 7, j: 5 }, { i: 8, j: 5 }, { i: 9, j: 5 }, { i: 14, j: 5 }, { i: 15, j: 5 }, { i: 16, j: 5 }, { i: 13, j: 5 },  ], css_id: 'tinytable_css_lty41n52ihxvg79fgkdf',}, 
+          { positions: [ { i: 19, j: 6 },  ], css_id: 'tinytable_css_etbs5sgh2uo68y536d32',}, 
+          { positions: [ { i: 1, j: 6 }, { i: 2, j: 6 }, { i: 3, j: 6 }, { i: 4, j: 6 }, { i: 5, j: 6 }, { i: 6, j: 6 }, { i: 7, j: 6 }, { i: 8, j: 6 }, { i: 9, j: 6 }, { i: 10, j: 6 }, { i: 11, j: 6 }, { i: 12, j: 6 }, { i: 13, j: 6 }, { i: 14, j: 6 }, { i: 15, j: 6 }, { i: 16, j: 6 }, { i: 17, j: 6 }, { i: 18, j: 6 },  ], css_id: 'tinytable_css_9xv8fita0jy2clpdevp5',}, 
+          { positions: [ { i: 0, j: 0 }, { i: 0, j: 2 }, { i: 0, j: 4 }, { i: 0, j: 1 }, { i: 0, j: 3 }, { i: 0, j: 5 },  ], css_id: 'tinytable_css_4uw49ok0e88vxrf6e3iw',}, 
+          { positions: [ { i: 0, j: 6 },  ], css_id: 'tinytable_css_3ckjp1y3tgftkoredzsq',}, 
           ];
 
           // Loop over the arrays to style the cells
           cellsToStyle.forEach(function (group) {
               group.positions.forEach(function (cell) {
-                  styleCell_da6hghaeudpado0rapwv(cell.i, cell.j, group.css_id);
+                  styleCell_bugkcgxkv8q6x525jyyn(cell.i, cell.j, group.css_id);
               });
           });
       });
@@ -413,15 +419,15 @@ Table&nbsp;3.1: Sample of the <code>legislators</code> table
 
     <style>
       /* tinytable css entries after */
-      .table td.tinytable_css_vkmam6dl3gm2k5l03u3u, .table th.tinytable_css_vkmam6dl3gm2k5l03u3u { font-size: 0.8em; border-bottom: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.1em; padding-right: 0.1em; }
-      .table td.tinytable_css_rfvtqzc6pb37k1gdnybj, .table th.tinytable_css_rfvtqzc6pb37k1gdnybj { font-size: 0.8em; border-bottom: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.1em; }
-      .table td.tinytable_css_aggykf3wwamyv4vlexub, .table th.tinytable_css_aggykf3wwamyv4vlexub { font-size: 0.8em; padding-right: 0.1em; padding-bottom: 0em; }
-      .table td.tinytable_css_5ih8nr73h97f2f514umo, .table th.tinytable_css_5ih8nr73h97f2f514umo { font-size: 0.8em; padding-bottom: 0em; }
-      .table td.tinytable_css_3czpjgxf5jxp3oxjk1x1, .table th.tinytable_css_3czpjgxf5jxp3oxjk1x1 { font-size: 0.8em; border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; border-bottom: solid #d3d8dc 0.1em; padding-bottom: 0em; }
-      .table td.tinytable_css_1pm3njlyfnvui5l3mx42, .table th.tinytable_css_1pm3njlyfnvui5l3mx42 { font-size: 0.8em; border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; border-bottom: solid #d3d8dc 0.1em; padding-right: 0.1em; padding-bottom: 0em; }
+      .table td.tinytable_css_x7awngyji16roejzfvde, .table th.tinytable_css_x7awngyji16roejzfvde { font-size: 0.8em; border-bottom: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.1em; padding-right: 0.1em; }
+      .table td.tinytable_css_lty41n52ihxvg79fgkdf, .table th.tinytable_css_lty41n52ihxvg79fgkdf { font-size: 0.8em; padding-right: 0.1em; padding-bottom: 0em; }
+      .table td.tinytable_css_etbs5sgh2uo68y536d32, .table th.tinytable_css_etbs5sgh2uo68y536d32 { font-size: 0.8em; border-bottom: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.1em; }
+      .table td.tinytable_css_9xv8fita0jy2clpdevp5, .table th.tinytable_css_9xv8fita0jy2clpdevp5 { font-size: 0.8em; padding-bottom: 0em; }
+      .table td.tinytable_css_4uw49ok0e88vxrf6e3iw, .table th.tinytable_css_4uw49ok0e88vxrf6e3iw { font-size: 0.8em; border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; border-bottom: solid #d3d8dc 0.1em; padding-right: 0.1em; padding-bottom: 0em; }
+      .table td.tinytable_css_3ckjp1y3tgftkoredzsq, .table th.tinytable_css_3ckjp1y3tgftkoredzsq { font-size: 0.8em; border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; border-bottom: solid #d3d8dc 0.1em; padding-bottom: 0em; }
     </style>
     <div class="container">
-      <table class="table table-borderless" id="tinytable_da6hghaeudpado0rapwv" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
+      <table class="table table-borderless" id="tinytable_bugkcgxkv8q6x525jyyn" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
         <thead>
         
               <tr>
@@ -628,8 +634,8 @@ Table&nbsp;3.2: Sample of the <code>legislators_terms</code> table
 
     <script>
 
-      function styleCell_22urfe2w2bm1q104vto6(i, j, css_id) {
-          var table = document.getElementById("tinytable_22urfe2w2bm1q104vto6");
+      function styleCell_02rpd6hde9gszg6gzxye(i, j, css_id) {
+          var table = document.getElementById("tinytable_02rpd6hde9gszg6gzxye");
           var cell = table.rows[i]?.cells[j];  // Safe navigation to avoid errors
           if (cell) {
               console.log(`Styling cell at (${i}, ${j}) with class ${css_id}`);
@@ -639,7 +645,7 @@ Table&nbsp;3.2: Sample of the <code>legislators_terms</code> table
           }
       }
       function insertSpanRow(i, colspan, content) {
-        var table = document.getElementById('tinytable_22urfe2w2bm1q104vto6');
+        var table = document.getElementById('tinytable_02rpd6hde9gszg6gzxye');
         var newRow = table.insertRow(i);
         var newCell = newRow.insertCell(0);
         newCell.setAttribute("colspan", colspan);
@@ -647,8 +653,8 @@ Table&nbsp;3.2: Sample of the <code>legislators_terms</code> table
         // this may be unsafe, but innerText does not interpret <br>
         newCell.innerHTML = content;
       }
-      function spanCell_22urfe2w2bm1q104vto6(i, j, rowspan, colspan) {
-        var table = document.getElementById("tinytable_22urfe2w2bm1q104vto6");
+      function spanCell_02rpd6hde9gszg6gzxye(i, j, rowspan, colspan) {
+        var table = document.getElementById("tinytable_02rpd6hde9gszg6gzxye");
         const targetRow = table.rows[i];
         const targetCell = targetRow.cells[j];
         for (let r = 0; r < rowspan; r++) {
@@ -678,18 +684,18 @@ Table&nbsp;3.2: Sample of the <code>legislators_terms</code> table
       window.addEventListener('load', function () {
           var cellsToStyle = [
             // tinytable style arrays after
-          { positions: [ { i: 19, j: 7 },  ], css_id: 'tinytable_css_oqk9ev15e192iu8psmxa',}, 
-          { positions: [ { i: 0, j: 7 },  ], css_id: 'tinytable_css_h26lz08g8n65a1c7k6nq',}, 
-          { positions: [ { i: 0, j: 0 }, { i: 0, j: 2 }, { i: 0, j: 4 }, { i: 0, j: 6 }, { i: 0, j: 3 }, { i: 0, j: 5 }, { i: 0, j: 1 },  ], css_id: 'tinytable_css_99pv76ffjnxji0vb9ea7',}, 
-          { positions: [ { i: 1, j: 7 }, { i: 2, j: 7 }, { i: 3, j: 7 }, { i: 4, j: 7 }, { i: 5, j: 7 }, { i: 6, j: 7 }, { i: 7, j: 7 }, { i: 8, j: 7 }, { i: 9, j: 7 }, { i: 10, j: 7 }, { i: 11, j: 7 }, { i: 12, j: 7 }, { i: 13, j: 7 }, { i: 14, j: 7 }, { i: 15, j: 7 }, { i: 16, j: 7 }, { i: 17, j: 7 }, { i: 18, j: 7 },  ], css_id: 'tinytable_css_6nknbochuuj02h1dol6z',}, 
-          { positions: [ { i: 6, j: 0 }, { i: 4, j: 0 }, { i: 5, j: 0 }, { i: 10, j: 0 }, { i: 11, j: 0 }, { i: 12, j: 0 }, { i: 13, j: 0 }, { i: 1, j: 0 }, { i: 2, j: 0 }, { i: 3, j: 0 }, { i: 17, j: 0 }, { i: 18, j: 0 }, { i: 12, j: 1 }, { i: 7, j: 0 }, { i: 8, j: 0 }, { i: 9, j: 0 }, { i: 3, j: 1 }, { i: 4, j: 1 }, { i: 5, j: 1 }, { i: 6, j: 1 }, { i: 14, j: 0 }, { i: 15, j: 0 }, { i: 16, j: 0 }, { i: 10, j: 1 }, { i: 11, j: 1 }, { i: 5, j: 2 }, { i: 13, j: 1 }, { i: 1, j: 1 }, { i: 2, j: 1 }, { i: 16, j: 1 }, { i: 17, j: 1 }, { i: 18, j: 1 }, { i: 12, j: 2 }, { i: 7, j: 1 }, { i: 8, j: 1 }, { i: 9, j: 1 }, { i: 3, j: 2 }, { i: 4, j: 2 }, { i: 18, j: 2 }, { i: 6, j: 2 }, { i: 14, j: 1 }, { i: 15, j: 1 }, { i: 9, j: 2 }, { i: 10, j: 2 }, { i: 11, j: 2 }, { i: 5, j: 3 }, { i: 13, j: 2 }, { i: 1, j: 2 }, { i: 2, j: 2 }, { i: 16, j: 2 }, { i: 17, j: 2 }, { i: 11, j: 3 }, { i: 12, j: 3 }, { i: 7, j: 2 }, { i: 8, j: 2 }, { i: 2, j: 3 }, { i: 3, j: 3 }, { i: 4, j: 3 }, { i: 18, j: 3 }, { i: 6, j: 3 }, { i: 14, j: 2 }, { i: 15, j: 2 }, { i: 9, j: 3 }, { i: 10, j: 3 }, { i: 4, j: 4 }, { i: 5, j: 4 }, { i: 13, j: 3 }, { i: 1, j: 3 }, { i: 15, j: 3 }, { i: 16, j: 3 }, { i: 17, j: 3 }, { i: 11, j: 4 }, { i: 12, j: 4 }, { i: 7, j: 3 }, { i: 8, j: 3 }, { i: 2, j: 4 }, { i: 3, j: 4 }, { i: 17, j: 4 }, { i: 18, j: 4 }, { i: 6, j: 4 }, { i: 14, j: 3 }, { i: 8, j: 4 }, { i: 9, j: 4 }, { i: 10, j: 4 }, { i: 4, j: 5 }, { i: 5, j: 5 }, { i: 13, j: 4 }, { i: 1, j: 4 }, { i: 15, j: 4 }, { i: 16, j: 4 }, { i: 10, j: 5 }, { i: 11, j: 5 }, { i: 12, j: 5 }, { i: 7, j: 4 }, { i: 1, j: 5 }, { i: 2, j: 5 }, { i: 3, j: 5 }, { i: 17, j: 5 }, { i: 18, j: 5 }, { i: 6, j: 5 }, { i: 14, j: 4 }, { i: 8, j: 5 }, { i: 9, j: 5 }, { i: 3, j: 6 }, { i: 4, j: 6 }, { i: 5, j: 6 }, { i: 13, j: 5 }, { i: 14, j: 5 }, { i: 15, j: 5 }, { i: 16, j: 5 }, { i: 10, j: 6 }, { i: 11, j: 6 }, { i: 12, j: 6 }, { i: 7, j: 5 }, { i: 1, j: 6 }, { i: 2, j: 6 }, { i: 16, j: 6 }, { i: 17, j: 6 }, { i: 18, j: 6 }, { i: 6, j: 6 }, { i: 7, j: 6 }, { i: 8, j: 6 }, { i: 9, j: 6 }, { i: 14, j: 6 }, { i: 15, j: 6 }, { i: 13, j: 6 },  ], css_id: 'tinytable_css_6d8fm510t4fibqv5c8b6',}, 
-          { positions: [ { i: 19, j: 5 }, { i: 19, j: 1 }, { i: 19, j: 3 }, { i: 19, j: 0 }, { i: 19, j: 2 }, { i: 19, j: 4 }, { i: 19, j: 6 },  ], css_id: 'tinytable_css_38590smb2tfkp2be4otv',}, 
+          { positions: [ { i: 6, j: 0 }, { i: 4, j: 0 }, { i: 5, j: 0 }, { i: 10, j: 0 }, { i: 11, j: 0 }, { i: 12, j: 0 }, { i: 13, j: 0 }, { i: 1, j: 0 }, { i: 2, j: 0 }, { i: 3, j: 0 }, { i: 17, j: 0 }, { i: 18, j: 0 }, { i: 12, j: 1 }, { i: 7, j: 0 }, { i: 8, j: 0 }, { i: 9, j: 0 }, { i: 3, j: 1 }, { i: 4, j: 1 }, { i: 5, j: 1 }, { i: 6, j: 1 }, { i: 14, j: 0 }, { i: 15, j: 0 }, { i: 16, j: 0 }, { i: 10, j: 1 }, { i: 11, j: 1 }, { i: 5, j: 2 }, { i: 13, j: 1 }, { i: 1, j: 1 }, { i: 2, j: 1 }, { i: 16, j: 1 }, { i: 17, j: 1 }, { i: 18, j: 1 }, { i: 12, j: 2 }, { i: 7, j: 1 }, { i: 8, j: 1 }, { i: 9, j: 1 }, { i: 3, j: 2 }, { i: 4, j: 2 }, { i: 18, j: 2 }, { i: 6, j: 2 }, { i: 14, j: 1 }, { i: 15, j: 1 }, { i: 9, j: 2 }, { i: 10, j: 2 }, { i: 11, j: 2 }, { i: 5, j: 3 }, { i: 13, j: 2 }, { i: 1, j: 2 }, { i: 2, j: 2 }, { i: 16, j: 2 }, { i: 17, j: 2 }, { i: 11, j: 3 }, { i: 12, j: 3 }, { i: 7, j: 2 }, { i: 8, j: 2 }, { i: 2, j: 3 }, { i: 3, j: 3 }, { i: 4, j: 3 }, { i: 18, j: 3 }, { i: 6, j: 3 }, { i: 14, j: 2 }, { i: 15, j: 2 }, { i: 9, j: 3 }, { i: 10, j: 3 }, { i: 4, j: 4 }, { i: 5, j: 4 }, { i: 13, j: 3 }, { i: 1, j: 3 }, { i: 15, j: 3 }, { i: 16, j: 3 }, { i: 17, j: 3 }, { i: 11, j: 4 }, { i: 12, j: 4 }, { i: 7, j: 3 }, { i: 8, j: 3 }, { i: 2, j: 4 }, { i: 3, j: 4 }, { i: 17, j: 4 }, { i: 18, j: 4 }, { i: 6, j: 4 }, { i: 14, j: 3 }, { i: 8, j: 4 }, { i: 9, j: 4 }, { i: 10, j: 4 }, { i: 4, j: 5 }, { i: 5, j: 5 }, { i: 13, j: 4 }, { i: 1, j: 4 }, { i: 15, j: 4 }, { i: 16, j: 4 }, { i: 10, j: 5 }, { i: 11, j: 5 }, { i: 12, j: 5 }, { i: 7, j: 4 }, { i: 1, j: 5 }, { i: 2, j: 5 }, { i: 3, j: 5 }, { i: 17, j: 5 }, { i: 18, j: 5 }, { i: 6, j: 5 }, { i: 14, j: 4 }, { i: 8, j: 5 }, { i: 9, j: 5 }, { i: 3, j: 6 }, { i: 4, j: 6 }, { i: 5, j: 6 }, { i: 13, j: 5 }, { i: 14, j: 5 }, { i: 15, j: 5 }, { i: 16, j: 5 }, { i: 10, j: 6 }, { i: 11, j: 6 }, { i: 12, j: 6 }, { i: 7, j: 5 }, { i: 1, j: 6 }, { i: 2, j: 6 }, { i: 16, j: 6 }, { i: 17, j: 6 }, { i: 18, j: 6 }, { i: 6, j: 6 }, { i: 7, j: 6 }, { i: 8, j: 6 }, { i: 9, j: 6 }, { i: 14, j: 6 }, { i: 15, j: 6 }, { i: 13, j: 6 },  ], css_id: 'tinytable_css_tso6xary5u0leu9tsgr7',}, 
+          { positions: [ { i: 0, j: 7 },  ], css_id: 'tinytable_css_ocpnz8al66rqg333xlyn',}, 
+          { positions: [ { i: 19, j: 5 }, { i: 19, j: 1 }, { i: 19, j: 3 }, { i: 19, j: 0 }, { i: 19, j: 2 }, { i: 19, j: 4 }, { i: 19, j: 6 },  ], css_id: 'tinytable_css_e5yxcs3f5ixd5h3tbw3x',}, 
+          { positions: [ { i: 0, j: 0 }, { i: 0, j: 2 }, { i: 0, j: 4 }, { i: 0, j: 6 }, { i: 0, j: 3 }, { i: 0, j: 5 }, { i: 0, j: 1 },  ], css_id: 'tinytable_css_a18fdfr94hdl0hq9zb5l',}, 
+          { positions: [ { i: 1, j: 7 }, { i: 2, j: 7 }, { i: 3, j: 7 }, { i: 4, j: 7 }, { i: 5, j: 7 }, { i: 6, j: 7 }, { i: 7, j: 7 }, { i: 8, j: 7 }, { i: 9, j: 7 }, { i: 10, j: 7 }, { i: 11, j: 7 }, { i: 12, j: 7 }, { i: 13, j: 7 }, { i: 14, j: 7 }, { i: 15, j: 7 }, { i: 16, j: 7 }, { i: 17, j: 7 }, { i: 18, j: 7 },  ], css_id: 'tinytable_css_5x4o15qe7xop3u50fmug',}, 
+          { positions: [ { i: 19, j: 7 },  ], css_id: 'tinytable_css_5mjf1f7y5ai7p388q48y',}, 
           ];
 
           // Loop over the arrays to style the cells
           cellsToStyle.forEach(function (group) {
               group.positions.forEach(function (cell) {
-                  styleCell_22urfe2w2bm1q104vto6(cell.i, cell.j, group.css_id);
+                  styleCell_02rpd6hde9gszg6gzxye(cell.i, cell.j, group.css_id);
               });
           });
       });
@@ -697,15 +703,15 @@ Table&nbsp;3.2: Sample of the <code>legislators_terms</code> table
 
     <style>
       /* tinytable css entries after */
-      .table td.tinytable_css_oqk9ev15e192iu8psmxa, .table th.tinytable_css_oqk9ev15e192iu8psmxa { font-size: 0.8em; border-bottom: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.1em; }
-      .table td.tinytable_css_h26lz08g8n65a1c7k6nq, .table th.tinytable_css_h26lz08g8n65a1c7k6nq { font-size: 0.8em; border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; border-bottom: solid #d3d8dc 0.1em; padding-bottom: 0em; }
-      .table td.tinytable_css_99pv76ffjnxji0vb9ea7, .table th.tinytable_css_99pv76ffjnxji0vb9ea7 { font-size: 0.8em; border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; border-bottom: solid #d3d8dc 0.1em; padding-right: 0.1em; padding-bottom: 0em; }
-      .table td.tinytable_css_6nknbochuuj02h1dol6z, .table th.tinytable_css_6nknbochuuj02h1dol6z { font-size: 0.8em; padding-bottom: 0em; }
-      .table td.tinytable_css_6d8fm510t4fibqv5c8b6, .table th.tinytable_css_6d8fm510t4fibqv5c8b6 { font-size: 0.8em; padding-right: 0.1em; padding-bottom: 0em; }
-      .table td.tinytable_css_38590smb2tfkp2be4otv, .table th.tinytable_css_38590smb2tfkp2be4otv { font-size: 0.8em; border-bottom: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.1em; padding-right: 0.1em; }
+      .table td.tinytable_css_tso6xary5u0leu9tsgr7, .table th.tinytable_css_tso6xary5u0leu9tsgr7 { font-size: 0.8em; padding-right: 0.1em; padding-bottom: 0em; }
+      .table td.tinytable_css_ocpnz8al66rqg333xlyn, .table th.tinytable_css_ocpnz8al66rqg333xlyn { font-size: 0.8em; border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; border-bottom: solid #d3d8dc 0.1em; padding-bottom: 0em; }
+      .table td.tinytable_css_e5yxcs3f5ixd5h3tbw3x, .table th.tinytable_css_e5yxcs3f5ixd5h3tbw3x { font-size: 0.8em; border-bottom: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.1em; padding-right: 0.1em; }
+      .table td.tinytable_css_a18fdfr94hdl0hq9zb5l, .table th.tinytable_css_a18fdfr94hdl0hq9zb5l { font-size: 0.8em; border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; border-bottom: solid #d3d8dc 0.1em; padding-right: 0.1em; padding-bottom: 0em; }
+      .table td.tinytable_css_5x4o15qe7xop3u50fmug, .table th.tinytable_css_5x4o15qe7xop3u50fmug { font-size: 0.8em; padding-bottom: 0em; }
+      .table td.tinytable_css_5mjf1f7y5ai7p388q48y, .table th.tinytable_css_5mjf1f7y5ai7p388q48y { font-size: 0.8em; border-bottom: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.1em; }
     </style>
     <div class="container">
-      <table class="table table-borderless" id="tinytable_22urfe2w2bm1q104vto6" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
+      <table class="table table-borderless" id="tinytable_02rpd6hde9gszg6gzxye" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
         <thead>
         
               <tr>
@@ -1849,72 +1855,72 @@ Figure&nbsp;3.2: Legislator retention after adjusting for actual years in office
 <tr class="odd">
 <td style="text-align: right;">1789</td>
 <td style="text-align: right;">0</td>
-<td style="text-align: right;">40</td>
+<td style="text-align: right;">37</td>
 <td style="text-align: right;">89</td>
-<td style="text-align: right;">2.225</td>
+<td style="text-align: right;">2.4054054</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">1789</td>
 <td style="text-align: right;">1</td>
-<td style="text-align: right;">40</td>
+<td style="text-align: right;">37</td>
 <td style="text-align: right;">89</td>
-<td style="text-align: right;">2.225</td>
+<td style="text-align: right;">2.4054054</td>
 </tr>
 <tr class="odd">
 <td style="text-align: right;">1789</td>
 <td style="text-align: right;">2</td>
-<td style="text-align: right;">40</td>
+<td style="text-align: right;">37</td>
 <td style="text-align: right;">57</td>
-<td style="text-align: right;">1.425</td>
+<td style="text-align: right;">1.5405405</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">1789</td>
 <td style="text-align: right;">3</td>
-<td style="text-align: right;">40</td>
+<td style="text-align: right;">37</td>
 <td style="text-align: right;">56</td>
-<td style="text-align: right;">1.400</td>
+<td style="text-align: right;">1.5135135</td>
 </tr>
 <tr class="odd">
 <td style="text-align: right;">1789</td>
 <td style="text-align: right;">4</td>
-<td style="text-align: right;">40</td>
+<td style="text-align: right;">37</td>
 <td style="text-align: right;">42</td>
-<td style="text-align: right;">1.050</td>
+<td style="text-align: right;">1.1351351</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">1789</td>
 <td style="text-align: right;">5</td>
+<td style="text-align: right;">37</td>
 <td style="text-align: right;">40</td>
-<td style="text-align: right;">40</td>
-<td style="text-align: right;">1.000</td>
+<td style="text-align: right;">1.0810811</td>
 </tr>
 <tr class="odd">
 <td style="text-align: right;">1789</td>
 <td style="text-align: right;">6</td>
-<td style="text-align: right;">40</td>
+<td style="text-align: right;">37</td>
 <td style="text-align: right;">31</td>
-<td style="text-align: right;">0.775</td>
+<td style="text-align: right;">0.8378378</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">1789</td>
 <td style="text-align: right;">7</td>
-<td style="text-align: right;">40</td>
+<td style="text-align: right;">37</td>
 <td style="text-align: right;">32</td>
-<td style="text-align: right;">0.800</td>
+<td style="text-align: right;">0.8648649</td>
 </tr>
 <tr class="odd">
 <td style="text-align: right;">1789</td>
 <td style="text-align: right;">8</td>
-<td style="text-align: right;">40</td>
+<td style="text-align: right;">37</td>
 <td style="text-align: right;">20</td>
-<td style="text-align: right;">0.500</td>
+<td style="text-align: right;">0.5405405</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">1789</td>
 <td style="text-align: right;">9</td>
-<td style="text-align: right;">40</td>
+<td style="text-align: right;">37</td>
 <td style="text-align: right;">19</td>
-<td style="text-align: right;">0.475</td>
+<td style="text-align: right;">0.5135135</td>
 </tr>
 </tbody>
 </table>
@@ -2055,54 +2061,54 @@ Warning
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: left;">A000001</td>
-<td style="text-align: left;">1951-01-03</td>
-<td style="text-align: left;">ND</td>
+<td style="text-align: left;">A000195</td>
+<td style="text-align: left;">1961-01-03</td>
+<td style="text-align: left;">IL</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">A000094</td>
-<td style="text-align: left;">1953-01-03</td>
-<td style="text-align: left;">NC</td>
+<td style="text-align: left;">B000051</td>
+<td style="text-align: left;">1899-12-04</td>
+<td style="text-align: left;">KS</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">B000016</td>
-<td style="text-align: left;">1885-12-07</td>
-<td style="text-align: left;">NY</td>
+<td style="text-align: left;">B000231</td>
+<td style="text-align: left;">1827-12-03</td>
+<td style="text-align: left;">MO</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">B000368</td>
-<td style="text-align: left;">1815-12-04</td>
-<td style="text-align: left;">NJ</td>
+<td style="text-align: left;">B000269</td>
+<td style="text-align: left;">1915-12-06</td>
+<td style="text-align: left;">PA</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">B000433</td>
-<td style="text-align: left;">1811-11-04</td>
-<td style="text-align: left;">KY</td>
+<td style="text-align: left;">B000547</td>
+<td style="text-align: left;">1919-05-19</td>
+<td style="text-align: left;">MO</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">B000438</td>
-<td style="text-align: left;">1877-10-15</td>
-<td style="text-align: left;">IN</td>
+<td style="text-align: left;">B000797</td>
+<td style="text-align: left;">1843-12-04</td>
+<td style="text-align: left;">MD</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">B000898</td>
-<td style="text-align: left;">1887-12-05</td>
-<td style="text-align: left;">NC</td>
+<td style="text-align: left;">B001137</td>
+<td style="text-align: left;">1817-12-01</td>
+<td style="text-align: left;">RI</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">B000954</td>
-<td style="text-align: left;">1923-12-03</td>
-<td style="text-align: left;">NJ</td>
+<td style="text-align: left;">B001244</td>
+<td style="text-align: left;">2003-01-07</td>
+<td style="text-align: left;">AL</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">B001119</td>
-<td style="text-align: left;">1887-12-05</td>
-<td style="text-align: left;">MA</td>
+<td style="text-align: left;">C000173</td>
+<td style="text-align: left;">1933-03-09</td>
+<td style="text-align: left;">KS</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">B001149</td>
-<td style="text-align: left;">1983-01-03</td>
-<td style="text-align: left;">IN</td>
+<td style="text-align: left;">C000210</td>
+<td style="text-align: left;">1853-12-05</td>
+<td style="text-align: left;">MO</td>
 </tr>
 </tbody>
 </table>
@@ -2165,8 +2171,8 @@ Replacing windows
 
     <script>
 
-      function styleCell_il5vq0law9h2pqnte3b3(i, j, css_id) {
-          var table = document.getElementById("tinytable_il5vq0law9h2pqnte3b3");
+      function styleCell_1lgz3m9xzs3o317nesvo(i, j, css_id) {
+          var table = document.getElementById("tinytable_1lgz3m9xzs3o317nesvo");
           var cell = table.rows[i]?.cells[j];  // Safe navigation to avoid errors
           if (cell) {
               console.log(`Styling cell at (${i}, ${j}) with class ${css_id}`);
@@ -2176,7 +2182,7 @@ Replacing windows
           }
       }
       function insertSpanRow(i, colspan, content) {
-        var table = document.getElementById('tinytable_il5vq0law9h2pqnte3b3');
+        var table = document.getElementById('tinytable_1lgz3m9xzs3o317nesvo');
         var newRow = table.insertRow(i);
         var newCell = newRow.insertCell(0);
         newCell.setAttribute("colspan", colspan);
@@ -2184,8 +2190,8 @@ Replacing windows
         // this may be unsafe, but innerText does not interpret <br>
         newCell.innerHTML = content;
       }
-      function spanCell_il5vq0law9h2pqnte3b3(i, j, rowspan, colspan) {
-        var table = document.getElementById("tinytable_il5vq0law9h2pqnte3b3");
+      function spanCell_1lgz3m9xzs3o317nesvo(i, j, rowspan, colspan) {
+        var table = document.getElementById("tinytable_1lgz3m9xzs3o317nesvo");
         const targetRow = table.rows[i];
         const targetCell = targetRow.cells[j];
         for (let r = 0; r < rowspan; r++) {
@@ -2215,14 +2221,14 @@ Replacing windows
       window.addEventListener('load', function () {
           var cellsToStyle = [
             // tinytable style arrays after
-          { positions: [ { i: 0, j: 0 }, { i: 0, j: 1 }, { i: 0, j: 2 }, { i: 0, j: 3 }, { i: 0, j: 4 },  ], css_id: 'tinytable_css_vu90nem0k1o3xenbsr5y',}, 
-          { positions: [ { i: 6, j: 0 }, { i: 6, j: 1 }, { i: 6, j: 2 }, { i: 6, j: 3 }, { i: 6, j: 4 },  ], css_id: 'tinytable_css_1oh0xfa0ge07tmvg8y0o',}, 
+          { positions: [ { i: 0, j: 0 }, { i: 0, j: 1 }, { i: 0, j: 2 }, { i: 0, j: 3 }, { i: 0, j: 4 },  ], css_id: 'tinytable_css_m2cdcipj6gmyihauh3a0',}, 
+          { positions: [ { i: 6, j: 0 }, { i: 6, j: 1 }, { i: 6, j: 2 }, { i: 6, j: 3 }, { i: 6, j: 4 },  ], css_id: 'tinytable_css_1zv3kxr1sw24zmrber7z',}, 
           ];
 
           // Loop over the arrays to style the cells
           cellsToStyle.forEach(function (group) {
               group.positions.forEach(function (cell) {
-                  styleCell_il5vq0law9h2pqnte3b3(cell.i, cell.j, group.css_id);
+                  styleCell_1lgz3m9xzs3o317nesvo(cell.i, cell.j, group.css_id);
               });
           });
       });
@@ -2230,11 +2236,11 @@ Replacing windows
 
     <style>
       /* tinytable css entries after */
-      .table td.tinytable_css_vu90nem0k1o3xenbsr5y, .table th.tinytable_css_vu90nem0k1o3xenbsr5y { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
-      .table td.tinytable_css_1oh0xfa0ge07tmvg8y0o, .table th.tinytable_css_1oh0xfa0ge07tmvg8y0o { border-bottom: solid #d3d8dc 0.1em; }
+      .table td.tinytable_css_m2cdcipj6gmyihauh3a0, .table th.tinytable_css_m2cdcipj6gmyihauh3a0 { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
+      .table td.tinytable_css_1zv3kxr1sw24zmrber7z, .table th.tinytable_css_1zv3kxr1sw24zmrber7z { border-bottom: solid #d3d8dc 0.1em; }
     </style>
     <div class="container">
-      <table class="table table-borderless" id="tinytable_il5vq0law9h2pqnte3b3" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
+      <table class="table table-borderless" id="tinytable_1lgz3m9xzs3o317nesvo" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
         <thead>
         
               <tr>
@@ -2901,61 +2907,61 @@ Long queries and CTEs
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: left;">S001145</td>
-<td style="text-align: left;">rep</td>
-<td style="text-align: left;">2000-01-01</td>
-<td style="text-align: left;">1999-01-06</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">I000055</td>
-<td style="text-align: left;">rep</td>
-<td style="text-align: left;">2000-01-01</td>
-<td style="text-align: left;">1999-01-06</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">J000283</td>
-<td style="text-align: left;">rep</td>
-<td style="text-align: left;">2000-01-01</td>
-<td style="text-align: left;">1999-01-06</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">J000255</td>
-<td style="text-align: left;">rep</td>
-<td style="text-align: left;">2000-01-01</td>
-<td style="text-align: left;">1999-01-06</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">W000154</td>
+<td style="text-align: left;">A000355</td>
 <td style="text-align: left;">sen</td>
 <td style="text-align: left;">2000-01-01</td>
-<td style="text-align: left;">1997-01-07</td>
+<td style="text-align: left;">1995-01-04</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">M000350</td>
+<td style="text-align: left;">H001031</td>
 <td style="text-align: left;">rep</td>
 <td style="text-align: left;">2000-01-01</td>
 <td style="text-align: left;">1999-01-06</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">H000981</td>
+<td style="text-align: left;">C001038</td>
 <td style="text-align: left;">rep</td>
 <td style="text-align: left;">2000-01-01</td>
 <td style="text-align: left;">1999-01-06</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">B000619</td>
+<td style="text-align: left;">G000377</td>
 <td style="text-align: left;">rep</td>
 <td style="text-align: left;">2000-01-01</td>
 <td style="text-align: left;">1999-01-06</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">C001036</td>
+<td style="text-align: left;">S001078</td>
 <td style="text-align: left;">rep</td>
 <td style="text-align: left;">2000-01-01</td>
 <td style="text-align: left;">1999-01-06</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">B000996</td>
+<td style="text-align: left;">J000032</td>
+<td style="text-align: left;">rep</td>
+<td style="text-align: left;">2000-01-01</td>
+<td style="text-align: left;">1999-01-06</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">G000352</td>
+<td style="text-align: left;">sen</td>
+<td style="text-align: left;">2000-01-01</td>
+<td style="text-align: left;">1999-01-06</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">L000111</td>
+<td style="text-align: left;">rep</td>
+<td style="text-align: left;">2000-01-01</td>
+<td style="text-align: left;">1999-01-06</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">L000491</td>
+<td style="text-align: left;">rep</td>
+<td style="text-align: left;">2000-01-01</td>
+<td style="text-align: left;">1999-01-06</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">F000116</td>
 <td style="text-align: left;">rep</td>
 <td style="text-align: left;">2000-01-01</td>
 <td style="text-align: left;">1999-01-06</td>
@@ -4178,17 +4184,17 @@ Survivorship bias
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">2019-12-31</td>
-<td style="text-align: right;">20</td>
-<td style="text-align: right;">97</td>
-<td style="text-align: right;">537</td>
-<td style="text-align: right;">0.1806331</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">2019-12-31</td>
 <td style="text-align: right;">21</td>
 <td style="text-align: right;">440</td>
 <td style="text-align: right;">537</td>
 <td style="text-align: right;">0.8193669</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2019-12-31</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">97</td>
+<td style="text-align: right;">537</td>
+<td style="text-align: right;">0.1806331</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">2018-12-31</td>
@@ -4220,17 +4226,17 @@ Survivorship bias
 </tr>
 <tr class="odd">
 <td style="text-align: left;">2016-12-31</td>
-<td style="text-align: right;">21</td>
-<td style="text-align: right;">398</td>
-<td style="text-align: right;">540</td>
-<td style="text-align: right;">0.7370370</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">2016-12-31</td>
 <td style="text-align: right;">20</td>
 <td style="text-align: right;">142</td>
 <td style="text-align: right;">540</td>
 <td style="text-align: right;">0.2629630</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2016-12-31</td>
+<td style="text-align: right;">21</td>
+<td style="text-align: right;">398</td>
+<td style="text-align: right;">540</td>
+<td style="text-align: right;">0.7370370</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">2015-12-31</td>
@@ -4437,23 +4443,23 @@ Figure&nbsp;3.11: Percent of legislators each year, by century first elected
 </tr>
 <tr class="even">
 <td style="text-align: left;">1790-12-31</td>
-<td style="text-align: right;">2</td>
-<td style="text-align: right;">89</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">1790-12-31</td>
 <td style="text-align: right;">1</td>
 <td style="text-align: right;">6</td>
 </tr>
-<tr class="even">
-<td style="text-align: left;">1791-12-31</td>
-<td style="text-align: right;">3</td>
-<td style="text-align: right;">57</td>
-</tr>
 <tr class="odd">
+<td style="text-align: left;">1790-12-31</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">89</td>
+</tr>
+<tr class="even">
 <td style="text-align: left;">1791-12-31</td>
 <td style="text-align: right;">1</td>
 <td style="text-align: right;">37</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">1791-12-31</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">57</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">1791-12-31</td>
@@ -4462,18 +4468,18 @@ Figure&nbsp;3.11: Percent of legislators each year, by century first elected
 </tr>
 <tr class="odd">
 <td style="text-align: left;">1792-12-31</td>
-<td style="text-align: right;">2</td>
-<td style="text-align: right;">37</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">1792-12-31</td>
 <td style="text-align: right;">1</td>
 <td style="text-align: right;">3</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: left;">1792-12-31</td>
 <td style="text-align: right;">4</td>
 <td style="text-align: right;">56</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">1792-12-31</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">37</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">1792-12-31</td>
@@ -5062,8 +5068,8 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./dbplyr.html" class="pagination-link" aria-label="Cohort using `dbplyr`">
-        <span class="nav-page-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Cohort using <code>dbplyr</code></span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./dbplyr.html" class="pagination-link" aria-label="Cohorts using `dbplyr`">
+        <span class="nav-page-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Cohorts using <code>dbplyr</code></span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
