@@ -103,6 +103,7 @@ library(knitr)
 print.tbl_sql <- function(x, ...) {
   collect(x, n = 4) |> 
     tt(...) |>
+    format_tt(escape = TRUE) |>
     knitr::knit_print()
 }
 
@@ -178,6 +179,7 @@ legislators |>
          id_bioguide, id_govtrack) |>
   collect(n = 19) |>
   tt() |>
+  format_tt(escape = TRUE) |>
   style_tt(fontsize = 0.8) |>
   theme_tt("spacing")
 ```
@@ -191,6 +193,7 @@ legislators_terms |>
          state, district, party) |>
   collect(n = 19) |>
   tt() |>
+  format_tt(escape = TRUE) |>
   style_tt(fontsize = 0.8) |>
   theme_tt("spacing")
 ```

@@ -22,3 +22,15 @@ bibliography: references.bib
 format:
   html:
     theme: cosmo
+  pdf:
+    include-in-header:
+      text: |
+        \usepackage[group-digits = integer, group-separator={,}, group-minimum-digits = 4]{siunitx}
+        \usepackage{imakeidx}
+        \usepackage{booktabs}
+    toc: true
+    toc-depth: 2
+    toc-title: "Contents"
+    number-sections: true
+    colorlinks: true
+    keep-tex: false

@@ -143,6 +143,7 @@ options(tinytable_theme_spacing_colsep = 0.1)
 print.tbl_sql <- function(x, ...) {
   collect(x, n = 10) |> 
     tt(...) |>
+    format_tt(escape = TRUE) |>
     theme_tt("spacing") |>
     knitr::knit_print()
 }
@@ -283,6 +284,7 @@ updated_term_ends <-
 updated_term_ends |>
   collect() |>
   tt() |>
+  format_tt(escape = TRUE) |>
   style_tt(fontsize = 0.8) |>
   theme_tt("spacing")
 ```
@@ -385,6 +387,7 @@ pelosi_terms |>
   arrange(term_start) |> 
   collect() |>
   tt() |>
+  format_tt(escape = TRUE) |>
   style_tt(fontsize = 0.8) |>
   theme_tt("spacing")
 ```
@@ -417,6 +420,7 @@ pelosi_term_gaps |>
   arrange(term_start) |>
   collect(n = 8) |>
   tt() |>
+  format_tt(escape = TRUE) |>
   theme_tt("spacing")
 ```
 
@@ -444,6 +448,7 @@ legislators_terms |>
   arrange(term_start) |>
   collect() |>
   tt() |>
+  format_tt(escape = TRUE) |>
   theme_tt("spacing")
 ```
 
@@ -464,6 +469,7 @@ legislators_terms |>
   arrange(term_start) |>
   collect() |>
   tt() |>
+  format_tt(escape = TRUE) |>
   theme_tt("spacing")
 ```
 
@@ -537,6 +543,7 @@ legislators |>
   arrange(id_bioguide, stint_start) |>
   collect() |> 
   tt() |>
+  format_tt(escape = TRUE) |>
   style_tt(fontsize = 0.8) |>
   theme_tt("spacing")
 ```
@@ -577,6 +584,7 @@ Other stints were broken by stints in the executive branch: Clay was Secretary o
 six_stinters |>
   collect() |>
   tt() |>
+  format_tt(escape = TRUE) |>
   style_tt(fontsize = 0.8) |>
   theme_tt("spacing")
 ```
@@ -617,6 +625,7 @@ Candidate false positives are presented in @tbl-problem-stints.
 problem_stints |>
   collect() |>
   tt() |>
+  format_tt(escape = TRUE) |>
   style_tt(fontsize = 0.8) |>
   theme_tt("spacing")
 ```
@@ -806,6 +815,7 @@ jqa_census_data <-
 jqa_census_data |>
   collect() |>
   tt() |>
+  format_tt(escape = TRUE) |>
   style_tt(fontsize = 0.8) |>
   theme_tt("spacing")
 ```

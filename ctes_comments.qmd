@@ -181,6 +181,7 @@ legislators |>
          id_bioguide, id_govtrack) |>
   collect(n = 19) |>
   tt() |>
+  format_tt(escape = TRUE) |>
   style_tt(fontsize = 0.8) |>
   theme_tt("spacing")
 ```
@@ -194,6 +195,7 @@ legislators_terms |>
          state, district, party) |>
   collect(n = 19) |>
   tt() |>
+  format_tt(escape = TRUE) |>
   style_tt(fontsize = 0.8) |>
   theme_tt("spacing")
 ```
@@ -874,7 +876,10 @@ ORDER BY 1, 2
 
 ```{r}
 #| echo: false
-state_pct_retaineds |> head() |> tt()
+state_pct_retaineds |> 
+  head() |>
+  tt() |> 
+  format_tt(escape = TRUE)
 ```
 
 The retention curves for the five states with the highest total number of legislators are graphed in @fig-state-pct-retaineds.
