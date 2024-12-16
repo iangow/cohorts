@@ -9,12 +9,12 @@ This commentary can be found below in "callout blocks" like this one.
 Second, I replace subqueries with common table expressions (CTEs) where applicable.
 Third, as a concomitant of using the CTEs, I clean up the SQL in other ways.
  
-  - I can't take the "leading commas" used in @tanimura2021sql: ["We're living in a society!"](@tanimura2021sql) ... so these go!
+  - I can't tolerate the "leading commas" used in @tanimura2021sql: ["We're living in a society!"](https://youtu.be/LHhbdXCzt_A?si=3H-GaZJ8OrWJshE2&t=22) ... so these go!
   - I make other changes to the SQL for a more consistent style (e.g., SQL keywords are capitalized).
-  - I use `USING` for cleaner SQL. For example `USING (id_bioguide)` is shorter than `ON a.id_bioguide = b.id_bioguide` and often obviates the need to use aliases (`a` and `b` here).
+  - I use `USING` for cleaner SQL. For example `USING (id_bioguide)` is shorter than `ON a.id_bioguide = b.id_bioguide` and often obviates the need for aliases such as `a` and `b`.
   
 Fourth, I delete some text, such as the introductory text that was in this very spot in the original chapter.
-Fifth, I modify some of the original text when it no longer reflects the approach used here.
+Fifth, I modify some of the original text when it no longer accurately describes the queries used here.
 :::
 
 ::: {.callout-note}

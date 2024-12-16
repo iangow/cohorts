@@ -1,4 +1,4 @@
-# Cohort using `dbplyr` {#sec-dbplyr}
+# Cohorts using `dbplyr` {#sec-dbplyr}
 
 ::: {.callout-note}
 #### `dbplyr` Version
@@ -1033,7 +1033,7 @@ The `min_start` of the terms falling in this window is also calculated for use i
 
 
 ```{r}
-first_terms <-
+first_terms_2000 <-
   legislators_terms |>
   filter(term_start <= "2000-12-31", 
          term_end >= "2000-01-01") |>
@@ -1048,7 +1048,7 @@ Second, an additional filter is added to `year_ends` so that it only returns dat
 
 ```{r}
 cohorts <-
-  first_terms |>
+  first_terms_2000 |>
   inner_join(legislators_terms |> select(-term_type),
              join_by(id_bioguide, y$term_start >= x$min_start)) |>
   left_join(year_ends |> filter(year(date) >= 2000), 

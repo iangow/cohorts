@@ -14,6 +14,7 @@ book:
     - ctes_comments.qmd
     - dbplyr.qmd
     - intermezzo.qmd
+    - revised.qmd
     - references.qmd
 
 bibliography: references.bib

@@ -1,27 +1,118 @@
 # Un intermezzo
 
-I take a brief pause in this chapter to organize some bigger-picture thoughts about Chapter 4 of @tanimura2021sql.
+I take a brief pause in this chapter to organize some bigger-picture thoughts about Chapter 4 of @tanimura2021sql before launching into a to-be-written alternative version of that chapter in @sec-revised.
+This chapter is not intended to be particularly coherent, but it meant more as a dumping ground for some raw materials that might be used to create an alternative version of Chapter 4 of @tanimura2021sql.
 
-My first thought is that the distinctions between each pair of the four types of cohort analysis identified by @tanimura2021sql [p. 124] are not equally sharp or stark.
-One distinction between retention and survivorship appears to turn on whether the activity engaged involves "repeated actions" or not.
-While this distinction certainly matters from a data analysis perspective, it's not clear that it's central to the analysis and my inclination is to view survivorship as the more fundamental idea underlying both.
+I think there is a lot to like about Chapter 4 of @tanimura2021sql.
+First, I love the use of a real data set, as I think it gets readers and students thinking about the data more deeply than is possible with simulated [fake] data.
+Also real data are more apt to cough up interesting complexities that are not easily anticipated with fake data.
+Second, the focus on the steps needed to get the data ready for analysis distinguishes Chapter 4 of @tanimura2021sql---indeed the whole book---both from books that focus on more elementary SQL (e.g., `CREATE TABLE`) and simpler data and from books that get hung up in statistical methods and neglect the all-important steps of preparing the data.
+Third, there is a richness to the examples.
+@tanimura2021sql pushes the legislators data hard.
 
-A more important distinction between retention and survivorship analysis in the taxonomy of Chapter 4 of @tanimura2021sql relates to whether a cohort member can exit the data and return at a later date.
+That said, there are some weaknesses.
+First, at 54 pages, the chapter is probably too long.
+While it's notionally shorter than Chapter 3 of @tanimura2021sql, Chapter 3 is really one chapter on data types (first 13 pages) and another chapter on the retail sales data set (47 pages).
+My sense is that it might make sense to drop a couple of queries and perhaps use a different data set for some aspects (e.g., the cumulative analysis feels a bit forced with the legislators data).
+Second, not every query is motivated by a precise question.
+As such, it can be hard to understand why various choices are being made.
+Third, I think this chapter nicely illustrates the outer limits of what you want to be doing with straight SQL with nested subqueries.
+I think one can do better using `dbplyr` to generate SQL.
+I believe that using `dbplyr` allows one to use more of a modular, building-block approach to some of the queries.
+For example, one can split apart the formation of cohorts from the arrangement of the basic survival data; I illustrate some ideas along these lines at the end of this chapter.
+I guess that this could lead to a shorter chapter.
+Fourth, @tanimura2021sql does not discuss approaches to handling censored data.
+While censoring is something more often found in an advanced statistics book, I think it can be handled at a level that does not demand high levels of statistical sophistication [e.g., see Chapter 10 of @singer2003longitudinal].^[By "advanced" I mean relative to the standards implicitly expected of readers of @tanimura2021sql.]
+
+Finally, I feel that the taxonomy provided in @tanimura2021sql is not as helpful as it might be.
+Perhaps an alternative taxonomy would be better.
+So I start with a taxonomy of analyses using survival analysis as the basic platform.
+
+### An alternative taxonomy?
+
+The situations for which *survival* analysis was named can be framed either in terms of the period of survival or in terms of the **event** which denotes the end of the survival period (e.g., death).
+While many sources [e.g., @singer2003longitudinal, p. 306] focus on the event, one can equally well focus on the **states** (i.e., "alive" before the event and [euphemistically] "not alive" after the event).
+
+With the terminology established, the first dichotomy is between **once-only events** and **possibly repeated events**.
+With *senso strictu* survivorship analysis where the "event" is death, the event only occurs once.
+
+In other situations, the "once-only" nature of the event studied is a function of how it is defined by the analyst.
+@singer2003longitudinal provide examples such as time to relapse among recently treated alcoholic and age at first suicide ideation.
+While one could track alcoholics over an extended period that allows them the opportunity to relapse, re-enter treatment, and then perhaps relapse again, by defining relapse as the first such event after treatment, it can occur at most once.
+Because of the way these events have been defined, if the event hadn't occurred by a date later than $t$, then it hadn't occurred by $t$.
+
+Often defining the event in such a way that it can happen at most once provides clear analytical benefits.
+Apart from simplifying data collation, a focus on once-only events allows an analyst to use one of the many statistical models adapted to such situations.
+For example, @singer2003longitudinal "focuses exclusively on the most common and fundamental problem: the analysis of single spells [i.e., once-only events]" [p. 311].
+@singer2003longitudinal provides tools for discrete-time and continuous-time analyses, including the Cox regression model and extensions to that model.
+While such models are beyond the scope of this book, they can be implemented once an analyst has organized the data into the canonical form for survival data.
+My focus below is on organizing data for such analysis.
+
+A second dichotomy relates to whether the states are **inherently continuous** or involve **repeated actions**.
+Conventional understanding has it that a person begins life at (or near) the date of birth and is alive until the date of death.
+"Being alive" is a continuous state.
+In the context of Chapter 4 of @tanimura2021sql, a legislator is elected to a term and remains a legislator until the term ends, either through expiration of the term, resignation, or death.
+
+But in other situations, there may be no inherently continuous state.
+For example, suppose (very hypothetically) that I were a regular Starbucks customer.
+Almost every morning I stop by the local Starbucks for a muffin and my regular coffee.
+Sometimes I pick up an afternoon caramel macchiato and I might grab breakfast at the airport Starbucks when travelling.
+Almost never do I partake in the Seattle-based company's wares on weekends.
+
+In this scenario, I might reasonably be described as a "regular Starbucks customer" even in the evening or on weekends.
+The challenge for the data analyst is that, while there is no continuous state observed in the data as there is with congressional terms or human lifetimes, we might want to treat "regular Starbucks customer" as the state of interest and therefore need to define  "regular Starbucks customer" in terms of actions (e.g., at least one purchase per month) or through related states (e.g., being a member of the Starbucks rewards program).
+
+In some cases, there will be underlying states of interest that are continuous, but the data analyst might need to infer these states from discrete observations in the data.
+
+My first thought is that the mapping from these two dichotomies to each the four types of cohort analysis identified by @tanimura2021sql is not entirely clear.
+@tanimura2021sql [p. 124] suggests that retention analysis is particularly relevant when the activity engaged involves "repeated actions", but it is not clear whether it is the first or the second dichotomy above that is relevant here.
+Depending on the revenue model, "playing an online game" might involve either discrete actions over time or maintaining a subscription.
+
+In other places, the rationale for the taxonomy of @tanimura2021sql is unclear.
 @tanimura2021sql [p. 124] suggests that retention analysis is "concerned with whether the cohort member has a record in the time series on a particular date, expressed as a number of periods from the starting date."
-This description allows for an individual to be in the sample at time $0$ and time $2$ even if not in the sample at time $1$.
+But it is not clear that this is the natural choice to make in all cases.
+
+An illustration of the implications of this definition can be seen in @tbl-jqa near the end of this chapter.
+There it can be seen that John Quincy Adams ("JQA") would be considered to have been "retained" in periods 28 through 45 notwithstanding his absence during periods 6 through 27, including a stint as president from 1825--1829.
+If we think of this analysis as being one about customer retention, we might have incurred significant customer acquisition costs (e.g., trial periods or discounts) to get JQA onboard in period 0 and then incurred those same costs all over again to sign up JQA in period 28.
+For the purposes of customer retention analysis (e.g., evaluating the effectiveness of AOL-style CDs distributed in the mail ... we are talking about the olden days, after all), we might want to either ignore periods after losing JQA as a customer, or treat these as a completely different stint (see below).
+While this does not make the retention analysis in @tanimura2021sql necessarily *wrong*, it does suggest that the taxonomy is not exhaustive of the ways we might want to structure an analysis.
+
+@tanimura2021sql [p. 124] suggests that what distinguishes survivorship analysis is that "instead of calculating whether an entity was present in a certain period [as in retention analyis], we calculate whether the entity is present in that period or later in the time series."
+One rationale for this distinction is that, if we observe that an individual is in the "alive" state at both time $0$ and time $2$, we can conclude that that individual was alive at time $1$.
+In this sense, the distinction maybe about make inferences about continuous states from discrete events or actions.
+Unfortunately, the legislators data is not a good setting for making such inferences in general, as one can be a senator, then not a senator, then a senator again and---though we learn below that some "filling" may be needed---the data on terms of the legislators is provided to us in a way that allows us to deduce the continuous state ("being a legislator") without needing to fill in gaps between discrete events.
+
+It is also not clear that the survivorship-versus-retention dichotomy of @tanimura2021sql has anything to do with whether the events are once-only events or not.
+For once-only events, being alive at time $t$ is implied by being alive at time $t$ "or later in the time series."
 Elsewhere @tanimura2021sql [p. 127] suggests that often "a cohort can lose but cannot gain new members once it is formed."
-I argue that the distinction between analyses where exit can happen only once from those where re-entry is possible is a more fundamental distinction and I discuss it in more detail below.
+So for many purposes the survivorship-versus-retention dichotomy only matters when the events are *not* once-only.
 
-Returnship, the third type of cohort analysis identified by @tanimura2021sql, seems to be one of repeated actions occurring "more than some minimum threshold of times", thus putting it close to retention.
-
-Finally, cumulative analyses "are concerned with the total number of times or amounts measured at one or more fixed time windows".
-In a sense, returnship seems to involve counting over windows, while cumulative analysis likely requires summing of some measure.
+The other two categories of analysis in the @tanimura2021sql [p. 124] are returnship and cumulative.
+Returnship examines of repeated actions occurring "more than some minimum threshold of times ... during a fixed window of time" and cumulative analyses "are concerned with the total number of times or amounts measured at one or more fixed time windows".
+Returnship seems to involve counting over windows, while cumulative analysis likely requires summing of some measure over windows.
 Given that a count is simply a sum of ones that indicate an action, this suggests that returnship is often perhaps a species of cumulative analysis.
 
-**Rewrite this paragraph once structure is understood.**
-@tanimura2021sql seems to concur regarding the existence of fundamental links between the four types of analysis, but elects to treat retention as the basic building block.
-While there is merit to this view, my inclination is to consider survivorship as the elemental analysis and to build up from there.
-My hunch is that a lot of the work in Chapter 4 of @tanimura2021sql can be better understood if one begins each analysis with a step that organizes survivorship data into a canonical structure.
+My hunch is that the latter two categories are not at the same level as the first two.
+One could do returnship and cumulative analysis in situations where there are once-only events or where multiple events are possible.
+Similarly, one could do returnship and cumulative analysis in situations whether the states are inherently continuous or involve repeated actions.
+
+I argue that what distinguishes the latter two categories from the other analyses is the metric chosen.
+For survival, we are in effect integrating the function $f(t) = 1$ from the start of the window to the end.
+With cumulative analysis, the function we are integrating might be, say, $f(t) = \text{Revenue}(t)$ if we are looking to accumulate revenue and returnship we might be summing the count function over some time window.
+This view gets some support from @tanimura2021sql [p. 127], where retention analysis is described as potentially including "the `count` of entities or `sum` of money or actions" [i.e., things discussed in the sections on returnship and cumulative analyses].
+
+That said, my sense is that returnship and cumulative analysis can present novel challenges from a data analysis perspective.
+The legislators data set does appear to provide an interesting example for returnship in the form of the question: "What proportion of legislators who start as representatives go on to become senators?"
+But this is just a survival analysis with the "event" being "becoming senator" rather than "ceasing to be a legislator" and the population limited to "legislators who start as a representative" rather than including all legislators.
+In contrast, the "cumulative" example using legislators (average number of terms) feels a bit more contrived and likely quite different in terms of the structure of the code from what you would need to do "cumulative revenue per customer by cohort" or similar.
+
+My hunch is that the most elemental analysis is one mirroring the original kind of survival analysis: once-only events with continuous states.
+Once this setting has been covered, one could cover issues involved in handling potentially repeated events and those arising when one observes discrete actions rather than events delineating boundaries between continuous states.
+
+My other hunch is that the analysis is much easier to understand when it is motivated by a clear question, such as the one used in the section covering returnship as discussed above.
+It isn't clear why the retention curve in Figure 4-4 of @tanimura2021sql [p. 135] includes legislators at time $t$ even if they have had a spell out of office prior to $t$ ("survivorship" analyses would seem to exclude these) and does not include legislators at time $t$ if they are out of office at that time, but will be in office at a later date ("retention" analyses would seem to include these).
+If the question that Figure 4-4 of @tanimura2021sql [p. 135] intends to answer were stated more clearly, then the choices to be made might also be clearer.
 
 ```{r}
 #| warning: false
@@ -83,11 +174,6 @@ congress_terms <- load_parquet(db, "congress_terms")
 
 ### Survival: Once-only events
 
-Often analytical simplicity is obtained by defining the event in such a way that it can happen at most once.
-@singer2003longitudinal provide examples such as time to relapse among recently treated alcoholic and age at first suicide ideation.
-While one could track alcoholics over an extended period that allows them the opportunity to relapse, re-enter treatment, and then perhaps relapse again, by defining relapse as the first such event after treatment, it can occur at most once.
-In other settings, events occur at most once for each individual (e.g., death for most individual humans).
-
 I suggest that the canonical form of data for survival analysis is a table with the following columns:
 
  - Identifier: One more columns that identify the individuals in the sample.
@@ -98,28 +184,18 @@ I suggest that the canonical form of data for survival analysis is a table with 
 Most queries involving cohorts in @sec-original do not use a survivorship approach.^[Most queries uses what I call a census-date approach that I discuss in @sec-census-date.]
 The queries using a survivorship approach are given in @sec-survivorship.
 
-Interestingly, @tanimura2021sql [p. 124] suggests that what distinguishes survivorship analysis is that "instead of calculating whether an entity was present in a certain period [as in retention analyis], we calculate whether the entity is present in that period or later in the time series."
-With *senso strictu* survivorship analysis where the "event" is death, the event only occurs once.
-So if an individual is alive both before and after a given date, then that individual must be alive on that date and there is no distinction between an entity being present in a certain period and that entity being present in that period or later in the time series.
-Similar logic applies to other once-only events such as first relapse or first ideation of suicide: if the event had not occurred by a date later than $t$, then it has not occurred by $t$.
-As such the primary distinction I make here is the not the same distinction as that made in @tanimura2021sql.
+
+
 
 Before moving on to discuss the census-date approach, I spend some time considering the approaches used in @sec-survivorship.
 The first query [@tanimura2021sql, p. 154--155] effectively organizes the data into the canonical form for survival data with `first_century` as the cohort, except that the exit date is measured as `term_start` for each legislator's last term.^[The choice of `term_start` rather than `term_end` is an odd one that is justified by the notion that "we don't need to know the specific dates of each term" because of a focus on "the share of legislators who survived in office for a decade or more after their first term started" [@tanimura2021sql, p. 154].
-Of course, a two-term senator will serve for 12 years, but the tenure calculated in this way would be six years rather than 12, which would seem to be a serious error.]
+Of course, a two-term senator will serve for 12 years, but the tenure calculated in this way would be six years rather than 12, which would seem to be a material error.]
 In effect, any gaps in a legislator's term are filled in in the sense that any legislator with a term covering any period after five years would be deemed to have "survived" for five years.
 
 What is not clear from @tanimura2021sql is why one would prefer "survivorship" analysis (with filling-in) over "retention" analysis, as there is no real context given for the queries.
 One example that is given does not help much: "if we are concerned about the number of students who are still in school after a certain number of years, we could look for the absence of a graduation event in a data set" [@tanimura2021sql, p. 154].
 But suppose our cohort comprises students who begin high school, where high school is understood as covering grades 9 through 12.
 It would not seem correct to treat a student who completed grades 9 and 10, then dropped out for a year before returning to complete the eleventh grade and then dropping out again as having "survived" four years of high school.
-
-In contrast, there are clear analytical benefits to focuses on once-only events.
-Apart from simplifying data collation, a focus on once-only events allows an analyst to deploy the extensive analytical machinery available for survival analysis.
-For example, @singer2003longitudinal "focuses exclusively on the most common and fundamental problem: the analysis of single spells [i.e., once-only events]" [p. 311].
-@singer2003longitudinal provides tools for discrete-time and continuous-time analyses, including the Cox regression model and extensions to that model.
-While such models are beyond the scope of this book, they can be implemented once an analyst has organized the data into the canonical form for survival data.
-My focus here is on organizing data for analysis.
 
 ### Survival: Censoring
  
@@ -166,7 +242,8 @@ get_terms <- function(file) {
     select(bioguide, terms) |>
     unnest_longer(terms) |>
     unnest_wider(terms) |>
-    select(bioguide, type, start, end, state, district, party, url,  class) |>
+    select(bioguide, type, start, end, state, district, 
+           party, url,  class) |>
     rename_with(\(x) str_c("term_", x), c(type, start, end)) |>
     rename(id_bioguide = bioguide)
 }
@@ -185,9 +262,8 @@ Finally, I join the old and new data and look for case where the updated `term_e
 Such cases are shown in @tbl-changed-term-ends.
 
 ```{r}
-#| label: tbl-changed-term-ends
-#| tbl-cap: Legislators with changed `term_end` values in updated data
-legislators |>
+updated_term_ends <-
+  legislators |>
   select(id_bioguide, full_name) |>
   inner_join(updated_terms, by = "id_bioguide") |>
   inner_join(legislators_terms,
@@ -197,6 +273,18 @@ legislators |>
   select(full_name, term_type, term_start, term_end,
          term_end_updated) |>
   arrange(term_end_updated) 
+```
+
+```{r}
+#| echo: false
+#| label: tbl-changed-term-ends
+#| tbl-cap: Legislators with changed `term_end` values in updated data
+#| 
+updated_term_ends |>
+  collect() |>
+  tt() |>
+  style_tt(fontsize = 0.8) |>
+  theme_tt("spacing")
 ```
 
 Looking at the table, we see that the earliest updated `term_end` relates to John Lewis, a civil rights icon and long-time legislator who passed away on 17 July 2020.
@@ -242,8 +330,6 @@ The main difference in the person-level form seen in Figure 10.4 of @singer2003l
 One corollary of this aspect of the person-level form is, as pointed out by @singer2003longitudinal [p. 310], a need to specify a "metric for clocking time" (e.g., days or years).
 With the canonical data form I present here, I effectively *defer* the need to choose the metric; as will be seen one cannot *avoid* this choice.
 
-
-
 ### Events that can happen more than once: The census-date approach {#sec-census-date}
 
 In many contexts, the event of interest will be a once-only event.
@@ -263,6 +349,15 @@ Another definition, which I call the **census-date approach**, reckons periods u
 
 Each census-date analysis in @sec-original uses 31 December of each year as the census date.
 For reasons we will learn about in @sec-stints, the choice of 31 December is appropriate because the *apparent* gaps that appear in the tenures of legislators in certain parts of the year do not affect 31 December.
+To implement this approach, I use the data frame `year_ends` below, which I create in R before copying to DuckDB.
+
+```{r}
+year_ends <-
+  tibble(year = 1770:2030L) |>
+  mutate(date = ymd(str_c(year, "-12-31"))) |>
+  select(date) |>
+  copy_to(db, df = _, name = "year_ends", overwrite = TRUE)
+```
 
 ### Events that can happen more than once: Stints {#sec-stints}
 
@@ -332,11 +427,11 @@ In contrast, the census-date approach using 31 December would not be affected by
 The shortness of the gaps above raises the possibility that one approach would be to consider two terms to be part of the same stint if there is just a short gap between them.
 But what is a "short gap" for this purpose?
 Would four days suffice?
-Looking at the terms of James Abdnor (`id_bioguide == "A000009")`) in @tbl-bbdnor-term-gaps suggests not.
+Looking at the terms of James Abdnor (`id_bioguide == "A000009")`) in @tbl-abdnor-term-gaps suggests not.
 
 ```{r}
 #| echo: false
-#| label: tbl-bbdnor-term-gaps
+#| label: tbl-abdnor-term-gaps
 #| tbl-cap: Congression terms of James Abdnor
 legislators_terms |>
   filter(id_bioguide == "A000009") |>
@@ -353,7 +448,7 @@ legislators_terms |>
 ```
 
 So maybe a month (say 30 days)?
-Looking at the terms of John Quincy Adams (`id_bioguide == "A000041")`) in @tbl-bbdnor-term-gaps, it seems this would not work.
+Looking at the terms of John Quincy Adams (`id_bioguide == "A000041")`) in @tbl-adams-term-gaps, it seems this would not work.
 
 ```{r}
 #| echo: false
@@ -378,8 +473,16 @@ Furthermore, the `term_start` data in `legislators_terms` appear to be based on 
 Data on these dates---derived from the United States Senate website---are contained in `congress_terms`.
 
 ```{r}
-congress_terms
+congress_terms |> 
+  filter(congress <= 5)
 ```
+
+```{r}
+congress_terms |> 
+  filter(congress >= 114)
+```
+
+Fortunately, each congress ends in the same year as the succeeding one starts:
 
 ```{r}
 congress_terms |> 
@@ -387,7 +490,9 @@ congress_terms |>
   count(same_year = year(term_start) != year(lag(term_end)))
 ```
 
-
+Using this fact and going term by term for each legislator and term type, we can identify a new stint for a legislator as one where there is no preceding term (i.e., the first stint) or the preceding term does not end in the same year as the current one.
+Note that, because I group by `id_bioguide` and `term_type`, if the preceding term was of a different type (`rep` or `sen`) from the current one, then the current term will be considered as starting a new stint.
+We can then number each stint by summing the numeric values of `new_stint`.
 
 ```{r}
 stints_raw <-
@@ -406,7 +511,8 @@ stints_raw <-
   compute()
 ```
 
-
+After adding `stint_number` to the data on legislator terms, we can organize the data by stints, which reduces the size of the data and facilitates analysis by stint.
+I store this reduced data set in `stints`.
 
 ```{r}
 stints <-
@@ -417,17 +523,37 @@ stints <-
             .groups = "drop")
 ```
 
+We can revisit the three legislators discussed at the start of this section to confirm that they are organized in `stints` in the way we would expect.
+As can be seen in @tbl-stints-examples, we have two stints each for James Abdnor and John Quincy Adams and one sting for Nancy Pelosi.
+
 ```{r}
+#| echo: false
+#| label: tbl-stints-examples
+#| tbl-cap: Congressional stints of example legislators
 legislators |>
   select(id_bioguide, full_name) |>
   inner_join(stints, by = "id_bioguide") |> 
   filter(id_bioguide %in% c("P000197", "A000009", "A000041")) |> 
-  arrange(id_bioguide, stint_start)
+  arrange(id_bioguide, stint_start) |>
+  collect() |> 
+  tt() |>
+  style_tt(fontsize = 0.8) |>
+  theme_tt("spacing")
 ```
 
+Looking at @tbl-num-stints, we see that there are two legislators with *six stints* each.
+
 ```{r}
-stints |> count(stint_number)
+#| echo: false
+#| label: tbl-num-stints
+#| tbl-cap: Distribution of number of stints
+stints |>
+  count(stint_number)
 ```
+
+Is this an error?
+I collect data on these two legislators in `six_stinters`.
+
 ```{r}
 six_stinters <-
   stints |>
@@ -439,6 +565,10 @@ six_stinters <-
   arrange(id_bioguide, stint_start) 
 ```
 
+From @tbl-six-stints, it seems that these are legitimately six-stint legislators.
+Henry Clay and John Randolph were major political figures over much of the first half of the nineteenth century.
+Some of their stints were broken by switches from one congressional body to another.
+Other stints were broken by stints in the executive branch: Clay was Secretary of State and Randolph spent a short time as the US ambassador to Russia.^[According to [Wikipedia](https://en.wikipedia.org/wiki/John_Randolph_of_Roanoke), Randolph did not present his credentials and soon resigned for health reasons.]
 
 ```{r}
 #| echo: false
@@ -447,43 +577,83 @@ six_stinters <-
 six_stinters |>
   collect() |>
   tt() |>
+  style_tt(fontsize = 0.8) |>
   theme_tt("spacing")
 ```
 
+The fact that congressional terms always end in the same year as the following term begins means that we won't miss terms that continue previous terms using the `year(term_start) == year(lag(term_end)))` rule.
+That is, we should have no "false negatives".
 
-## Adding cohorts: The canonical form
-
-```{sql}
-#| connection: db
-CREATE OR REPLACE TABLE date_dim AS
-WITH dates AS 
-  (
-    SELECT generate_series::date AS date
-    FROM generate_series(DATE '1770-01-01', 
-                         DATE '2030-12-31',
-                         INTERVAL '1 day') )
-SELECT date, 
-  strftime(date, '%B') AS month_name,
-  strftime(date, '%-d') AS day_of_month,
-  year(date) AS year
-FROM dates;
-```
+But do we need to worry about "false positives": cases where we classify a term as continuing the previous term when there is actually a gap between the two terms.
+To examine the possibility of false positives, I adapt the `stints` code above to create `problem_stints`, which contains terms that began *after* the start of the congressional term in that year.
 
 ```{r}
-date_dim <- tbl(db, "date_dim")
+problem_stints <-
+  legislators_terms |>
+  group_by(id_bioguide, term_type) |>
+  window_order(term_start) |>
+  mutate(year_start = year(term_start),
+         same_year = year(term_start) == year(lag(term_end))) |>
+  inner_join(
+    congress_terms |>
+      mutate(year_start = year(term_start)),
+    by = "year_start", 
+    suffix = c("", "_congress")) |>
+  filter(same_year, 
+         term_start > term_start_congress) |>
+  inner_join(legislators |> select(id_bioguide, full_name),
+             by = "id_bioguide") |>
+  select(id_bioguide, full_name, term_type, 
+         term_start_congress, term_start) |>
+  arrange(term_start)
 ```
+
+Candidate false positives are presented in @tbl-problem-stints.
 
 ```{r}
-year_ends <-
-  date_dim |>
-  filter(month_name == 'December', day_of_month == 31) |>
-  select(date)
+#| echo: false
+#| label: tbl-problem-stints
+#| tbl-cap: Possibly problematic stint data
+problem_stints |>
+  collect() |>
+  tt() |>
+  style_tt(fontsize = 0.8) |>
+  theme_tt("spacing")
 ```
 
-### Cohorts considered in @tanimura2021sql
+As with many data tasks, what is required to handle these is not some fancy coding or analysis, but simple "shoe leather"
+For example, take the latest case from @tbl-problem-stints.
+According to [The Oregonian](https://www.oregonlive.com/politics/2017/01/oregon_congressman_kurt_schrad_1.html), Walter Jones missed being sworn in on [the first day of the 116th Congress](https://clerk.house.gov/evs/2019/roll001.xml) because he was on honeymoon.
+Kurt Schrader is another who missed [the first day of Congress](https://clerk.house.gov/evs/2017/roll001.xml).
+The gaps are somewhat longer in the cases of Henry Moore Teller and Henry Clarence Dworchak.
+
+Teller was one of the initial pair of senators from Colarado, which as admitted the 38th state of the United States on 1 August 1876.
+[Initial digging](https://www.senate.gov/states/CO/timeline.htm) into the former case suggests that "the Senate confirmed the nomination of Henry Moore Teller as secretary of the interior under President Chester A. Arthur. 
+Teller resigned his Senate seat on April 17, 1876, and served as interior secretary until March 3, 1885."
+Hmm? So Teller resigned before Colarado was even a state to serve under Chester Arthur, who didn't even become president until 1881.
+This is clearly a mistake (a giveaway is the apparent nine-year stint as cabinet secretary).
+
+
+
+### Why use census dates?
+
+With events that happen at most once, there is no clear rationale for using either census dates or stints.
+Each observation will have just one stint (albeit with a potentially censored exit date) and, assuming that date of entry is $t=0$, then being in the sample after date $t=T$ implies being in the sample on any census date between $0$ and $T$.
+
+Thus the differences between analyses using census dates and stints will arise when individuals can have multiple stints.
+So why use census dates rather than calculating stints?
+
+I think one reason for using a census-date is that can be much easier to implement.
+Constructing stints for legislators required additional data (i.e., `congress_terms`) and a little data-wrangling gymnastics.
+In contrast, by using 31 December as the census date (a date unlikely to be in a "gap"), we can easily construct measures of tenure with less effort.
+
+Additionally, the census-date appraoach makes it easy to implement the chosen "metric for clocking time" [@singer2003longitudinal, p. 310].
+By using `year_ends`, almost all examples in @tanimura2021sql measure time in terms of years.
+
+## Organizing cohort data
 
 There are several different cohorts uses in analyses in Chapter 4 of @tanimura2021sql.
-Note that not all analyses involve cohorts. For example, pp. 170--171.
+
 
  - `first_year`
  - `first_century` (also called `cohort_century` or `century`)
@@ -494,53 +664,149 @@ Note that not all analyses involve cohorts. For example, pp. 170--171.
  - `first_century` and `first_type`
  - `date` (last day of the year) and `century` (`last_century`?)
  
-If you read @sec-original carefully, you will see that any individual legislator is placed in no more than one cohort in any analysis.
+If you read @sec-original carefully, you will see that any individual legislator is placed in no more than one of the cohorts above in any analysis.
 As such one particulaly clean (and clear) approach would create a table comprising the individual identifier (`id_bioguide`) and the cohort assignment for each individual.
-For example, the following code creates a `first_centuries` with cohort assignments for `first_century`.
+For example, the following code creates a `first_centuries` table with cohort assignments for `first_century` (here named `cohort` for reasons that will become clear in a moment).
 
 ```{r}
 first_centuries <-
   legislators_terms |>
   group_by(id_bioguide) |>
-  summarize(first_century = century(min(term_start, na.rm = TRUE)),
+  summarize(cohort = century(min(term_start, na.rm = TRUE)),
             .groups = "drop")
 ```
-
-### Census dates
-
-Why do we need to use census dates?
-
-One reason would seem to be to accounting for breaks in tenures.
-Is this intentional in all cases?
-
-Another reason would appear to relate to data collection strategies.
-
-Finally, is there something about discretizing the data on periods?
+ 
+Note that not all analyses in @sec-original involve cohorts.
+For example, the analysis of tenures [@tanimura2021sql, pp. 170--174] is described as "rather than cohorting on `first_term`, we can cohort on tenure instead."
+But I feel it is a little confusing to describe this analysis as involving "cohorting" as any individual legislator will appear in multiple cohorts over time.^[It might be viewed as the concatenation of multiple cohort analyses, one for each period studied.]
 
 ```{r}
-cohorts <-
-  first_centuries |>
-  inner_join(survival_data, by = "id_bioguide") |>
-  mutate(exit_date = coalesce(exit_date, extract_date)) |>
-  left_join(year_ends, 
-             join_by(between(y$date, x$entry_date, x$exit_date))) |>
-  mutate(period = coalesce(year(age(date, entry_date)), 0)) |>
-  group_by(first_century, period) |>
-  summarize(cohort_retained = n_distinct(id_bioguide),
+first_terms <-
+  legislators_terms |>
+  group_by(id_bioguide) |>
+  summarize(first_term = min(term_start, na.rm = TRUE),
             .groups = "drop")
+
+census_data <-
+  legislators_terms |>
+  inner_join(first_terms, by = "id_bioguide") |>
+  left_join(year_ends, 
+            join_by(
+              between(y$date, x$term_start, x$term_end))) |>
+  mutate(period = coalesce(year(age(date, first_term)), 0))
 ```
+
+The cohort analysis can now proceed by combining these two data frames and calculating `pct_retained` after a few data steps.
 
 ```{r}
 cen_pct_retaineds <-
-  cohorts |>
-  group_by(first_century) |>
+  first_centuries |>
+  inner_join(census_data, by = "id_bioguide") |>
+  group_by(cohort, period) |>
+  summarize(cohort_retained = n_distinct(id_bioguide),
+            .groups = "drop") |>
+  group_by(cohort) |>
   window_order(period) |>
-  mutate(cohort_size = first(cohort_retained),
-         pct_retained = cohort_retained / cohort_size) |>
+  mutate(cohort_size = first(cohort_retained)) |>
   ungroup() |>
-  select(first_century, period, cohort_size, cohort_retained,
-         pct_retained)
+  mutate(pct_retained = cohort_retained / cohort_size) |>
+  select(cohort, period, cohort_size, cohort_retained,
+         pct_retained) |>
+  arrange(cohort, period)
 
-cen_pct_retaineds |>
-  arrange(first_century, period)
+cen_pct_retaineds
 ```
+Of course, this logic could be embedded in a function:
+
+```{r}
+get_pct_retained <- function(cohorts, census_data) {
+
+  cohorts |>
+    inner_join(census_data, by = "id_bioguide") |>
+    group_by(cohort, period) |>
+    summarize(cohort_retained = n_distinct(id_bioguide),
+              .groups = "drop") |>
+    group_by(cohort) |>
+    window_order(period) |>
+    mutate(cohort_size = first(cohort_retained)) |>
+    ungroup() |>
+    mutate(pct_retained = cohort_retained / cohort_size) |>
+    select(cohort, period, cohort_size, cohort_retained,
+           pct_retained) |>
+    arrange(cohort, period)
+}
+```
+
+As can be seen from the following output, we get the same results using `get_pct_retained()` as we got above.
+
+```{r}
+get_pct_retained(first_centuries, census_data)
+```
+
+The benefit of using a function like this is that it makes it easy to do the analysis using different cohorts.
+Here I re-run the analysis using cohorts formed on `gender`:
+
+```{r}
+genders <-
+  legislators |>
+  distinct(id_bioguide, gender) |>
+  rename(cohort = gender)
+
+get_pct_retained(genders, census_data)
+```
+
+It is relatively straightforward to apply `get_pct_retained()` to replicate the "retention for legislators who were in office in the year 2000" analysis [@tanimura2021sql, pp. 151-153].
+Defining the cohorts is fairly straightforward:
+
+```{r}
+test_year <- 2000
+year_start <- ymd(str_c(test_year, "-01-01"))
+year_end <- ymd(str_c(test_year, "-12-31"))
+
+legislators_2000 <-
+  legislators_terms |>
+  filter(term_start <= year_start, term_end >= year_end) |>
+  distinct(id_bioguide, term_type) |>
+  rename(cohort = term_type)
+```
+
+The main tweak is to the calculation of the census data, as `"2000-01-01"` is used in place of `first_term` and we need to focus on dates in or after 2000 (this is achieved using `filter(period >= 0)`).
+
+```{r}
+census_data_2000 <-
+  legislators_terms |>
+  select(id_bioguide, term_type, term_start, term_end) |>
+  inner_join(year_ends, 
+             join_by(
+               between(y$date, x$term_start, x$term_end))) |>
+  mutate(period = coalesce(year(age(date, year_start)), 0)) |>
+  filter(period >= 0)
+```
+
+Now I just need to call the same function.
+Note that I sort the data to match the output in the book [@tanimura2021sql, p. 152].
+
+```{r}
+get_pct_retained(legislators_2000, census_data_2000) |> 
+  arrange(period, cohort)
+```
+
+```{r}
+jqa_census_data <-
+  census_data |>
+  filter(id_bioguide == "A000041") |>
+  select(id_bioguide, term_type, term_start, term_end,
+         date, period)
+```
+
+```{r}
+#| echo: false
+#| label: tbl-jqa
+#| tbl-cap: Census data for John Quincy Adams
+jqa_census_data |>
+  collect() |>
+  tt() |>
+  style_tt(fontsize = 0.8) |>
+  theme_tt("spacing")
+```
+
