@@ -203,15 +203,35 @@ The key question SQL will help us answer is: once representatives take office, h
 
 ## Retention
 
-One of the most common types of cohort analysis is retention analysis. To retain is to keep or continue something. Many skills need to be practiced to be retained. Businesses usually want their customers to keep purchasing their products or using their services, since retaining customers is more profitable than acquiring new ones. Employers want to retain their employees, because recruiting replacements is expensive and time consuming. Elected officials seek reelection in order to continue working on the priorities of their constituents.
+One of the most common types of cohort analysis is retention analysis.
+To retain is to keep or continue something.
+Many skills need to be practiced to be retained.
+Businesses usually want their customers to keep purchasing their products or using their services, since retaining customers is more profitable than acquiring new ones. 
+Employers want to retain their employees, because recruiting replacements is expensive and time consuming.
+Elected officials seek reelection in order to continue working on the priorities of their constituents.
 
-The main question in retention analysis is whether the starting size of the cohort—number of subscribers or employees, amount spent, or another key metric—will remain constant, decay, or increase over time. When there is an increase or a decrease, the amount and speed of change are also interesting questions. In most retention analyses, the starting size will tend to decay over time, since a cohort can lose but cannot gain new members once it is formed. Revenue is an interesting exception, since a cohort of customers can spend more in subsequent months than they did in the first month collectively, even if some of them churn.
+The main question in retention analysis is whether the starting size of the cohort—number of subscribers or employees, amount spent, or another key metric—will remain constant, decay, or increase over time.
+When there is an increase or a decrease, the amount and speed of change are also interesting questions.
+In most retention analyses, the starting size will tend to decay over time, since a cohort can lose but cannot gain new members once it is formed. 
+Revenue is an interesting exception, since a cohort of customers can spend more in subsequent months than they did in the first month collectively, even if some of them churn.
 
-Retention analysis uses the count of entities or sum of money or actions present in the data set for each period from the starting date, and it normalizes by dividing this number by the count or sum of entities, money, or actions in the first time period. The result is expressed as a percentage, and retention in the starting period is always 100%. Over time, retention based on counts generally declines and can never exceed 100%, whereas money- or action-based retention, while often declining, can increase and be greater than 100% in a time period. Retention analysis output is typically displayed in either table or graph form, which is referred to as a retention curve. We'll see a number of examples of retention curves later in this chapter.
+Retention analysis uses the count of entities or sum of money or actions present in the data set for each period from the starting date, and it normalizes by dividing this number by the count or sum of entities, money, or actions in the first time period.
+The result is expressed as a percentage, and retention in the starting period is always 100%.
+Over time, retention based on counts generally declines and can never exceed 100%, whereas money- or action-based retention, while often declining, can increase and be greater than 100% in a time period.
+Retention analysis output is typically displayed in either table or graph form, which is referred to as a retention curve.
+We'll see a number of examples of retention curves later in this chapter.
 
-Graphs of retention curves can be used to compare cohorts. The first characteristic to pay attention to is the shape of the curve in the initial few periods, where there is often an initial steep drop. For many consumer apps, losing half a cohort in the first few months is common. A cohort with a curve that is either more or less steep than others can indicate changes in the product or customer acquisition source that merit further investigation. A second characteristic to look for is whether the curve flattens after some number of periods or continues declining rapidly to zero. A flattening curve indicates that there is a point in time from which most of the cohort that remains stays indefinitely. A retention curve that inflects upward, sometimes called a smile curve, can occur if cohort members return or reactivate after falling out of the data set for some period. Finally, retention curves that measure subscription revenue are monitored for signs of increasing revenue per customer over time, a sign of a healthy SaaS software business.
+Graphs of retention curves can be used to compare cohorts.
+The first characteristic to pay attention to is the shape of the curve in the initial few periods, where there is often an initial steep drop.
+For many consumer apps, losing half a cohort in the first few months is common.
+A cohort with a curve that is either more or less steep than others can indicate changes in the product or customer acquisition source that merit further investigation. A second characteristic to look for is whether the curve flattens after some number of periods or continues declining rapidly to zero.
+A flattening curve indicates that there is a point in time from which most of the cohort that remains stays indefinitely.
+A retention curve that inflects upward, sometimes called a smile curve, can occur if cohort members return or reactivate after falling out of the data set for some period. 
+Finally, retention curves that measure subscription revenue are monitored for signs of increasing revenue per customer over time, a sign of a healthy SaaS software business.
 
-This section will show how to create a retention analysis, add cohort groupings from the time series itself and other tables, and handle missing and sparse data that can occur in time series data. With this framework in hand, you'll learn in the subsequent section how to make modifications to create the other related types of cohort analysis. As a result, this section on retention will be the longest one in the chapter, as you build up code and develop your intuition about the calculations.
+This section will show how to create a retention analysis, add cohort groupings from the time series itself and other tables, and handle missing and sparse data that can occur in time series data.
+With this framework in hand, you'll learn in the subsequent section how to make modifications to create the other related types of cohort analysis.
+As a result, this section on retention will be the longest one in the chapter, as you build up code and develop your intuition about the calculations.
 
 ### SQL for a Basic Retention Curve
 
@@ -564,9 +584,17 @@ Next, I'll discuss forming groups from the time series itself, and after that, I
 
 Now that we have SQL code to calculate retention, we can start to split the entities into cohorts. In this section, I will show how to derive cohort groupings from the time series itself. First I'll discuss time-based cohorts based on the first date, and I'll explain how to make cohorts based on other attributes from the time series.
 
-The most common way to create the cohorts is based on the first or minimum date or time that the entity appears in the time series. This means that only one table is necessary for the cohort retention analysis: the time series itself. Cohorting by the first appearance or action is interesting because often groups that start at different times behave differently. For consumer services, early adopters are often more enthusiastic and retain differently than later adopters, whereas in SaaS software, later adopters may retain better because the product is more mature. Time-based cohorts can be grouped by any time granularity that is meaningful to the organization, though weekly, monthly, or yearly cohorts are common. If you're not sure what grouping to use, try running the cohort analysis with different groupings, without making the cohort sizes too small, to see where meaningful patterns emerge. Fortunately, once you know how to construct the cohorts and retention analysis, substituting different time granularities is straightforward.
+The most common way to create the cohorts is based on the first or minimum date or time that the entity appears in the time series.
+This means that only one table is necessary for the cohort retention analysis: the time series itself.
+Cohorting by the first appearance or action is interesting because often groups that start at different times behave differently.
+For consumer services, early adopters are often more enthusiastic and retain differently than later adopters, whereas in SaaS software, later adopters may retain better because the product is more mature.
+Time-based cohorts can be grouped by any time granularity that is meaningful to the organization, though weekly, monthly, or yearly cohorts are common.
+If you're not sure what grouping to use, try running the cohort analysis with different groupings, without making the cohort sizes too small, to see where meaningful patterns emerge.
+Fortunately, once you know how to construct the cohorts and retention analysis, substituting different time granularities is straightforward.
 
-The first example will use yearly cohorts, and then I will demonstrate swapping in centuries. The key question we will consider is whether the era in which a legislator first took office has any correlation with their retention. Political trends and the public mood do change over time, but by how much?
+The first example will use yearly cohorts, and then I will demonstrate swapping in centuries.
+The key question we will consider is whether the era in which a legislator first took office has any correlation with their retention.
+Political trends and the public mood do change over time, but by how much?
 
 To calculate yearly cohorts, we first add the year of the `first_term` calculated previously to `cohorts_retained`, the CTE that finds `period` and `cohort_retained`:
 
