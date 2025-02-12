@@ -182,6 +182,7 @@ legislators_terms |>
   style_tt(fontsize = 0.8) |>
   theme_tt("spacing")
 ```
+
 Now that we have an understanding of what cohort analysis is and of the data set we'll be using for examples, let's get into how to write SQL for retention analysis.
 The key question SQL will help us answer is: once representatives take office, how long do they keep their jobs?
 
